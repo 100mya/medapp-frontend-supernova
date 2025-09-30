@@ -1,0 +1,91 @@
+{
+    "HistoryTaking": {
+      "Symptoms": [
+        "Chest pain",
+        "shortness of breath",
+        "palpitations",
+        "syncope",
+        "abdominal pain",
+        "nausea",
+        "vomiting",
+        "diarrhea",
+        "constipation",
+        "jaundice",
+        "pain",
+        "swelling",
+        "stiffness",
+        "weakness",
+        "deformity",
+        "fatigue",
+        "bleeding",
+        "bruising",
+        "infections",
+        "weight loss",
+        "cough",
+        "dyspnea",
+        "sputum production",
+        "hemoptysis"
+      ],
+      "Risk Factors": [
+        "Hypertension",
+        "smoking",
+        "diabetes",
+        "hyperlipidemia",
+        "family history of cardiovascular diseases",
+        "gastrointestinal diseases",
+        "rheumatological diseases",
+        "genetic disorders",
+        "occupational exposures (asbestos, silica, dust, chemicals)"
+      ],
+      "Injury History": [
+        "Details of trauma",
+        "mechanism of injury"
+      ],
+      "Past Medical History": [
+        "Previous cardiovascular",
+        "gastrointestinal",
+        "musculoskeletal",
+        "and hematological issues",
+        "transfusions",
+        "treatments",
+        "surgeries",
+        "chronic conditions (e.g., asthma",
+        "COPD",
+        "arthritis",
+        "hematological disorders",
+        "respiratory infections)"
+      ],
+      "Medication Use": [
+        "Current medications",
+        "recent changes",
+        "over-the-counter drugs",
+        "compliance",
+        "side effects",
+        "NSAIDs",
+        "alcohol use",
+        "steroids",
+        "immunosuppressants"
+      ],
+      "Family History": [
+        "Cardiovascular diseases",
+        "gastrointestinal diseases",
+        "cancers",
+        "rheumatological diseases",
+        "genetic disorders",
+        "clotting disorders"
+      ],
+      "Travel History": [
+        "Recent travel locations",
+        "duration of stay",
+        "reason for travel",
+        "any specific health issues encountered during or after travel"
+      ],
+      "Allergies": [
+        "Known allergies",
+        "allergy triggers",
+        "severity of reactions",
+        "history of allergic reactions"
+      ]
+    }
+  }
+  

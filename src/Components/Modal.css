@@ -1,0 +1,225 @@
+.custom-modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  
+  .custom-modal-content {
+    display: flex;
+    width: 1200px;
+    height: 600px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .custom-modal-content.custom-signup {
+    transform: translateX(0%);
+  }
+  
+  .custom-modal-content.custom-login {
+    transform: translateX(0%);
+  }
+  
+  .custom-form-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    background: linear-gradient(90deg, #fff, #fbfaf0);
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: calc(100% - 40px); /* Adjust max height as needed */
+  }
+  
+  .custom-switch-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('modal.png') no-repeat center center/cover;
+    position: relative;
+  }
+  
+  .custom-switch-box {
+    background: linear-gradient(45deg, #ff416c, #ff416c);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+    color: #fff;
+    height: 120px;
+  }
+  
+  .custom-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-items: center;
+    justify-content: center;
+    position: relative;
+    flex-wrap: wrap;
+    overflow-y: auto;
+  }
+
+  .custom-subscribe {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: calc(100% - 40px); /* Adjust max height as needed */
+  }
+  
+  .custom-input {
+    margin: 10px 50px;
+    padding: 15px;
+    border: 0px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #ff416c, #ff416c);
+    color: white;
+    cursor: pointer;
+    width: fit-content;
+    margin-left: 50px;
+    margin-top: 20px;
+  }
+  
+  .custom-button:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }
+  
+  .custom-switch-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #fff;
+    color: #ff416c;
+    cursor: pointer;
+  }
+  
+  .custom-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  
+  .custom-forgot-password {
+    margin-top: 10px;
+    color: #ff416c;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  /* Modal.css */
+.custom-phone-input {
+    border: 0px solid #ccc;
+    margin: 10px 50px;
+}
+
+.custom-phone-input input {
+    padding: 15px;
+    border: 0px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.plan-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.plan {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 45%;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  color: #333;
+  margin: 20px;
+}
+
+.plan:hover {
+  border-color: #ff416c;
+}
+
+.plan.selected {
+  border-color: #ff416c;
+  background-color: #fff;
+}
+
+.plan h3 {
+  margin: 0 0 10px;
+}
+
+.plan p {
+  margin: 0;
+}
+
+#paypal-button-container {
+  justify-items: center;
+  margin-top: 20px;
+  width: 50%;
+  padding-right: 50%;
+}
+  
+  /* Media query for mobile devices */
+@media (max-width: 768px) {
+  .custom-modal-content {
+    width: 90%;
+    height: auto;
+    max-width: 400px; /* Adjust max-width to your preference */
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .custom-form-container,
+  .custom-switch-container {
+    padding: 20px;
+  }
+
+  .custom-form {
+    width: 100%;
+  }
+
+  .custom-input {
+    margin: 10px 0;
+    width: calc(100% - 40px); /* Adjust width for mobile */
+  }
+
+  .custom-button {
+    margin-left: 0;
+    width: 100%; /* Full width button */
+  }
+
+  .custom-switch-box {
+    height: auto;
+  }
+}

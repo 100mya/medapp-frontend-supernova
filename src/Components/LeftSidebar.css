@@ -1,0 +1,78 @@
+/* src/styles/LeftSidebar.css */
+.left-sidebar {
+  width: 300px; /* Adjust sidebar width as needed */
+  background-color: #fff;
+  position: fixed;
+  top: 50px; /* Adjust to leave space for the header */
+  left: 0;
+  bottom: 0;
+  overflow-y: auto; /* Enable scrolling if content exceeds height */
+  border-right: 1px solid #ddd; /* Example: Add a border on the right */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profiles-info {
+  margin-bottom: 20px;
+}
+
+.profiles-header {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center align items */
+  margin-bottom: 0px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: auto;
+}
+
+.profiles-header h3 {
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+  color: #ff416c;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 80px; /* Adjust the size of the profile picture */
+  height: 80px; /* Adjust the size of the profile picture */
+  border-radius: 50%;
+  margin-bottom: 0px;
+}
+
+.profiles-email {
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.profiles-details {
+  margin-bottom: 10px;
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.profiles-info-item {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.profiles-counts {
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.profiles-bio {
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+

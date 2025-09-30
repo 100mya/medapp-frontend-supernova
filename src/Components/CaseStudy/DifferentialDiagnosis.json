@@ -1,0 +1,82 @@
+{
+    "DifferentialDiagnosis": {
+      "Cardiovascular": [
+        "Myocardial infarction",
+        "Angina",
+        "Heart failure",
+        "Arrhythmias",
+        "Valvular heart disease",
+        "Pericarditis",
+        "Hypertensive crisis",
+        "Aortic dissection",
+        "Coronary artery disease",
+        "Cardiomyopathy",
+        "Endocarditis",
+        "Myocarditis",
+        "Cardiac tamponade"
+      ],
+      "Respiratory": [
+        "Pneumonia",
+        "COPD",
+        "Asthma",
+        "Pulmonary embolism",
+        "Pleural effusion",
+        "Interstitial lung disease",
+        "Tuberculosis",
+        "Lung cancer",
+        "Acute bronchitis",
+        "Acute respiratory distress syndrome (ARDS)",
+        "Pneumothorax",
+        "Hemothorax",
+        "Aspiration pneumonia"
+      ],
+      "Gastrointestinal": [
+        "Peptic ulcer disease",
+        "Gastroenteritis",
+        "Hepatitis",
+        "Cholecystitis",
+        "Pancreatitis",
+        "IBD",
+        "GI bleeding",
+        "Gastric cancer",
+        "Colorectal cancer",
+        "Gallstones",
+        "Diverticulitis",
+        "Esophageal varices",
+        "Gastric outlet obstruction"
+      ],
+      "Musculoskeletal": [
+        "Fractures",
+        "Sprains",
+        "Dislocations",
+        "Arthritis",
+        "Bursitis",
+        "Tendinitis",
+        "Infections (osteomyelitis, septic arthritis)",
+        "Gout",
+        "Rheumatoid arthritis",
+        "Osteoarthritis",
+        "Ankylosing spondylitis",
+        "Fibromyalgia",
+        "Lupus",
+        "Osteoporosis"
+      ],
+      "Hematological": [
+        "Anemia",
+        "Leukemia",
+        "Lymphoma",
+        "Coagulation disorders",
+        "Infections",
+        "Nutritional deficiencies",
+        "Thrombocytopenia",
+        "Hemophilia",
+        "Deep vein thrombosis",
+        "Sickle cell disease",
+        "Hemochromatosis",
+        "Polycythemia",
+        "Thrombotic thrombocytopenic purpura (TTP)",
+        "Disseminated intravascular coagulation (DIC)"
+      ]
+    }
+  }
+  

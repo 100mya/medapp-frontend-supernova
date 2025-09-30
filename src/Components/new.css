@@ -1,0 +1,202 @@
+/* NotesGenerator.css */
+
+.NotesGenerator-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .NotesGenerator-heading {
+    margin: 20px 0;
+    font-size: 2rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .NotesGenerator-heading span {
+    color: #ff416c;
+  }
+  
+  .NotesGenerator-chat-container {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 1200px;
+    height: 80vh;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    padding: 20px;
+  }
+  
+  .NotesGenerator-chat {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+  }
+  
+  .NotesGenerator-message {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .NotesGenerator-message.user {
+    justify-content: flex-end;
+    transform: translateX(20px);
+  }
+  
+  .NotesGenerator-message.bot {
+    justify-content: flex-start;
+    transform: translateX(-20px);
+  }
+  
+  .NotesGenerator-message-content {
+    max-width: 60%;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .NotesGenerator-message.user .NotesGenerator-message-content {
+    background-color: #ff416c;
+    color: #ffffff;
+    text-align: right;
+  }
+  
+  .NotesGenerator-message.bot .NotesGenerator-message-content {
+    background-color: #e5e5e5;
+    color: #000000;
+    text-align: left;
+  }
+  
+  .NotesGenerator-form-section {
+    display: flex;
+    padding: 20px;
+    background: #f7f7f7;
+    border-top: 1px solid #e0e0e0;
+    max-width: 1200px;
+  }
+
+  .chat-individual-notes-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .NotesGenerator-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    flex: 1;
+    margin-right: 20px;
+  }
+
+  .NotesGenerator-textarea {
+    flex: 1;
+    height: 60px;
+    resize: none;
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: border-color 0.3s;
+  }
+  
+  .NotesGenerator-button {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #ff416c, #ff416c);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .NotesGenerator-button:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }
+  
+  .NotesGenerator-save-button {
+    background-color: transparent; /* Green background */
+  color: #555; /* White text */
+  border: none; /* No border */
+  padding: 5px 10px; /* Padding */
+  text-align: center; /* Center text */
+  text-decoration: none; /* No underline */
+  display: inline-block; /* Display as block */
+  margin-top: 10px; /* Margin top */
+  cursor: pointer; /* Cursor on hover */
+  border-radius: 2px; /* Rounded corners */
+  margin-left: 10px;
+  }
+  
+  /* Popup styles */
+  .NotesGenerator-popup {
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure popup is on top */
+  border-radius: 20px;
+  }
+  
+  .NotesGenerator-popup-content {
+    background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  width: 300px; /* Width of the popup box */
+  text-align: center;
+  }
+
+  .NotesGenerator-popup-content h2 {
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  
+  .NotesGenerator-popup-content input {
+    width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  }
+  
+  .NotesGenerator-popup-content button {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #ff416c, #ff416c);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+  }
+  
+  .NotesGenerator-popup-content button:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }

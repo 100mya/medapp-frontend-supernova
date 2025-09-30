@@ -1,0 +1,52 @@
+/* src/components/CallToActionBottomSection.css */
+.cta-bottom-section {
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    background: #fff;
+    padding: 3rem 2rem;
+    margin: 20px;
+    height: 35vh;
+  }
+  
+  .cta-bottom-content {
+    text-align: center;
+    color: #333;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0);
+    border-radius: 20px;
+    padding: 0px;
+    width: 900px;
+  }
+  
+  .cta-bottom-content h2 {
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    font-family: 'Tahoma', sans-serif;
+    font-weight: 500;
+  }
+  
+  .cta-bottom-content p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cta-bottom-button {
+    background: linear-gradient(90deg, #ff416c, #ff416c);
+    border: none;
+    padding: 10px 1rem;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+  }
+  
+  .cta-bottom-button:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }
+
+  .cta-bottom-content span {
+      color: #ff416c;
+  }
+  

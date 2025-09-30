@@ -1,0 +1,79 @@
+/* src/styles/PostCreationForm.css */
+.post-creation-form {
+    background-color: #fff;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-creation-form form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .post-creation-form textarea {
+    width: 95%;
+    height: 100px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    border: 0px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    resize: none;
+  }
+  
+  .post-creation-form input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .post-creation-form button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff416c;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .post-creation-form button:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }
+
+  @media (max-width: 768px) {
+    .post-creation-form {
+      background-color: #fff;
+      padding: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
+      margin-top: 0;
+      margin-bottom: 0;
+      border-radius: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-creation-form textarea {
+      width: 88%;
+      height: 70px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 20px;
+      border: 0px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      resize: none;
+    }
+
+    .post-creation-form button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff416c;
+      color: white;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  }
+  

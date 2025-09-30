@@ -1,0 +1,141 @@
+/* src/components/HeroSection.css */
+.research-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('hero-bg4.png');
+    background-size: cover;
+    background-position-x: center;
+    text-align: center;
+    padding: 2rem;
+    min-height: 92vh;
+  }
+  
+  .research-hero-content {
+    max-width: 1000px;
+    color: white;
+  }
+  
+  .research-hero h1 {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    font-family: 'Tahoma', sans-serif;
+    font-weight: 400;
+    margin-top: 100px;
+  }
+  
+  .research-hero h1 span {
+    background: linear-gradient(45deg, #ff416c, #fe009d, #8e44ad);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: 600;
+  }
+  
+  .research-hero p {
+    font-size: 1.2rem;
+    margin-bottom: 100px;
+    font-family: 'Tahoma', sans-serif;
+  }
+  
+  .research-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-radius: 10px;
+    padding: 1rem;
+    color: #fff;
+    width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0);
+    border-width: 2px;
+    border-color: #ff416c;
+  }
+  
+  .research-upload-area input {
+    margin-bottom: 1rem;
+    border-style: dashed;
+    color: transparent;
+    border-width: 2px;
+    border-color: #fff;
+    height: 100px;
+    width: 700px;
+  }
+  
+  .research-upload-area button {
+    background: linear-gradient(45deg, #ff416c, #fe009d, #8e44ad);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .research-upload-area button:hover {
+    background: linear-gradient(45deg, #8e44ad, #fe009d, #ff416c);
+  }
+  
+  .research-upload-area button svg {
+    margin-right: 0.5rem;
+  }
+  
+  .uploaded-files {
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .file-card {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    color: #fff;
+    font-weight: 200;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .file-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .file-icon {
+    margin-right: 0.5rem;
+    color: #ff416c;
+    background: linear-gradient(45deg, #ff416c, #fe009d, #8e44ad);
+    background-clip: text;
+    -webkit-background-clip: text;
+    font-size: 1rem;
+  }
+  
+  .research-options {
+    margin-top: 2rem;
+  }
+  
+  .research-options button {
+    background: linear-gradient(45deg, #ff416c, #fe009d, #8e44ad);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+  }
+  
+  .research-options button:hover {
+    background: linear-gradient(45deg, #8e44ad, #fe009d, #ff416c);
+    color: #fff;
+    border: none;
+  }
+  

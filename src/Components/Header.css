@@ -1,0 +1,115 @@
+/* src/components/Header.css */
+
+/* Base styles for desktop/laptop */
+.research-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0);
+  border-radius: 0px;
+  color: #ff416c;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  padding-left: 5rem;
+  padding-right: 4rem;
+}
+
+.research-logo {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.research-nav {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.research-nav a {
+  margin: 0 1rem;
+  color: #111;
+  text-decoration: none;
+}
+
+.research-nav a:hover {
+  color: #ff416c;
+}
+
+.research-cta {
+  background: linear-gradient(90deg, #ff416c, #ff416c);
+  border: none;
+  padding: 10px 1rem;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  border-radius: 20px;
+  transition: background 0.3s ease;
+}
+
+.research-cta:hover {
+  background: linear-gradient(90deg, #cf0080, #ff416c);
+}
+
+.mobile-nav-toggle {
+  display: none; /* Hide the navigation button on desktop */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .research-header {
+      flex-direction: column;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+  }
+
+  .research-logo {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+      margin-top: 10px;
+  }
+
+  .mobile-nav-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #111;
+    margin-left: auto;
+    margin-top: -22px;
+  }
+
+  .research-nav {
+    display: none;
+    flex-direction: column;
+    width: 150px;
+    background: white;
+    position: absolute;
+    top: 60px; /* Adjust based on your header height */
+    right: 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    z-index: 1000;
+    padding: 10px;
+  }
+
+  .research-nav.open {
+    display: flex;
+  }
+
+  .research-nav a {
+    margin: 0.5rem 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 0px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0);
+    text-align: center;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .research-cta {
+    display: none; /* Hide the Get Started button */
+  }
+}

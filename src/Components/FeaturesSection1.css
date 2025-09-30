@@ -1,0 +1,71 @@
+/* FeaturesSection.css */
+
+.features-section1 {
+    padding: 50px;
+    text-align: center;
+    position: relative; /* Make sure the position is relative */
+    min-height: 400vh;
+    background: #fff;/* linear-gradient(45deg, #cf0080, #ff416c);*/
+    margin-top: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+    border-radius: 0px;
+  }
+  
+  
+  .features-container1 {
+    position: sticky; /* Make the cards sticky */
+    top: 190px; /* Leave space for the fixed title */
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    padding-bottom: 20px; /* Add padding for better scroll experience */
+  }
+  
+  .feature-card1 {
+    background: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 2rem;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all 0.5s ease;
+    flex-shrink: 0; /* Prevent shrinking when overflowing */
+    height: 400px;
+    color: #ff416c;
+    font-weight: 400;
+    padding: 0px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feature-icon1 {
+    font-size: 3rem;
+    padding: 20px;
+    font-weight: 400;
+  }
+  
+  .feature-description1 {
+    padding: 0px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 400;
+    color: black;
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+  .feature-title1 {
+    padding: 00px;
+    text-align: center;
+    font-size: 1.6rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 500;
+  }
+  

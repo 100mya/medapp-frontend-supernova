@@ -1,0 +1,113 @@
+/* src/components/LandingSection.css */
+
+/* Base styles for desktop/laptop */
+.landing-section {
+  display: flex;
+  align-items: center;
+  background-image: url('hero-bg6.png');
+  background-size: cover;
+  background-position-x: center;
+  text-align: center;
+  padding: 2rem;
+  min-height: 50vh;
+  margin-left: 150px;
+  margin-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+}
+
+.landing-content {
+  max-width: 50%;
+  color: black;
+  text-align: left;
+  margin-left: -100px;
+}
+
+.landing-section h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  font-family: 'Tahoma', sans-serif;
+  font-weight: 500;
+}
+
+.rx-span {
+  background: linear-gradient(90deg, #ff416c, #cf0080);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 600;
+}
+
+.landing-section p {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  font-family: 'Tahoma', sans-serif;
+}
+
+.head-span::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  color: transparent;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .landing-section {
+    flex-direction: column;
+    padding: 1rem;
+    margin: 0 1rem;
+    min-height: 68vh;
+    border-radius: 20px;
+    background-image: url('app-bg3.png'); /* Change the background image for mobile */
+    background-size: cover;
+    background-position-x: center;
+  }
+
+  .landing-content {
+    max-width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .landing-section h1 {
+    font-size: 2.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .landing-section p {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .rx-span {
+    font-size: 2.3rem;
+  }
+
+  .research-cta-mobile {
+    display: inline-block;
+    background: linear-gradient(90deg, #ff416c, #ff416c);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .research-cta-mobile:hover {
+    background: linear-gradient(90deg, #cf0080, #ff416c);
+  }
+}
+
+/* Hide the mobile button on desktop */
+@media (min-width: 769px) {
+  .research-cta-mobile {
+    display: none;
+  }
+}

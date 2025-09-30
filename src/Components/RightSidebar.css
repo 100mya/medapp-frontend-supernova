@@ -1,0 +1,143 @@
+.right-sidebar {
+  position: fixed;
+  top: 50px; /* Adjust if needed */
+  right: 0;
+  width: 300px; /* Increased width */
+  height: calc(100% - 50px); /* Adjust if needed */
+  background-color: #ffffff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 0px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.right-sidebar-notifications {
+  height: calc(100% - 50px); /* Adjust if needed */
+  background-color: #ffffff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.right-sidebar-title {
+  font-size: 1.2em;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #333333;
+}
+
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.notification-list {
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item {
+  background-color: #fff;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-card {
+  display: flex;
+  align-items: center;
+}
+
+.icon-container {
+  margin-right: 15px;
+  font-size: 1.2em;
+}
+
+.notification-icon {
+  font-size: 1em;
+}
+
+.notification-icon.like {
+  color: #ff6b6b; /* Red */
+}
+
+.notification-icon.reply {
+  color: #6b7cff; /* Blue */
+}
+
+.notification-icon.follow {
+  color: #57cc99; /* Green */
+}
+
+.message {
+  flex: 1;
+}
+
+.message p {
+  font-size: 0.9em;
+  color: #555555;
+  margin: 0;
+}
+
+.time {
+  font-size: 0.8em;
+  color: #999999;
+  font-weight: lighter;
+}
+
+.error-message {
+  color: red;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.nav-links a {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a:hover {
+  background-color: #ddd;
+}
+
+.nav-icon {
+  font-size: 1.2em;
+  margin-right: 10px;
+}
+
+.delete-notification-btn {
+  background-color: transparent; /* Red */
+  color: #b6b6b6;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.delete-notification-btn:hover {
+  color: rgb(145, 145, 145); /* Darker Red */
+}
+

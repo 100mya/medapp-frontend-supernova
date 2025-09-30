@@ -1,0 +1,60 @@
+{
+    "PhysicalExamination": {
+      "General Appearance": [
+        "Cyanosis",
+        "Pallor",
+        "Jaundice",
+        "Distress",
+        "Weight loss"
+      ],
+      "Vital Signs": [
+        "Blood pressure",
+        "Heart rate",
+        "Respiratory rate",
+        "Temperature",
+        "Oxygen saturation"
+      ],
+      "Skin": [
+        "Bruising",
+        "Petechiae",
+        "Purpura",
+        "Erythema",
+        "Atrophy",
+        "Clubbing"
+      ],
+      "Lymph Nodes": [
+        "Enlargement (lymphadenopathy)"
+      ],
+      "Cardiovascular": [
+        "Jugular venous pressure",
+        "Heart sounds (murmurs, gallops)",
+        "Peripheral pulses",
+        "Edema"
+      ],
+      "Respiratory": [
+        "Inspection (chest wall movement, use of accessory muscles)",
+        "Palpation (tactile fremitus)",
+        "Percussion (resonance, dullness)",
+        "Auscultation (breath sounds, wheezes, crackles)"
+      ],
+      "Abdomen": [
+        "Inspection (distension, scars)",
+        "Auscultation (bowel sounds)",
+        "Palpation (tenderness, masses, liver/spleen size)",
+        "Percussion (dullness, tympany)"
+      ],
+      "Rectal Examination": [
+        "Hemorrhoids",
+        "Masses",
+        "Occult blood"
+      ],
+      "Musculoskeletal": [
+        "Inspection (deformity, swelling)",
+        "Palpation (tenderness, warmth, effusion, crepitus)",
+        "Range of motion (active and passive movements of affected joints)",
+        "Strength testing (muscle strength graded on a scale of 0 to 5)",
+        "Special tests based on suspected condition (e.g., Lachman test for ACL injury, Tinel’s sign for carpal tunnel)"
+      ]
+    }
+  }
+  

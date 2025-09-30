@@ -1,0 +1,148 @@
+{
+    "Interventions": {
+      "Medications": {
+        "Antibiotics": [
+          "Amoxicillin",
+          "Azithromycin",
+          "Ciprofloxacin",
+          "Doxycycline",
+          "Erythromycin",
+          "Levofloxacin",
+          "Metronidazole",
+          "Vancomycin",
+          "Ceftriaxone",
+          "Gentamicin"
+        ],
+        "Analgesics": [
+          "Acetaminophen",
+          "Ibuprofen",
+          "Naproxen",
+          "Aspirin",
+          "Morphine",
+          "Hydrocodone",
+          "Oxycodone",
+          "Tramadol"
+        ],
+        "Anti-inflammatory": [
+          "Ibuprofen",
+          "Naproxen",
+          "Diclofenac",
+          "Celecoxib",
+          "Prednisone",
+          "Methylprednisolone"
+        ],
+        "Anticoagulants": [
+          "Heparin",
+          "Warfarin",
+          "Enoxaparin",
+          "Dabigatran",
+          "Rivaroxaban",
+          "Apixaban",
+          "Fondaparinux"
+        ],
+        "Antiplatelets": [
+          "Aspirin",
+          "Clopidogrel",
+          "Prasugrel",
+          "Ticagrelor"
+        ],
+        "Bronchodilators": [
+          "Albuterol",
+          "Salmeterol",
+          "Formoterol",
+          "Ipratropium",
+          "Tiotropium"
+        ],
+        "Steroids": [
+          "Prednisone",
+          "Methylprednisolone",
+          "Dexamethasone",
+          "Hydrocortisone"
+        ],
+        "Respiratory Medications": [
+          "Montelukast",
+          "Theophylline",
+          "Cromolyn",
+          "Omalizumab"
+        ],
+        "Gastrointestinal Medications": [
+          "Omeprazole",
+          "Lansoprazole",
+          "Ranitidine",
+          "Famotidine",
+          "Metoclopramide",
+          "Ondansetron",
+          "Loperamide",
+          "Mesalamine",
+          "Sulfasalazine",
+          "Infliximab"
+        ],
+        "Cardiovascular Medications": [
+          "ACE Inhibitors - Lisinopril",
+          "ACE Inhibitors - Enalapril",
+          "Beta-Blockers - Metoprolol",
+          "Beta-Blockers - Atenolol",
+          "Calcium Channel Blockers - Amlodipine",
+          "Calcium Channel Blockers - Diltiazem",
+          "Diuretics - Furosemide",
+          "Diuretics - Spironolactone",
+          "Vasodilators - Nitroglycerin",
+          "Vasodilators - Hydralazine"
+        ],
+        "Antiemetics": [
+          "Ondansetron",
+          "Promethazine",
+          "Metoclopramide",
+          "Prochlorperazine"
+        ],
+        "Immunosuppressants": [
+          "Methotrexate",
+          "Azathioprine",
+          "Cyclosporine",
+          "Tacrolimus"
+        ],
+        "Antivirals": [
+          "Acyclovir",
+          "Oseltamivir",
+          "Valacyclovir",
+          "Remdesivir"
+        ],
+        "Antifungals": [
+          "Fluconazole",
+          "Itraconazole",
+          "Amphotericin B",
+          "Voriconazole"
+        ]
+      },
+      "Procedures": [
+        "Bronchoscopy",
+        "Thoracentesis",
+        "Chest Tube Insertion",
+        "Mechanical Ventilation",
+        "Pulmonary Function Tests (PFTs)",
+        "Percutaneous Coronary Intervention (PCI)",
+        "Pacemaker Insertion",
+        "Defibrillation",
+        "Cardiac Catheterization",
+        "Coronary Artery Bypass Grafting (CABG)",
+        "Endoscopy (EGD)",
+        "Colonoscopy",
+        "Sigmoidoscopy",
+        "ERCP",
+        "Endoscopic Hemostasis",
+        "Liver Biopsy",
+        "Paracentesis",
+        "Joint Aspiration",
+        "Reduction of Dislocations",
+        "Fracture Fixation (Casting, Splinting)",
+        "Arthroscopy",
+        "Joint Replacement",
+        "Central Line Placement",
+        "Lumbar Puncture",
+        "Dialysis",
+        "Bone Marrow Biopsy",
+        "Paracentesis"
+      ]
+    }
+  }
+  

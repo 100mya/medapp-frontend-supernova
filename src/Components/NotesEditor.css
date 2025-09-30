@@ -1,0 +1,244 @@
+/* General Container */
+.NotesEditor-container {
+  display: flex;
+  padding: 0px;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  height: calc(100vh - 90px); /* Full viewport height minus 90px for the header and padding */
+  box-sizing: border-box;
+  overflow: hidden; /* Hide overflow at viewport level */
+}
+
+.NotesEditor-table-section,
+.NotesEditor-editor-section {
+  flex: 1;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.NotesEditor-table-section h2,
+.NotesEditor-editor-section h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+
+.NotesEditor-table-section h2 span,
+.NotesEditor-editor-section h2 span {
+  color: #ff416c;
+}
+
+.NotesEditor-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.NotesEditor-table th,
+.NotesEditor-table td {
+  border: none; /* Remove borders to make it look like cards */
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.NotesEditor-table th {
+  background-color: #fff;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.NotesEditor-table tr:nth-child(even) {
+  background-color: #fff;
+}
+
+/* Tag styling */
+.NotesEditor-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+}
+
+.NotesEditor-tag {
+  background-color: #ff416c;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+/* Action Button styling */
+.NotesEditor-action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  padding: 5px;
+  color: #999;
+}
+
+.NotesEditor-action-button:hover {
+  transform: translateY(-3px); /* Lift up a bit on hover */
+}
+
+.NotesEditor-save-button,
+.NotesEditor-download-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #ff416c;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.NotesEditor-save-button:hover,
+.NotesEditor-download-button:hover {
+  background: linear-gradient(90deg, #cf0080, #ff416c);
+}
+
+/* Search Section */
+.NotesEditor-search {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.NotesEditor-search select {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.NotesEditor-search .react-autosuggest__container {
+  flex-grow: 1;
+}
+
+.NotesEditor-search .react-autosuggest__input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.NotesEditor-search .react-autosuggest__suggestions-container {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.NotesEditor-search .react-autosuggest__suggestions-container--open {
+  display: block;
+}
+
+.NotesEditor-search .react-autosuggest__suggestions-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.NotesEditor-search .react-autosuggest__suggestion {
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.NotesEditor-search .react-autosuggest__suggestion--highlighted {
+  background-color: #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .NotesEditor-container {
+    flex-direction: column; /* Stack sections vertically on smaller screens */
+    padding: 10px;
+    height: auto; /* Allow height to adjust based on content */
+  }
+
+  .NotesEditor-table-section,
+  .NotesEditor-editor-section {
+    margin: 10px 5px;
+    padding: 15px;
+    max-width: 100%; /* Allow sections to expand fully */
+    height: auto; /* Allow height to adjust based on content */
+  }
+
+  .NotesEditor-table th,
+  .NotesEditor-table td {
+    padding: 8px;
+  }
+
+  .NotesEditor-save-button,
+  .NotesEditor-download-button {
+    padding: 8px 16px;
+  }
+}
+
+
+.NotesEditor-search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.NotesEditor-search select,
+.NotesEditor-search input {
+  padding: 10px;
+  font-size: 16px;
+  border: 0px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  flex: 1;
+  max-width: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.NotesEditor-search input {
+  flex: 2;
+  max-width: none; /* Adjust width if necessary */
+}
+
+.NotesEditor-search select {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.NotesEditor-search input:focus,
+.NotesEditor-search select:focus {
+  outline: none;
+  border-color: #ff416c;
+}
+
+.NotesEditor-search input::placeholder {
+  color: #999;
+}
+
+.NotesEditor-search input:-ms-input-placeholder {
+  color: #999;
+}
+
+.NotesEditor-search input::-ms-input-placeholder {
+  color: #999;
+}

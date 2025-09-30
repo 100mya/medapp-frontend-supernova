@@ -1,0 +1,98 @@
+{
+    "StabilizationActions": {
+      "Monitor Vital Signs": [
+        "Monitor temperature",
+        "Monitor pulse",
+        "Monitor blood pressure",
+        "Monitor respiratory rate",
+        "Monitor oxygen saturation"
+      ],
+      "Immobilize Injury": [
+        "Splint the affected area as appropriate",
+        "Apply traction",
+        "Apply immobilization devices",
+        "Cervical collar",
+        "Backboard"
+      ],
+      "Administer Oxygen": [
+        "Administer oxygen via nasal cannula",
+        "Administer oxygen via face mask",
+        "Administer oxygen via non-rebreather mask",
+        "Administer oxygen via mechanical ventilation"
+      ],
+      "Start IV Fluids": [
+        "Administer crystalloid fluids",
+        "Normal saline",
+        "Lactated Ringer's",
+        "Administer colloid fluids",
+        "Albumin",
+        "Hetastarch",
+        "Administer blood products",
+        "Packed red blood cells",
+        "Fresh frozen plasma"
+      ],
+      "Pain Management": [
+        "Administer NSAIDs",
+        "Ibuprofen",
+        "Ketorolac",
+        "Administer acetaminophen",
+        "Administer opioids",
+        "Morphine",
+        "Fentanyl",
+        "Administer nerve blocks"
+      ],
+      "Control Bleeding": [
+        "Apply direct pressure over the bleeding site",
+        "Elevate the bleeding limb above the level of the heart",
+        "Apply pressure dressings or tourniquets",
+        "Administer hemostatic agents",
+        "Tranexamic acid",
+        "Fibrin sealants"
+      ],
+      "Administer Medications": [
+        "Administer antibiotics according to local guidelines",
+        "Administer bronchodilators",
+        "Albuterol",
+        "Administer anticoagulants",
+        "Heparin",
+        "Enoxaparin",
+        "Administer vasopressors",
+        "Norepinephrine",
+        "Dopamine",
+        "Administer inotropes",
+        "Dobutamine",
+        "Epinephrine",
+        "Administer antidotes for specific toxicities",
+        "Naloxone for opioid overdose",
+        "Flumazenil for benzodiazepine overdose"
+      ],
+      "Monitor Cardiac Rhythm": [
+        "Attach cardiac monitor leads for continuous electrocardiographic monitoring",
+        "Perform 12-lead electrocardiogram",
+        "Monitor for arrhythmias and ischemic changes",
+        "Consider invasive monitoring",
+        "Pulmonary artery catheterization"
+      ],
+      "Insert Foley Catheter": [
+        "Insert urinary catheter to monitor urine output",
+        "Monitor urine output hourly for adequacy of renal perfusion"
+      ],
+      "Perform Basic Life Support": [
+        "Initiate CPR with high-quality chest compressions",
+        "Deliver rescue breaths using bag-valve-mask or advanced airway adjuncts",
+        "Apply automated external defibrillator (AED)",
+        "Follow advanced cardiac life support (ACLS) algorithms for further management"
+      ],
+      "Treat Anaphylaxis": [
+        "Administer epinephrine (1:1000) intramuscularly into anterolateral thigh",
+        "Administer antihistamines",
+        "Diphenhydramine",
+        "Administer corticosteroids",
+        "Methylprednisolone",
+        "Consider adjunctive therapies",
+        "Intravenous fluids",
+        "Bronchodilators"
+      ]
+    }
+  }
+  

@@ -1,0 +1,11 @@
+{
+    "HandOff": {
+      "Situation": [
+        "ICU/CCU Admission",
+        "Regular Admission",
+        "Discharge with Follow-Up",
+        "Prepare to Operate"
+      ]
+    }
+  }
+  

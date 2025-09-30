@@ -1,0 +1,24 @@
+{
+    "Communications": {
+      "Communication": [
+        "Consult Cardiology",
+        "Consult Pulmonology",
+        "Consult Gastroenterology",
+        "Consult Hematology/Oncology",
+        "Consult Orthopedics/Rheumatology",
+        "Consult Infectious Disease",
+        "Consult General Surgery",
+        "Consult Neurology",
+        "Consult Endocrinology",
+        "Consult Nephrology",
+        "Consult Urology",
+        "Consult Psychiatry/Psychology",
+        "Consult Ophthalmology",
+        "Consult Otolaryngology (ENT)",
+        "Consult Dermatology",
+        "Consult Obstetrics/Gynecology",
+        "Consult Pediatrics"
+      ]
+    }
+  }
+  
