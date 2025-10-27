@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBell, FaUser, FaCog } from 'react-icons/fa';
 import './ProfileComponent.css';
 
@@ -25,6 +26,7 @@ const ProfileComponent = ({ handleLogout }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isNotificationsDropdownOpen, setIsNotificationsDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile'); // New state for active tab
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   // Fetch user profile details from backend on component mount
   useEffect(() => {
@@ -182,14 +184,17 @@ const ProfileComponent = ({ handleLogout }) => {
       alert(`Error updating password: ${error.message}`);
     }
   };
+
+  const handleDashboardClick = (e) => {}
   
 
   return (
     <div className="profile-header-container">
-      <a href="/" className="profile-header-homepage-link">Home</a>
-      <h1 className='ph-h'>
-        Welcome, <span style={{ color: '#ff416c' }}>{user.name}</span>
-      </h1>
+      <nav className={`research-nav ${isNavOpen ? 'open' : ''}`}>
+              <Link to="/dashboard/upload-papers" onClick={handleDashboardClick}>Dashboard</Link>
+              <Link to="/case-studies" onClick={handleDashboardClick}>Case Study</Link>
+              <Link to="/community" onClick={handleDashboardClick}>Community</Link>
+            </nav>
       <div className="profile-header-icons">
         <div className="profile-header-icon" onClick={handleNotificationClick}>
           {/*<FaBell />*/}
@@ -204,13 +209,6 @@ const ProfileComponent = ({ handleLogout }) => {
             </div>
           )}
         </div>
-        <div className="profile-header-icon" onClick={handleSettingsClick}>
-          {/*<FaCog />*/}
-        </div>
-        <div className="profile-header-icon" onClick={handleProfileClick}>
-          <FaUser />
-        </div>
-        <button onClick={handleLogout}>Logout</button>
       </div>
 
       {isProfileModalOpen && (

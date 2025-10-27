@@ -298,7 +298,7 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
     <div className={`NotesGenerator-container ${showNotes ? 'show' : ''}`}>
       <h1 className="NotesGenerator-heading">Generate <span>Notes</span></h1>
       <p>Promt out the content in the text area and generate notes</p>
-      {isLoggedIn && isSubscribed ? (
+      {1 ? (
         <div className="NotesGenerator-chat-container">
           <div className="NotesGenerator-chat">
             {chatMessages.map((message, index) => (

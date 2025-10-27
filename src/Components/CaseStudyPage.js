@@ -73,7 +73,7 @@ const CaseStudyPage = () => {
           <Header />
     <div className="case-page">
       <h1 className="case-page-heading">Interactive Medical <span style={{color: "#ff416c"}}>Case Studies</span></h1>
-      {isLoggedIn && isSubscribed ? (
+      {1 ? (
       <div className="case-page-card-container">
         {cardData.map((card) => (
           <div className="case-page-card" key={card.title}>

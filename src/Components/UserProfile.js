@@ -4,7 +4,7 @@ import defaultImg from './default.jpeg';
 import { FaEdit, FaTrash, FaStream, FaUser, FaSearch, FaBell } from 'react-icons/fa'; // Import icons
 import { useNavigate } from 'react-router-dom';
 // Import components
-import CommunityHeader from './CommunityHeader';
+import CommunityHeader from './Header';
 import LeftSidebar from './LeftSidebar';
 import RightSidebar from './RightSidebar';
 import Post from './UserPost';

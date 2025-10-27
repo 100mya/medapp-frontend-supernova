@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CommunityHeader from './CommunityHeader';
+import CommunityHeader from './Header';
 import LeftSidebar from './LeftSidebar';
 import RightSidebar from './RightSidebar';
 import MainContent from './MainContent';

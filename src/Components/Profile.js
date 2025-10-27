@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'; // Import useLocation hook to ac
 import {FaStream, FaUser, FaSearch, FaBell} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 // Import components
-import CommunityHeader from './CommunityHeader';
+import CommunityHeader from './Header';
 import LeftSidebar from './LeftSidebar';
 import RightSidebar from './RightSidebar';
 import Post from './Post';

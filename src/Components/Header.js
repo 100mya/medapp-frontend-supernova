@@ -66,20 +66,15 @@ function Header() {
 
   return (
     <header className="research-header">
-      <div className="research-logo">MedicoEd</div>
+      <div className="research-logo">Brainboost</div>
       <button className="mobile-nav-toggle" onClick={toggleNav}>
         <FaBars />
       </button>
       <nav className={`research-nav ${isNavOpen ? 'open' : ''}`}>
-        <Link to="/">Home</Link>
-        <Link to="/dashboard/upload-papers" onClick={handleDashboardClick}>Dashboard</Link>
-        <Link to="/exam" onClick={handleDashboardClick}>Exam</Link>
-        <Link to="/case-studies" onClick={handleDashboardClick}>Case Study</Link>
-        <Link to="/pricing">Pricing</Link>
-        <Link to="/community" onClick={handleDashboardClick}>Community</Link>
+        <Link to="/dashboard/upload-papers" >Dashboard</Link>
+        <Link to="/case-studies" >Case Study</Link>
+        <Link to="/community" >Community</Link>
       </nav>
-      <button className="research-cta" onClick={handleGetStartedClick}>Get Started</button>
-      {showModal && <Modal toggleModal={() => setShowModal(false)} setIsLoggedIn={setIsLoggedIn} />}
     </header>
   );
 }

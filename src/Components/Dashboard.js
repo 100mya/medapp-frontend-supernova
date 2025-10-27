@@ -4,7 +4,7 @@ import { FiUpload, FiFileText, FiList, FiMessageCircle, FiClipboard, FiLayers, F
 import './Dashboard.css';
 import UploadPapers from './UploadPapers';
 import SummaryGenerator from './SummaryGenerator';
-import ProfileComponent from './ProfileComponent';
+import Header from './Header';
 import ComparisonTool from './CompareSummaries';
 import AIChat from './AIChat';
 import QuestionsGenerator from './QuestionsGenerator';
@@ -74,42 +74,12 @@ function Dashboard({ handleLogout }) {
         </li>
         <li>
           <Link
-            to="/dashboard/summary-generator"
-            className={activeTab === '/dashboard/summary-generator' ? 'active' : ''}
-            onClick={() => handleTabClick('/dashboard/summary-generator')}
-          >
-            <FiFileText className="icon" />
-            <span className="label">Summary Generator</span>
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/dashboard/comparison-tool"
-            className={activeTab === '/dashboard/comparison-tool' ? 'active' : ''}
-            onClick={() => handleTabClick('/dashboard/comparison-tool')}
-          >
-            <FiList className="icon" />
-            <span className="label">Compare Summaries</span>
-          </Link>
-        </li>
-        <li>
-          <Link
             to="/dashboard/ai-chat"
             className={activeTab === '/dashboard/ai-chat' ? 'active' : ''}
             onClick={() => handleTabClick('/dashboard/ai-chat')}
           >
             <FiMessageCircle className="icon" />
             <span className="label">Chat with Document</span>
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/dashboard/compare-and-chat"
-            className={activeTab === '/dashboard/compare-and-chat' ? 'active' : ''}
-            onClick={() => handleTabClick('/dashboard/compare-and-chat')}
-          >
-            <FiMap className="icon" />
-            <span className="label">Compare and Chat</span>
           </Link>
         </li>
         <li>
@@ -158,7 +128,7 @@ function Dashboard({ handleLogout }) {
 
   return (
     <div className="dashboard">
-      <ProfileComponent handleLogout={handleLogout} />
+      <Header />
 
       {isMobile && (
         <button className="toggle-sidebar-button" onClick={toggleSidebar}>
