@@ -1,115 +1,164 @@
-/* src/components/Header.css */
+/* Updated header styles to match the provided image design */
 
-/* Base styles for desktop/laptop */
-.research-header {
+.supernova-header-new {
+  background-color: #000000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0rem 2rem;
+  height: 80px;
+}
+
+.supernova-header-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  background: rgba(255, 255, 255, 0);
-  border-radius: 0px;
-  color: #ff416c;
-  padding-top: 1rem;
-  padding-bottom: 0.5rem;
-  padding-left: 5rem;
-  padding-right: 4rem;
+  gap: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.research-logo {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.research-nav {
+/* Logo styling */
+.supernova-logo-new {
   display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 80px;
+  overflow: hidden;
+}
+
+.supernova-logo-new img {
+  height: 120px;
+  width: auto;
+  position: relative;
+  top: -5px; /* Move image up to crop 20px from top and bottom */
+  object-fit: fill;
+}
+
+/* Navigation styling */
+.supernova-nav-new {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  flex: 1;
   justify-content: center;
-  flex-grow: 1;
 }
 
-.research-nav a {
-  margin: 0 1rem;
-  color: #111;
+.supernova-nav-link {
+  color: #e0e0e0;
   text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  white-space: nowrap;
 }
 
-.research-nav a:hover {
-  color: #ff416c;
+.supernova-nav-link:hover {
+  color: #ffffff;
 }
 
-.research-cta {
-  background: linear-gradient(90deg, #ff416c, #ff416c);
+/* Added auth buttons styling in header */
+.supernova-header-auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.supernova-login-button-header {
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  color: #ffffff;
   border: none;
-  padding: 10px 1rem;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  color: white;
-  font-weight: bold;
-  border-radius: 20px;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 16, 242, 0.3);
 }
 
-.research-cta:hover {
-  background: linear-gradient(90deg, #cf0080, #ff416c);
+.supernova-login-button-header:hover {
+  box-shadow: 0 6px 16px rgba(102, 16, 242, 0.5);
+  transform: translateY(-2px);
 }
 
-.mobile-nav-toggle {
-  display: none; /* Hide the navigation button on desktop */
+.supernova-logout-button-header {
+  background-color: transparent;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Media query for mobile devices */
+.supernova-logout-button-header:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.supernova-mobile-nav-toggle-new {
+  display: none;
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* Mobile responsive styles */
 @media (max-width: 768px) {
-  .research-header {
-      flex-direction: column;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+  .supernova-header-new {
+    padding: 1rem;
   }
 
-  .research-logo {
-      font-size: 1.2rem;
-      margin-bottom: 0;
-      margin-top: 10px;
+  .supernova-header-container {
+    gap: 1rem;
   }
 
-  .mobile-nav-toggle {
+  .supernova-logo-new img {
+    height: 60px;
+  }
+
+  .supernova-mobile-nav-toggle-new {
     display: block;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: #111;
-    margin-left: auto;
-    margin-top: -22px;
   }
 
-  .research-nav {
+  .supernova-header-auth-buttons {
     display: none;
-    flex-direction: column;
-    width: 150px;
-    background: white;
-    position: absolute;
-    top: 60px; /* Adjust based on your header height */
-    right: 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    z-index: 1000;
-    padding: 10px;
   }
 
-  .research-nav.open {
+  .supernova-nav-new {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background-color: #0f1419;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+  }
+
+  .supernova-nav-new.open {
     display: flex;
   }
 
-  .research-nav a {
-    margin: 0.5rem 0.5rem;
-    padding: 0.5rem;
-    border-bottom: 0px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0);
-    text-align: center;
-    border-radius: 20px;
-    font-weight: 500;
+  .supernova-nav-link {
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
   }
 
-  .research-cta {
-    display: none; /* Hide the Get Started button */
+  .supernova-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }

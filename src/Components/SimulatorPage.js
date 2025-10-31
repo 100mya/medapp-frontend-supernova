@@ -63,7 +63,7 @@ const SimulatorPage = () => {
       </div>
 
       <div className="right-window">
-        <h2>Response <span style={{color: "#ff416c"}}>Window</span></h2>
+        <h2>Response <span style={{color: "#6f42c1"}}>Window</span></h2>
         {responses.map((response, index) => (
           <div key={index} className={`response ${response.sender}`}>
             {response.sender === 'user' && response.message != null ? (

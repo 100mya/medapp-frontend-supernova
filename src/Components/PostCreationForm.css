@@ -1,79 +1,101 @@
 /* src/styles/PostCreationForm.css */
 .post-creation-form {
-    background-color: #fff;
-    padding: 30px;
-    margin: 20px;
+  background-color: #1a1f4d;
+  /* Dark card background */
+  padding: 30px;
+  margin: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
+}
+
+.post-creation-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-creation-form textarea {
+  width: 95%;
+  height: 100px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  border: 0px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  resize: none;
+  background-color: #0a0e27;
+  /* Very dark background */
+  color: #d0d0d0;
+  /* Light text */
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
+}
+
+.post-creation-form input[type="file"] {
+  margin-bottom: 10px;
+  color: #d0d0d0;
+  /* Light text for file input */
+}
+
+.post-creation-form button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  /* Purple gradient button */
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.post-creation-form button:hover {
+  background: linear-gradient(90deg, #7a23ff, #8b5cf6);
+  /* Lighter purple on hover */
+}
+
+@media (max-width: 768px) {
+  .post-creation-form {
+    background-color: #1a1f4d;
+    /* Dark background for mobile */
+    padding: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
     border-radius: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(102, 16, 242, 0.2);
+    /* Purple border */
   }
-  
-  .post-creation-form form {
-    display: flex;
-    flex-direction: column;
-  }
-  
+
   .post-creation-form textarea {
-    width: 95%;
-    height: 100px;
+    width: 88%;
+    height: 70px;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 20px;
     border: 0px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     resize: none;
+    background-color: #0a0e27;
+    /* Very dark background */
+    color: #d0d0d0;
+    /* Light text */
+    border: 1px solid rgba(102, 16, 242, 0.2);
+    /* Purple border */
   }
-  
-  .post-creation-form input[type="file"] {
-    margin-bottom: 10px;
-  }
-  
+
   .post-creation-form button {
     padding: 10px;
     border: none;
-    border-radius: 5px;
-    background-color: #ff416c;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #6610f2, #6f42c1);
+    /* Purple gradient */
     color: white;
-    font-size: 1rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
-  .post-creation-form button:hover {
-    background: linear-gradient(90deg, #cf0080, #ff416c);
-  }
-
-  @media (max-width: 768px) {
-    .post-creation-form {
-      background-color: #fff;
-      padding: 20px;
-      margin-left: 10px;
-      margin-right: 10px;
-      margin-top: 0;
-      margin-bottom: 0;
-      border-radius: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .post-creation-form textarea {
-      width: 88%;
-      height: 70px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 20px;
-      border: 0px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      resize: none;
-    }
-
-    .post-creation-form button {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background-color: #ff416c;
-      color: white;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-  }
-  
+}

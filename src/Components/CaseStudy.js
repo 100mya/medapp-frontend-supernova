@@ -10,7 +10,7 @@ import interventionsData from './CaseStudy/Interventions.json';
 import investigationsData from './CaseStudy/Investigations.json';
 import communicationsData from './CaseStudy/Communications.json';
 import handOffData from './CaseStudy/HandOff.json';
-import { FaHandsWash, FaHandPaper, FaUserCheck, FaLock, FaUserShield, FaHandshake, FaTools } from 'react-icons/fa';
+import { FaHandsWash, FaHandPaper, FaUserCheck, FaLock, FaUserShield, FaHandshake, FaTools, FaMask } from 'react-icons/fa';
 import maskIcon from './mask.JPG';
 import ReactMarkdown from 'react-markdown';
 
@@ -179,7 +179,7 @@ const closeReportPopup = () => {
       case 'patient-information':
         return (
           <div>
-            <h2>Patient <span style={{color: "#ff416c"}}>Information</span></h2>
+            <h2>Patient <span style={{color: "#6f42c1"}}>Information</span></h2>
             <button onClick={fetchCaseStudy} disabled={isGenerating || areButtonsDisabled}>
               {isGenerating ? 'Generating...' : 'Generate Case Study'}  {/* Update button text */}
             </button>
@@ -198,7 +198,7 @@ const closeReportPopup = () => {
         case 'preparation':
           return (
             <div>
-              <h2>Initial <span style={{color: "#ff416c"}}>Preparation</span></h2>
+              <h2>Initial <span style={{color: "#6f42c1"}}>Preparation</span></h2>
               <div className="card-container">
             <div className="card">
               <FaHandsWash className="card-icon" />
@@ -211,7 +211,8 @@ const closeReportPopup = () => {
               <p style={{textAlign: "center"}} className="card-description">Put on disposable gloves to protect yourself and prevent contamination.</p>
             </div>
             <div className="card">
-            <img src={maskIcon} alt="Wear Mask" className="mask-icon" />
+            {/*<img src={maskIcon} alt="Wear Mask" className="mask-icon" />*/}
+            <FaMask className="card-icon" />
               <h3 style={{textAlign: "center"}}>Wear Mask</h3>
               <p style={{textAlign: "center"}} className="card-description">Use a mask to reduce the risk of spreading or contracting infections.</p>
             </div>
@@ -222,7 +223,7 @@ const closeReportPopup = () => {
             </div>
             </div>
 
-              <h2>Ethical <span style={{color: "#ff416c"}}>Considerations</span></h2>
+              <h2>Ethical <span style={{color: "#6f42c1"}}>Considerations</span></h2>
               <div className="card-container">
                 <div className="card">
                   <FaUserCheck className="card-icon" />
@@ -250,7 +251,7 @@ const closeReportPopup = () => {
       case 'history-taking':
         return (
           <div>
-            <h2>History <span style={{color: "#ff416c"}}>Taking</span></h2>
+            <h2>History <span style={{color: "#6f42c1"}}>Taking</span></h2>
             <ul>
               {Object.entries(historyTakingData.HistoryTaking).map(([category, items]) => (
                 <div key={category}>
@@ -264,7 +265,7 @@ const closeReportPopup = () => {
       case 'physical-examination':
         return (
           <div>
-            <h2>Physical <span style={{color: "#ff416c"}}>Examination</span></h2>
+            <h2>Physical <span style={{color: "#6f42c1"}}>Examination</span></h2>
             <ul>
               {Object.entries(physicalExaminationData.PhysicalExamination).map(([category, items]) => (
                 <div key={category}>
@@ -286,7 +287,7 @@ const closeReportPopup = () => {
       case 'differential-diagnosis':
         return (
           <form onSubmit={handleSubmit}>
-            <h2>Differential <span style={{color: "#ff416c"}}>Diagnosis</span></h2>
+            <h2>Differential <span style={{color: "#6f42c1"}}>Diagnosis</span></h2>
             <ul>
               {Object.entries(differentialDiagnosisData.DifferentialDiagnosis).map(([category, items]) => (
                 <div key={category}>
@@ -311,7 +312,7 @@ const closeReportPopup = () => {
                 </div>
               ))}
             </ul>
-            <button disabled={areButtonsDisabled} type="submit" style={{ marginTop: '20px', padding: "10px 20px" , width: "fit-content", borderRadius: "20px", backgroundColor: "#ff416c" , color: "white" }}>Submit Differential Diagnoses</button>
+            <button disabled={areButtonsDisabled} type="submit" style={{ marginTop: '20px', padding: "10px 20px" , width: "fit-content", borderRadius: "20px", backgroundColor: "#6f42c1" , color: "white" }}>Submit Differential Diagnoses</button>
             {isDiagnosisRecorded && (
               <p style={{ marginTop: '20px', color: 'green' }}>Differential diagnosis has been recorded.</p>
             )}
@@ -320,7 +321,7 @@ const closeReportPopup = () => {
       case 'stabilization-actions':
         return (
           <div>
-            <h2>Stabilization <span style={{color: "#ff416c"}}>Actions</span></h2>
+            <h2>Stabilization <span style={{color: "#6f42c1"}}>Actions</span></h2>
             <ul>
               {Object.entries(stabilizationActionsData.StabilizationActions).map(([category, items]) => (
                 <div key={category}>
@@ -425,7 +426,7 @@ const closeReportPopup = () => {
       case 'patient-handover':
         return (
           <div>
-            <h2>Patient <span style={{color: "#ff416c"}}>Handover</span></h2>
+            <h2>Patient <span style={{color: "#6f42c1"}}>Handover</span></h2>
             <ul>
               {handOffData.HandOff.Situation.map((item, index) => (
                 <li key={index}>
@@ -435,7 +436,7 @@ const closeReportPopup = () => {
             </ul>
             {showFinalDiagnosis ? (
               <div>
-                <h2>Select <span style={{color: "#ff416c"}}>Final Diagnosis</span></h2>
+                <h2>Select <span style={{color: "#6f42c1"}}>Final Diagnosis</span></h2>
                 <ul>
                   {differentialDiagnoses.map((diagnosis, index) => (
                     <li key={index}>

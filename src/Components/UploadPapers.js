@@ -278,7 +278,7 @@ const UploadPapers = () => {
   return (
     <div className="UploadPapers-container">
       <h1 className="UploadPapers-heading">
-        Upload Your <span style={{ color: "#ff416c" }}>Files</span>
+        Upload Your <span style={{ color: "#6f42c1" }}>Files</span>
       </h1>
       <div className="UploadPapers-bigbox">
         <form id="UploadPapers-upload-form" className="UploadPapers-form" onSubmit={handleSubmit}>

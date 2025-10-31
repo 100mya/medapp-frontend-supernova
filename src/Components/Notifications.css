@@ -1,105 +1,109 @@
- 
-  .right-sidebar-title-notifications {
-    font-size: 1.2em;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 500;
-    margin-bottom: 20px;
-    color: #333333;
-    margin-top: 50px;
-  }
+.right-sidebar-title-notifications {
+  font-size: 1.2em;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #d0d0d0;
+  margin-top: 50px;
+}
 
-  .right-sidebar-notifications {
-    background-color: #ffffff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    margin-top: 0; /* Remove margin at the top */
-    z-index: 100; /* Ensure it stays above other content */
+.right-sidebar-notifications {
+  background-color: #0a0e27;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  margin-top: 0;
+  z-index: 100;
 }
 
 .notifications-container-notifications {
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-    margin: 0; /* Adjust margin to ensure no overlapping */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    padding: 15px;
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1f4d;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
 }
 
-  
-  .notification-list-notifications {
-    margin: 0;
-    padding: 0;
-  }
-  
-  .notification-item-notifications {
-    background-color: #fff;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .notification-card-notifications {
-    display: flex;
-    align-items: center;
-  }
-  
-  .icon-container-notifications {
-    margin-right: 15px;
-    font-size: 1.2em;
-  }
-  
-  .notification-icon-notifications {
-    font-size: 1em;
-  }
-  
-  .notification-icon.like-notifications {
-    color: #ff6b6b; /* Red */
-  }
-  
-  .notification-icon-notifications.reply {
-    color: #6b7cff; /* Blue */
-  }
-  
-  .notification-icon-notifications.follow {
-    color: #57cc99; /* Green */
-  }
-  
-  .message-notifications {
-    flex: 1;
-  }
-  
-  .message-notifications p {
-    font-size: 0.9em;
-    color: #555555;
-    margin: 0;
-  }
-  
-  .time-notifications {
-    font-size: 0.8em;
-    color: #999999;
-    font-weight: lighter;
-  }
-  
-  .error-message-notifications {
-    color: red;
-  }
-  
-  .delete-notification-btn-notifications {
-    background-color: transparent; /* Red */
-    color: #b6b6b6;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-  }
-  
-  .delete-notification-btn-notifications:hover {
-    color: rgb(145, 145, 145); /* Darker Red */
-  }
-  
-  
+.notification-list-notifications {
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item-notifications {
+  background-color: #0f1535;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(102, 16, 242, 0.2);
+}
+
+.notification-card-notifications {
+  display: flex;
+  align-items: center;
+}
+
+.icon-container-notifications {
+  margin-right: 15px;
+  font-size: 1.2em;
+}
+
+.notification-icon-notifications {
+  font-size: 1em;
+}
+
+.notification-icon.like-notifications {
+  color: #ff6b6b;
+}
+
+.notification-icon-notifications.reply {
+  color: #6b7cff;
+}
+
+.notification-icon-notifications.follow {
+  color: #57cc99;
+}
+
+.message-notifications {
+  flex: 1;
+}
+
+.message-notifications p {
+  font-size: 0.9em;
+  color: #d0d0d0;
+  margin: 0;
+}
+
+.time-notifications {
+  font-size: 0.8em;
+  color: #b0b0b0;
+  font-weight: lighter;
+}
+
+.error-message-notifications {
+  color: #ff6b6b;
+}
+
+.no-notifications-notifications {
+  color: #b0b0b0;
+  text-align: center;
+  padding: 20px;
+}
+
+.delete-notification-btn-notifications {
+  background-color: transparent;
+  color: #b6b6b6;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.delete-notification-btn-notifications:hover {
+  color: #6f42c1;
+}

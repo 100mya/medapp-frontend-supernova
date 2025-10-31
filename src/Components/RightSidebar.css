@@ -1,38 +1,46 @@
 .right-sidebar {
   position: fixed;
-  top: 50px; /* Adjust if needed */
+  top: 80px;
   right: 0;
-  width: 300px; /* Increased width */
-  height: calc(100% - 50px); /* Adjust if needed */
-  background-color: #ffffff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: calc(100% - 50px);
+  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  /* Dark gradient background */
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   padding: 0px;
   overflow-y: auto;
   z-index: 1000;
+  border-left: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
 }
 
 .right-sidebar-notifications {
-  height: calc(100% - 50px); /* Adjust if needed */
-  background-color: #ffffff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  height: calc(100% - 50px);
+  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  /* Dark gradient */
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .right-sidebar-title {
   font-size: 1.2em;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 500;
   margin-bottom: 20px;
-  color: #333333;
+  color: #ffffff;
+  /* White text */
 }
 
 .notifications-container {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: #1a1f4d;
+  /* Dark card background */
   margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
 }
 
 .notification-list {
@@ -41,11 +49,14 @@
 }
 
 .notification-item {
-  background-color: #fff;
+  background-color: #0a0e27;
+  /* Very dark background for items */
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(102, 16, 242, 0.15);
+  /* Subtle purple border */
 }
 
 .notification-card {
@@ -63,15 +74,18 @@
 }
 
 .notification-icon.like {
-  color: #ff6b6b; /* Red */
+  color: #6f42c1;
+  /* Pink accent */
 }
 
 .notification-icon.reply {
-  color: #6b7cff; /* Blue */
+  color: #6b7cff;
+  /* Blue accent */
 }
 
 .notification-icon.follow {
-  color: #57cc99; /* Green */
+  color: #57cc99;
+  /* Green accent */
 }
 
 .message {
@@ -80,32 +94,39 @@
 
 .message p {
   font-size: 0.9em;
-  color: #555555;
+  color: #d0d0d0;
+  /* Light text */
   margin: 0;
 }
 
 .time {
   font-size: 0.8em;
-  color: #999999;
+  color: #888888;
+  /* Dimmer gray */
   font-weight: lighter;
 }
 
 .error-message {
-  color: red;
+  color: #ff6b6b;
+  /* Red error color */
 }
 
 .nav-links {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: #1a1f4d;
+  /* Dark card background */
   margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
 }
 
 .nav-links a {
-  color: #333;
+  color: #d0d0d0;
+  /* Light text */
   text-decoration: none;
   padding: 8px 10px;
   margin-bottom: 5px;
@@ -116,7 +137,10 @@
 }
 
 .nav-links a:hover {
-  background-color: #ddd;
+  background-color: rgba(102, 16, 242, 0.2);
+  /* Purple hover background */
+  color: #6610f2;
+  /* Purple text on hover */
 }
 
 .nav-icon {
@@ -125,8 +149,9 @@
 }
 
 .delete-notification-btn {
-  background-color: transparent; /* Red */
-  color: #b6b6b6;
+  background-color: transparent;
+  color: #888888;
+  /* Gray text */
   border: none;
   padding: 8px 15px;
   border-radius: 5px;
@@ -138,6 +163,15 @@
 }
 
 .delete-notification-btn:hover {
-  color: rgb(145, 145, 145); /* Darker Red */
+  color: #6f42c1;
+  /* Pink on hover */
+  background-color: rgba(255, 65, 108, 0.1);
+  /* Subtle pink background */
 }
 
+.no-notifications {
+  color: #b0b0b0;
+  /* Light gray text */
+  text-align: center;
+  padding: 20px;
+}

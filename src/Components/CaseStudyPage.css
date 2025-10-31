@@ -1,104 +1,105 @@
+/* Updated to match dashboard dark theme with purple/pink accent colors */
 .case-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #fff;
-    min-height: 100vh;
-  }
-  
-  .case-page-heading {
-    font-size: 2rem;
-    margin-bottom: 50px;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 500;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #0a0e27;
+  min-height: 100vh;
+}
+
+.case-page-heading {
+  font-size: 2rem;
+  margin-bottom: 50px;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+
+.case-page-card-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.case-page-card {
+  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(102, 16, 242, 0.2);
+  overflow: hidden;
+  transition: transform 0.3s;
+  text-align: center;
+  padding: 20px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+}
+
+.case-page-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(102, 16, 242, 0.4);
+}
+
+.case-page-card-icon-container {
+  background: transparent;
+  padding: 10px;
+  color: #6f42c1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.case-page-card-icon {
+  font-size: 2rem;
+  color: #6f42c1;
+}
+
+.case-page-card-content {
+  padding: 15px;
+}
+
+.case-page-card-title {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+
+.case-page-card-description {
+  font-size: 1rem;
+  color: #b0b0b0;
+  margin: 10px 0;
+}
+
+.case-page-card-button {
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(102, 16, 242, 0.3);
+}
+
+.case-page-card-button:hover {
+  background: linear-gradient(90deg, #7a20f2, #7d4fcf);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(102, 16, 242, 0.5);
+}
+
+@media (max-width: 768px) {
   .case-page-card-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 1000px; /* Adjust based on your layout requirements */
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .case-page-card {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s;
-    text-align: center;
-    padding: 20px;
+}
+
+@media (max-width: 480px) {
+  .case-page-card-container {
+    grid-template-columns: 1fr;
   }
-  
-  .case-page-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .case-page-card-icon-container {
-    background: #fff;
-    padding: 10px;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-  }
-  
-  .case-page-card-icon {
-    font-size: 2rem;
-    color: #ff416c;
-  }
-  
-  .case-page-card-content {
-    padding: 15px;
-  }
-  
-  .case-page-card-title {
-    font-size: 1.2rem;
-    margin: 0;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 500;
-  }
-  
-  .case-page-card-description {
-    font-size: 1rem;
-    color: #555;
-    margin: 10px 0;
-  }
-  
-  .case-page-card-button {
-    background: linear-gradient(90deg, #cf0080, #ff416c);
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    border: 0px solid #777;
-  }
-  
-  .case-page-card-button:hover {
-    background: linear-gradient(90deg, #ff416c,  #cf0080);
-    color: #fff;
-    border: none;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .case-page-card-container {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .case-page-card-container {
-      grid-template-columns: 1fr;
-    }
-  }
-  
+}

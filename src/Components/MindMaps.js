@@ -13,6 +13,8 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
   const [loading, setLoading] = useState(false)
   const [zoomLevels, setZoomLevels] = useState({})
   const [selectedLanguage, setSelectedLanguage] = useState("en")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
 
   const languages = [
     { code: "en", name: "English" },
@@ -126,6 +128,64 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
   ]
 
   useEffect(() => {
+    const handleLoginWithStoredCredentials = async () => {
+      try {
+        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
+        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+
+        if (storedSubscriptionStatus) {
+          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+        }
+        if (!storedCredentials) {
+          throw new Error("No stored credentials found")
+        }
+        const { email, password } = JSON.parse(storedCredentials)
+
+        {/*const storedPlanStatus = localStorage.getItem("isPremiumPlan")
+        console.log(storedPlanStatus)
+        if (storedPlanStatus) {
+          setIsPremiumPlan(JSON.parse(storedPlanStatus))
+        }*/}
+
+        const loginResponse = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        })
+
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json()
+          console.log("Logged in successfully:", loginData)
+          setUserEmail(email)
+          setIsLoggedIn(true)
+
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+
+          if (filenamesResponse.ok) {
+            const filenamesData = await filenamesResponse.json()
+            setFilenames(filenamesData.filenames || [])
+          } else {
+            throw new Error("Failed to fetch filenames")
+          }
+        } else {
+          throw new Error("Failed to login with stored credentials")
+        }
+      } catch (error) {
+        console.error("Error logging in with stored credentials:", error)
+      }
+    }
+
+    handleLoginWithStoredCredentials()
+  }, [])
+
+  useEffect(() => {
     const savedCredentials = localStorage.getItem("rx_chatbot_credentials")
     if (savedCredentials) {
       const { email } = JSON.parse(savedCredentials)
@@ -229,16 +289,17 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
   }
 
   return (
-    <div className="MindMapGenerator-container">
-      <h1 className="MindMapGenerator-title">
+    <div className="wl-MindMapGenerator-container-dark">
+      <h1 className="wl-MindMapGenerator-title-dark">
         Mind Map <span>Generator</span>
       </h1>
-      <div className="MindMapGenerator-form">
-        <label>Select Document</label>
+      {isLoggedIn && isSubscribed ? (
+      <div className="wl-MindMapGenerator-form-dark">
+        <label style={{ color: "#e0e0e0" }}>Select Document</label>
         <select
           id="filename"
           name="filename"
-          className="MindMapGenerator-select"
+          className="wl-MindMapGenerator-select-dark"
           value={selectedFile}
           onChange={(e) => setSelectedFile(e.target.value)}
         >
@@ -249,11 +310,11 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
             </option>
           ))}
         </select>
-        <label>Select Language</label>
+        <label style={{ color: "#e0e0e0" }}>Select Language</label>
         <select
           id="language"
           name="language"
-          className="QuestionsGenerator-select"
+          className="wl-MindMapGenerator-select-dark"
           value={selectedLanguage}
           onChange={handleLanguageChange}
         >
@@ -263,15 +324,18 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
             </option>
           ))}
         </select>
-        <button className="MindMapGenerator-button" onClick={generateMindMap} disabled={loading}>
+        <button className="wl-MindMapGenerator-button-dark" onClick={generateMindMap} disabled={loading}>
           {loading ? "Generating Mind Map..." : "Generate Mind Map"}
         </button>
       </div>
+      ) : (
+        <div >Please login and subscribe to generate Mind Maps.</div>
+      )}
       {mindMapImages.length > 0 && (
-        <div className="MindMapGenerator-images-container">
+        <div className="wl-MindMapGenerator-images-container-dark">
           {mindMapImages.map(({ title, url }) => (
-            <div key={title} className="MindMapGenerator-image-wrapper">
-              <div className="MindMapGenerator-zoom-controls">
+            <div key={title} className="wl-MindMapGenerator-image-wrapper-dark">
+              <div className="wl-MindMapGenerator-zoom-controls-dark">
                 <button onClick={() => handleZoomIn(title)}>
                   <BsZoomIn />
                 </button>
@@ -285,7 +349,7 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
                   <img
                     src={url || "/placeholder.svg"}
                     alt={`Generated Mind Map ${title}`}
-                    className="MindMapGenerator-image"
+                    className="wl-MindMapGenerator-image-dark"
                     style={{ transform: `scale(${zoomLevels[title] || 1})` }}
                   />
                 </TransformComponent>

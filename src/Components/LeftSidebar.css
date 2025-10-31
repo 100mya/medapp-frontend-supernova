@@ -1,14 +1,16 @@
 /* src/styles/LeftSidebar.css */
 .left-sidebar {
-  width: 300px; /* Adjust sidebar width as needed */
-  background-color: #fff;
+  width: 300px;
+  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  /* Changed to dark gradient background */
   position: fixed;
-  top: 50px; /* Adjust to leave space for the header */
+  top: 80px;
   left: 0;
   bottom: 0;
-  overflow-y: auto; /* Enable scrolling if content exceeds height */
-  border-right: 1px solid #ddd; /* Example: Add a border on the right */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-right: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border instead of gray */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .profiles-info {
@@ -17,8 +19,8 @@
 
 .profiles-header {
   display: flex;
-  flex-direction: column; /* Stack children vertically */
-  align-items: center; /* Center align items */
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 0px;
   padding-top: 20px;
   padding-left: 20px;
@@ -29,50 +31,68 @@
 .profiles-header h3 {
   margin-bottom: 5px;
   font-size: 1.5rem;
-  color: #ff416c;
+  color: #6610f2;
+  /* Purple accent for name */
   text-align: center;
 }
 
 .profile-pic {
-  width: 80px; /* Adjust the size of the profile picture */
-  height: 80px; /* Adjust the size of the profile picture */
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   margin-bottom: 0px;
+  border: 2px solid rgba(102, 16, 242, 0.3);
+  /* Subtle purple border for profile pic */
 }
 
 .profiles-email {
-  color: #666;
+  color: #b0b0b0;
+  /* Light gray for email */
   font-size: 0.9rem;
   text-align: center;
 }
 
 .profiles-details {
   margin-bottom: 10px;
-  background-color: #fff;
+  background-color: #1a1f4d;
+  /* Dark card background */
   margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Subtle purple border */
 }
 
 .profiles-info-item {
   margin-bottom: 5px;
   font-size: 0.9rem;
+  color: #d0d0d0;
+  /* Light text */
 }
 
 .profiles-counts {
-  background-color: #fff;
+  background-color: #1a1f4d;
+  /* Dark card background */
   margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
+  color: #d0d0d0;
+  /* Light text */
 }
 
 .profiles-bio {
-  background-color: #fff;
+  background-color: #1a1f4d;
+  /* Dark card background */
   margin: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;
   padding: 15px;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  /* Purple border */
+  color: #d0d0d0;
+  /* Light text */
 }
-

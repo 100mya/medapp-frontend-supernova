@@ -11,10 +11,11 @@ const Flashcards = () => {
   const [loading, setLoading] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState("en")
-  const [showPopup, setShowPopup] = useState(false) // For the popup
-  const [selectedFlashcardIndex, setSelectedFlashcardIndex] = useState(null) // Track selected flashcard for saving
-  const [title, setTitle] = useState("") // Store title input
-  const [tags, setTags] = useState("") // Store tags input
+  const [showPopup, setShowPopup] = useState(false)
+  const [selectedFlashcardIndex, setSelectedFlashcardIndex] = useState(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [title, setTitle] = useState("")
+  const [tags, setTags] = useState("")
   const [cardText, setCardText] = useState("")
 
   const languages = [
@@ -129,6 +130,64 @@ const Flashcards = () => {
   ]
 
   useEffect(() => {
+    const handleLoginWithStoredCredentials = async () => {
+      try {
+        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
+        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+
+        if (storedSubscriptionStatus) {
+          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+        }
+        if (!storedCredentials) {
+          throw new Error("No stored credentials found")
+        }
+        const { email, password } = JSON.parse(storedCredentials)
+
+        {/*const storedPlanStatus = localStorage.getItem("isPremiumPlan")
+        console.log(storedPlanStatus)
+        if (storedPlanStatus) {
+          setIsPremiumPlan(JSON.parse(storedPlanStatus))
+        }*/}
+
+        const loginResponse = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        })
+
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json()
+          console.log("Logged in successfully:", loginData)
+          setUserEmail(email)
+          setIsLoggedIn(true)
+
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+
+          if (filenamesResponse.ok) {
+            const filenamesData = await filenamesResponse.json()
+            setFilenames(filenamesData.filenames || [])
+          } else {
+            throw new Error("Failed to fetch filenames")
+          }
+        } else {
+          throw new Error("Failed to login with stored credentials")
+        }
+      } catch (error) {
+        console.error("Error logging in with stored credentials:", error)
+      }
+    }
+
+    handleLoginWithStoredCredentials()
+  }, [])
+
+  useEffect(() => {
     const savedCredentials = localStorage.getItem("rx_chatbot_credentials")
     if (savedCredentials) {
       const { email } = JSON.parse(savedCredentials)
@@ -230,13 +289,18 @@ const Flashcards = () => {
   }
 
   return (
-    <div className="FlashCard-container">
-      <h1 className="FlashCard-title">
+    <div className="wl-FlashCard-container-dark">
+      <h1 className="wl-FlashCard-title-dark">
         Flashcard <span>Generator</span>
       </h1>
-      <div className="FlashCard-form">
-        <label>Select Document</label>
-        <select className="FlashCard-select" value={selectedFile} onChange={(e) => setSelectedFile(e.target.value)}>
+      {isLoggedIn && isSubscribed ? (
+        <div className="wl-FlashCard-form-dark">
+        <label className="wl-FlashCard-label-dark">Select Document</label>
+        <select
+          className="wl-FlashCard-select-dark"
+          value={selectedFile}
+          onChange={(e) => setSelectedFile(e.target.value)}
+        >
           <option value="">Select a file</option>
           {filenames.map((filename, index) => (
             <option key={index} value={filename}>
@@ -245,8 +309,8 @@ const Flashcards = () => {
           ))}
         </select>
 
-        <label>Select Language</label>
-        <select className="FlashCard-select" value={selectedLanguage} onChange={handleLanguageChange}>
+        <label className="wl-FlashCard-label-dark">Select Language</label>
+        <select className="wl-FlashCard-select-dark" value={selectedLanguage} onChange={handleLanguageChange}>
           {languages.map(({ code, name }) => (
             <option key={code} value={code}>
               {name}
@@ -254,25 +318,25 @@ const Flashcards = () => {
           ))}
         </select>
 
-        <button className="FlashCard-button" onClick={generateFlashcards} disabled={loading}>
+        <button className="wl-FlashCard-button-dark" onClick={generateFlashcards} disabled={loading}>
           {loading ? "Generating Flashcards..." : "Generate Flashcards"}
         </button>
 
         {Object.keys(flashcards).length > 0 && (
-          <div className="FlashCard-results">
-            <div className="FlashCard-item-container">
+          <div className="wl-FlashCard-results-dark">
+            <div className="wl-FlashCard-item-container-dark">
               {Object.entries(flashcards).map(([key, flashcard], index) => (
-                <div key={index} className="FlashCard-item">
-                  <div className="FlashCard-inner">
-                    <div className="FlashCard-front">
+                <div key={index} className="wl-FlashCard-item-dark">
+                  <div className="wl-FlashCard-inner-dark">
+                    <div className="wl-FlashCard-front-dark">
                       <p>{flashcard.Question}</p>
                     </div>
-                    <div className="FlashCard-back">
+                    <div className="wl-FlashCard-back-dark">
                       <p>{flashcard.Answer}</p>
                     </div>
                   </div>
                   <button
-                    className="FlashCard-save"
+                    className="wl-FlashCard-save-dark"
                     onClick={() => handleSaveFlashcard(JSON.stringify(flashcard), index)}
                   >
                     Save
@@ -283,10 +347,12 @@ const Flashcards = () => {
           </div>
         )}
       </div>
-      {/* Popup for title and tags */}
+      ) : (
+        <div>Please login and subscribe to generate Flashcards.</div>
+      )}
       {showPopup && (
-        <div className="QuestionsGenerator-popup">
-          <div className="QuestionsGenerator-popup-content">
+        <div className="wl-QuestionsGenerator-popup-dark">
+          <div className="wl-QuestionsGenerator-popup-content-dark">
             <h2>Enter Title and Tags</h2>
             <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
             <input

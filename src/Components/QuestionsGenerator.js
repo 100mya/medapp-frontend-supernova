@@ -188,7 +188,6 @@ const QuestionsGenerator = () => {
           setIsLoggedIn(true)
           setUserEmail(email)
 
-          // Fetch filenames if login is successful
           const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
             method: "GET",
             headers: {
@@ -202,12 +201,9 @@ const QuestionsGenerator = () => {
         }
       } catch (error) {
         console.error("Error logging in with stored credentials:", error)
-        // Optionally handle login failure (e.g., clear local storage)
-        // localStorage.removeItem('rx_chatbot_credentials');
       }
     }
 
-    // Attempt login with stored credentials when component mounts
     handleLoginWithStoredCredentials()
   }, [])
 
@@ -299,28 +295,35 @@ const QuestionsGenerator = () => {
   }
 
   return (
-    <div className="QuestionsGenerator-container">
-      <h1 className="QuestionsGenerator-title">
+    <div className="wl-QuestionsGenerator-container-dark">
+      <h1 className="wl-QuestionsGenerator-title-dark">
         Quiz <span>Generator</span>
       </h1>
-      {1 ? (
-        <div className="QuestionsGenerator-form">
-          <div className="QuestionsGenerator-input">
+      {isLoggedIn && isSubscribed ? (
+        <div className="wl-QuestionsGenerator-form-dark">
+          <div className="wl-QuestionsGenerator-input-dark">
             <label htmlFor="numberOfQuestions">Number of Questions:</label>
             <input
               type="number"
               id="numberOfQuestions"
               value={numberOfQuestions}
               onChange={(e) => setNumberOfQuestions(e.target.value)}
-              style={{ padding: "10px", borderRadius: "10px", border: "1px solid #ccc", marginRight: "10px" }}
+              style={{
+                padding: "10px",
+                borderRadius: "10px",
+                border: "1px solid #6610f2",
+                marginRight: "10px",
+                backgroundColor: "#1a1f4d",
+                color: "#ffffff",
+              }}
               min="1"
             />
           </div>
-          <label style={{ marginRight: "10px" }}>Select Document</label>
+          <label style={{ marginRight: "10px", color: "#e0e0e0" }}>Select Document</label>
           <select
             id="filename"
             name="filename"
-            className="QuestionsGenerator-select"
+            className="wl-QuestionsGenerator-select-dark"
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
           >
@@ -331,11 +334,11 @@ const QuestionsGenerator = () => {
               </option>
             ))}
           </select>
-          <label>Select Language</label>
+          <label style={{ color: "#e0e0e0" }}>Select Language</label>
           <select
             id="language"
             name="language"
-            className="QuestionsGenerator-select"
+            className="wl-QuestionsGenerator-select-dark"
             value={selectedLanguage}
             onChange={handleLanguageChange}
           >
@@ -346,7 +349,7 @@ const QuestionsGenerator = () => {
             ))}
           </select>
           <button
-            className="QuestionsGenerator-button"
+            className="wl-QuestionsGenerator-button-dark"
             onClick={generateQuiz}
             disabled={loading}
             style={{ marginTop: "20px" }}
@@ -357,17 +360,17 @@ const QuestionsGenerator = () => {
       ) : (
         <p>Please login and subscribe to generate quiz.</p>
       )}
-      <div className="QuestionsGenerator-quiz">
+      <div className="wl-QuestionsGenerator-quiz-dark">
         {quiz.length > 0 &&
           quiz.map((item, index) => (
-            <div key={index} className="QuestionsGenerator-quiz-item">
-              <h3 className="QuestionsGenerator-question">{item.question}</h3>
-              <ul className="QuestionsGenerator-options">
+            <div key={index} className="wl-QuestionsGenerator-quiz-item-dark">
+              <h3 className="wl-QuestionsGenerator-question-dark">{item.question}</h3>
+              <ul className="wl-QuestionsGenerator-options-dark">
                 {item.options.map((option, idx) => (
                   <li
                     key={idx}
-                    className={`QuestionsGenerator-option ${
-                      selectedAnswers[index] ? (option === item.answer ? "correct" : "incorrect") : ""
+                    className={`wl-QuestionsGenerator-option-dark ${
+                      selectedAnswers[index] ? (option === item.answer ? "wl-correct-dark" : "wl-incorrect-dark") : ""
                     }`}
                     onClick={() => handleOptionClick(index, option)}
                   >
@@ -376,23 +379,22 @@ const QuestionsGenerator = () => {
                 ))}
               </ul>
               {selectedAnswers[index] && (
-                <div className="QuestionsGenerator-answer">
+                <div className="wl-QuestionsGenerator-answer-dark">
                   <strong>Correct Answer: {item.answer}</strong>
                   <br /> <br />
-                  Explanation: {item.explanation} {/* Show explanation */}
+                  Explanation: {item.explanation}
                 </div>
               )}
-              <button className="QuestionsGenerator-save-button" onClick={() => handleSaveQuestion(index)}>
+              <button className="wl-QuestionsGenerator-save-button-dark" onClick={() => handleSaveQuestion(index)}>
                 Save Question
               </button>
             </div>
           ))}
       </div>
 
-      {/* Popup for title and tags */}
       {showPopup && (
-        <div className="QuestionsGenerator-popup">
-          <div className="QuestionsGenerator-popup-content">
+        <div className="wl-QuestionsGenerator-popup-dark">
+          <div className="wl-QuestionsGenerator-popup-content-dark">
             <h2>Enter Title and Tags</h2>
             <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
             <input

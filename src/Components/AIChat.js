@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import "./AIChat.css"
@@ -10,15 +10,17 @@ const AIChat = () => {
   const [filenames, setFilenames] = useState([])
   const [selectedFile, setSelectedFile] = useState("")
   const [messages, setMessages] = useState([])
-  const [selectedLanguage, setSelectedLanguage] = useState("en") // Default language is English
+  const [selectedLanguage, setSelectedLanguage] = useState("en")
   const [savedMessages, setSavedMessages] = useState([])
-  const [isLoggedIn, setIsLoggedIn] = useState(false) // Track login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isPremiumPlan, setIsPremiumPlan] = useState(false)
 
-  // State for popup
   const [showPopup, setShowPopup] = useState(false)
   const [popupData, setPopupData] = useState({ title: "", tags: "", msgContent: "" })
+
+  const streamControllerRef = useRef(null)
+  const streamRunIdRef = useRef(0)
 
   const languages = [
     { code: "en", name: "English" },
@@ -165,7 +167,6 @@ const AIChat = () => {
           setUserEmail(email)
           setIsLoggedIn(true)
 
-          // Fetch filenames after successful login
           const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
             method: "GET",
             headers: {
@@ -190,73 +191,78 @@ const AIChat = () => {
     handleLoginWithStoredCredentials()
   }, [])
 
-  const createStreamedCompletion = async (url, formData) => {
-    const payload = {
-      prompt: formData.get("prompt"),
-      filename: formData.get("filename"),
-      language: formData.get("language"),
-      user_id: formData.get("user_id"),
-    }
-
-    return fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-  }
-
   const handleStream = async (url, formData) => {
     try {
-      const response = await createStreamedCompletion(url, formData)
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let bufferedResponse = ""
-
-      const processText = async ({ done, value }) => {
-        if (done) {
-          setMessages((prevMessages) => {
-            if (prevMessages.length === 0 || prevMessages[prevMessages.length - 1].type !== "bot") {
-              return [...prevMessages, { type: "bot", content: bufferedResponse }]
-            } else {
-              const updatedMessages = [...prevMessages]
-              updatedMessages[updatedMessages.length - 1].content = bufferedResponse
-              return updatedMessages
-            }
-          })
-          return
-        }
-        bufferedResponse = decoder.decode(value, { stream: true })
-        await new Promise((resolve) => setTimeout(resolve, 100))
-        setMessages((prevMessages) => {
-          if (prevMessages.length === 0 || prevMessages[prevMessages.length - 1].type !== "bot") {
-            return [...prevMessages, { type: "bot", content: bufferedResponse }]
-          } else {
-            const updatedMessages = [...prevMessages]
-            updatedMessages[updatedMessages.length - 1].content = bufferedResponse
-            return updatedMessages
-          }
-        })
-        return reader.read().then(processText)
+      // Abort any previous stream
+      if (streamControllerRef.current) {
+        try {
+          streamControllerRef.current.abort()
+        } catch {}
       }
 
-      return reader
-        .read()
-        .then(processText)
-        .catch((err) => {
-          console.error("Error reading stream", err)
+      const controller = new AbortController()
+      streamControllerRef.current = controller
+      const myRunId = ++streamRunIdRef.current
+
+      const payload = {
+        prompt: formData.get("prompt"),
+        filename: formData.get("filename"),
+        language: formData.get("language"),
+        user_id: formData.get("user_id"),
+      }
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      })
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let fullContent = ""
+
+      // Add bot message placeholder
+      setMessages((prevMessages) => [...prevMessages, { type: "bot", content: "" }])
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        // Only process if this is still the current stream
+        if (myRunId !== streamRunIdRef.current) return
+
+        const chunk = decoder.decode(value, { stream: true })
+        fullContent = chunk
+
+        // Update the last bot message with accumulated content
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages]
+          if (updatedMessages.length > 0 && updatedMessages[updatedMessages.length - 1].type === "bot") {
+            updatedMessages[updatedMessages.length - 1].content = fullContent
+          }
+          return updatedMessages
         })
+      }
     } catch (error) {
-      console.error("Error handling stream", error)
+      if (error?.name !== "AbortError") {
+        console.error("Error handling stream", error)
+      }
+    } finally {
+      const myRunId = streamRunIdRef.current // Declare myRunId here
+      if (myRunId === streamRunIdRef.current) {
+        streamControllerRef.current = null
+      }
     }
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
-    formData.set("filename", selectedFile) // Ensure the selected file is included
-    formData.set("language", selectedLanguage) // Ensure the selected language is included
+    formData.set("filename", selectedFile)
+    formData.set("language", selectedLanguage)
     formData.set("user_id", userEmail)
 
     setMessages((prevMessages) => [...prevMessages, { type: "user", content: formData.get("prompt") }])
@@ -314,17 +320,16 @@ const AIChat = () => {
 
   return (
     <div>
-      {/*{isLoggedIn && isSubscribed ? (*/}
-      {1 ? (
-        <div className="AIChat-container">
-          <h1 className="AIChat-heading">
+      {isLoggedIn && isSubscribed ? (
+        <div className="wl-aichat-container-dark">
+          <h1 className="wl-aichat-heading-dark">
             Chat With <span>Document</span>
           </h1>
-          <div className="AIChat-chat-container">
-            <div className="AIChat-pastMessages">
+          <div className="wl-aichat-chat-container-dark">
+            <div className="wl-aichat-pastMessages-dark">
               {messages.map((msg, index) => (
-                <div key={index} className={`AIChat-message ${msg.type}`}>
-                  <div className="AIChat-message-content">
+                <div key={index} className={`wl-aichat-message-dark ${msg.type}`}>
+                  <div className="wl-aichat-message-content-dark">
                     {msg.type === "bot" ? (
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                     ) : (
@@ -332,10 +337,10 @@ const AIChat = () => {
                     )}
                     {msg.type === "bot" && (
                       <div>
-                        <button className="AIChat-save-button" onClick={() => handleCopy(msg.content)}>
+                        <button className="wl-aichat-save-button-dark" onClick={() => handleCopy(msg.content)}>
                           Copy
                         </button>
-                        <button className="AIChat-save-button" onClick={() => openPopup(msg.content)}>
+                        <button className="wl-aichat-save-button-dark" onClick={() => openPopup(msg.content)}>
                           Save
                         </button>
                       </div>
@@ -344,13 +349,13 @@ const AIChat = () => {
                 </div>
               ))}
             </div>
-            <div className="AIChat-form-section">
-              <form id="chat-with-paper-form" className="AIChat-chat-form" onSubmit={handleSubmit}>
+            <div className="wl-aichat-form-section-dark">
+              <form id="chat-with-paper-form" className="wl-aichat-chat-form-dark" onSubmit={handleSubmit}>
                 <label>Select Document</label>
                 <select
                   id="filename"
                   name="filename"
-                  className="AIChat-file-select"
+                  className="wl-aichat-file-select-dark"
                   value={selectedFile}
                   onChange={(e) => setSelectedFile(e.target.value)}
                 >
@@ -365,7 +370,7 @@ const AIChat = () => {
                 <select
                   id="language"
                   name="language"
-                  className="AIChat-language-select"
+                  className="wl-aichat-language-select-dark"
                   value={selectedLanguage}
                   onChange={(e) => setSelectedLanguage(e.target.value)}
                 >
@@ -378,20 +383,19 @@ const AIChat = () => {
                 <textarea
                   id="paper-prompt"
                   name="prompt"
-                  className="AIChat-prompt-box"
+                  className="wl-aichat-prompt-box-dark"
                   placeholder="Enter your message..."
                 ></textarea>
-                <button type="submit" className="AIChat-button">
+                <button type="submit" className="wl-aichat-button-dark">
                   Submit
                 </button>
               </form>
             </div>
           </div>
 
-          {/* Popup for title and tags */}
           {showPopup && (
-            <div className="AIChat-popup">
-              <div className="AIChat-popup-content">
+            <div className="wl-aichat-popup-dark">
+              <div className="wl-aichat-popup-content-dark">
                 <h2>Save Message</h2>
                 <input
                   type="text"
@@ -412,7 +416,7 @@ const AIChat = () => {
           )}
         </div>
       ) : (
-        <div className="AIChat-login-message">Please login and subscribe to chat with paper.</div>
+        <div className="wl-aichat-login-message-dark">Please login and subscribe to chat with paper.</div>
       )}
     </div>
   )

@@ -1,216 +1,237 @@
-.QuestionsGenerator-container {
-    font-family: 'Arial', sans-serif;
-    margin: 20px;
-    padding: 20px;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .QuestionsGenerator-title {
-    margin: 20px 0;
+/* Updated to Supernova dark theme with purple-indigo gradient */
+.wl-QuestionsGenerator-container-dark {
+  font-family: "Arial", sans-serif;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0f1535 0%, #1a1f4d 100%);
+  box-shadow: 0 2px 4px rgba(102, 16, 242, 0.15);
+  border: 1px solid rgba(102, 16, 242, 0.2);
+}
+
+.wl-QuestionsGenerator-title-dark {
+  margin: 20px 0;
   font-size: 2rem;
-  color: #333;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 500;
-  }
+}
 
-  .QuestionsGenerator-title span{
-    color: #ff416c;
-    }
-  
-  .QuestionsGenerator-form {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .QuestionsGenerator-select {
-    margin-right: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #ffffff;
-    cursor: pointer;
-    transition: border-color 0.3s;
-    max-width: 350px;
-  }
-  
-  .QuestionsGenerator-button {
-    padding: 10px 20px;
-    background: linear-gradient(90deg, #ff416c, #ff416c);
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .QuestionsGenerator-button:hover {
-    background: linear-gradient(90deg, #cf0080, #ff416c);
-  }
-  
-  .QuestionsGenerator-quiz {
-    margin-top: 20px;
-  }
-  
-  .QuestionsGenerator-quiz-item {
-    background: #fff;
-    padding: 20px;
-    margin-bottom: 0px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
-  }
-  
-  .QuestionsGenerator-question {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 500;
-    text-align: left;
-  }
-  
-  .QuestionsGenerator-options {
-    list-style-type: lower-alpha;
-    padding: 0 20px;
-  }
-  
-  .QuestionsGenerator-option {
-    background: #fff;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
-    text-align: left;
-  }
-  
-  .QuestionsGenerator-option.correct {
-    background: #c8e6c9;
-    color: #333;
-  }
-  
-  .QuestionsGenerator-option.incorrect {
-    background: #fff;
-    color: #333;
-  }
+.wl-QuestionsGenerator-title-dark span {
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .QuestionsGenerator-option.incorrect:hover {
-    color: #333;
-  }
-  
-  .QuestionsGenerator-answer {
-    margin-top: 10px;
-    font-size: 1em;
-    color: #555;
-    padding: 0 0%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+.wl-QuestionsGenerator-form-dark {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
 
-  .QuestionsGenerator-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* ensure it's above other content */
-  }
-  
-  .QuestionsGenerator-popup-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .QuestionsGenerator-popup h2 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 500;
-  }
-  
-  .QuestionsGenerator-popup input {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  .QuestionsGenerator-popup button {
-    background-color: #ff416c;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 20px;
-    margin-right: 10px;
-    font-size: 1rem;
-  }
-  
-  .QuestionsGenerator-popup button:hover {
-    background: linear-gradient(90deg, #cf0080, #ff416c);
-  }
-  
-  .QuestionsGenerator-popup button:last-child {
-    background-color: #ff416c;
-  }
+.wl-QuestionsGenerator-select-dark {
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #6610f2;
+  border-radius: 10px;
+  background-color: #1a1f4d;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s;
+  max-width: 350px;
+}
 
-  .QuestionsGenerator-popup button:last-child:hover {
-    background-color: linear-gradient(90deg, #cf0080, #ff416c);
-  }
+.wl-QuestionsGenerator-select-dark:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(102, 16, 242, 0.5);
+}
 
-  .QuestionsGenerator-save-button {
-    background-color: transparent; /* Green background */
-  color: #555; /* White text */
-  border: none; /* No border */
-  padding: 5px 10px; /* Padding */
-  text-align: center; /* Center text */
-  text-decoration: none; /* No underline */
-  display: inline-block; /* Display as block */
-  margin-top: 10px; /* Margin top */
-  cursor: pointer; /* Cursor on hover */
-  border-radius: 2px; /* Rounded corners */
+.wl-QuestionsGenerator-button-dark {
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.wl-QuestionsGenerator-button-dark:hover {
+  box-shadow: 0 0 20px rgba(102, 16, 242, 0.5);
+  transform: translateY(-2px);
+}
+
+.wl-QuestionsGenerator-quiz-dark {
+  margin-top: 20px;
+}
+
+.wl-QuestionsGenerator-quiz-item-dark {
+  background: #0f1535;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(102, 16, 242, 0.1);
+  border: 1px solid rgba(102, 16, 242, 0.2);
+}
+
+.wl-QuestionsGenerator-question-dark {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  text-align: left;
+}
+
+.wl-QuestionsGenerator-options-dark {
+  list-style-type: lower-alpha;
+  padding: 0 20px;
+}
+
+.wl-QuestionsGenerator-option-dark {
+  background: #1a1f4d;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(102, 16, 242, 0.1);
+  text-align: left;
+  color: #e0e0e0;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+}
+
+.wl-QuestionsGenerator-option-dark:hover {
+  background: #252a5a;
+  border-color: #6610f2;
+}
+
+.wl-QuestionsGenerator-option-dark.wl-correct-dark {
+  background: rgba(102, 16, 242, 0.3);
+  color: #a8d5ff;
+  border-color: #6610f2;
+}
+
+.wl-QuestionsGenerator-option-dark.wl-incorrect-dark {
+  background: #1a1f4d;
+  color: #e0e0e0;
+}
+
+.wl-QuestionsGenerator-answer-dark {
+  margin-top: 10px;
+  font-size: 1em;
+  color: #b0b0b0;
+  padding: 10px;
+  background: rgba(102, 16, 242, 0.1);
+  border-left: 3px solid #6610f2;
+  border-radius: 3px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.wl-QuestionsGenerator-popup-dark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.wl-QuestionsGenerator-popup-content-dark {
+  background-color: #0f1535;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(102, 16, 242, 0.3);
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #6610f2;
+}
+
+.wl-QuestionsGenerator-popup-content-dark h2 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.wl-QuestionsGenerator-popup-content-dark input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #6610f2;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #1a1f4d;
+  color: #ffffff;
+}
+
+.wl-QuestionsGenerator-popup-content-dark button {
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+  margin-right: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.wl-QuestionsGenerator-popup-content-dark button:hover {
+  box-shadow: 0 0 15px rgba(102, 16, 242, 0.5);
+  transform: translateY(-2px);
+}
+
+.wl-QuestionsGenerator-save-button-dark {
+  background-color: transparent;
+  color: #b0b0b0;
+  border: none;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 2px;
   margin-left: 10px;
-  }
+  transition: all 0.3s ease;
+}
 
-/* New styles for mobile screens */
+.wl-QuestionsGenerator-save-button-dark:hover {
+  color: #6610f2;
+}
+
 @media (max-width: 768px) {
-
-  .QuestionsGenerator-container {
+  .wl-QuestionsGenerator-container-dark {
     margin: 0px;
     margin-left: -10px;
     padding: 10px;
   }
 
-  .QuestionsGenerator-form {
+  .wl-QuestionsGenerator-form-dark {
     gap: 10px;
   }
 
-  .QuestionsGenerator-popup {
+  .wl-QuestionsGenerator-popup-dark {
     left: 20px;
   }
 
-  .QuestionsGenerator-question {
+  .wl-QuestionsGenerator-question-dark {
     font-size: 1rem;
   }
 
-  .QuestionsGenerator-title {
+  .wl-QuestionsGenerator-title-dark {
     font-size: 1.2rem;
   }
-
 }

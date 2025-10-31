@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import "./UploadDashboard.css" // Import the associated CSS file
+import "./UploadDashboard.css"
 
 function UploadDashboard() {
   const [filenames, setFilenames] = useState([])
@@ -40,11 +40,9 @@ function UploadDashboard() {
       .then((data) => {
         if (data.success) {
           console.log("File deleted successfully:", filename)
-          // Update state or reload file list as needed
           setFilenames((prevFilenames) => prevFilenames.filter((name) => name !== filename))
         } else {
           console.error("Error deleting file:", data.error)
-          // Handle error display or logging
         }
       })
       .catch((error) => {
@@ -53,17 +51,17 @@ function UploadDashboard() {
   }
 
   return (
-    <div className="upload-dashboard">
+    <div className="wl-upload-dashboard-dark">
       <h1>Dashboard</h1>
-      <div id="upload-form">
+      <div id="wl-upload-form-dark">
         <h5>Current files</h5>
         {filenames && filenames.length > 0 ? (
-          <ul className="file-list">
+          <ul className="wl-file-list-dark">
             {filenames.map((file, index) => (
               <li key={index}>
                 <span>{file}</span>
                 <i
-                  className="fas fa-trash-alt delete-icon"
+                  className="fas fa-trash-alt wl-delete-icon-dark"
                   data-filename={file}
                   onClick={() => handleFileDelete(file)}
                 ></i>
@@ -75,7 +73,7 @@ function UploadDashboard() {
         )}
         <form action="/upload" method="post" encType="multipart/form-data">
           <input type="file" name="files[]" multiple />
-          <button id="btnUploadMore">Upload more files</button>
+          <button id="wl-btnUploadMore-dark">Upload more files</button>
         </form>
       </div>
     </div>

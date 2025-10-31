@@ -1,24 +1,28 @@
+/* Updated to match dashboard dark theme with purple/pink accent colors */
 .UploadPapers-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #fff;
+  background-color: #0a0e27;
   border-radius: 8px;
+  color: #d0d0d0;
 }
 
 .UploadPapers-bigbox {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  border: 1px solid rgba(102, 16, 242, 0.2);
   padding: 20px;
   margin-bottom: 60px;
+  border-radius: 8px;
 }
 
 .UploadPapers-heading {
   font-size: 28px;
   margin-bottom: 30px;
   text-align: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 500;
+  color: #ffffff;
 }
 
 .UploadPapers-form {
@@ -26,8 +30,8 @@
 }
 
 .UploadPapers-upload-box {
-  border: 0px solid #ddd;
-  background-color: #fff;
+  border: 0px solid rgba(102, 16, 242, 0.2);
+  background-color: #0f1535;
   padding: 20px;
   text-align: center;
   border-radius: 8px;
@@ -37,6 +41,7 @@
 .UploadPapers-upload-box p {
   padding-left: 20px;
   padding-right: 20px;
+  color: #b0b0b0;
 }
 
 .UploadPapers-uicon {
@@ -46,18 +51,21 @@
 
 .UploadPapers-uploads-container h3 {
   font-weight: 500;
-  background-color: #fff;
+  background-color: #1a1f4d;
   z-index: 10;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding-left: 20px;
   padding-right: 20px;
   margin-left: 40%;
   width: fit-content;
   margin-top: -15px;
+  color: #ffffff;
+  border: 1px solid rgba(102, 16, 242, 0.2);
+  border-radius: 4px;
 }
 
 .UploadPapers-uploads-container {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid rgba(102, 16, 242, 0.2);
   justify-items: center;
   text-align: center;
 }
@@ -74,29 +82,38 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  border: 1px solid #ddd; /* Adjust dashed border color */
+  border: 1px solid rgba(102, 16, 242, 0.2);
   border-radius: 0px;
+  color: #d0d0d0;
 }
 
 .UploadPapers-uicon p {
-  color: #7e7e7e;
+  color: #b0b0b0;
   margin: 0px 0;
   font-size: 0.8rem;
 }
 
 .UploadPapers-uicon label {
   font-size: 1.5rem;
+  color: #6f42c1;
 }
 
 .UploadPapers-upload-button {
-  background-color: #fff;
-  color: #555;
-  border: 1px solid #ddd;
+  background-color: #1a1f4d;
+  color: #d0d0d0;
+  border: 1px solid rgba(102, 16, 242, 0.2);
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
   margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.UploadPapers-upload-button:hover {
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  color: #fff;
+  border-color: #6610f2;
 }
 
 .UploadPapers-loader {
@@ -108,7 +125,7 @@
 .UploadPapers-dot {
   width: 10px;
   height: 10px;
-  background-color: #adadad; /* Adjust loader dot color */
+  background-color: #6610f2;
   margin: 0 5px;
   border-radius: 50%;
   animation: dot-blink 1.3s infinite ease-in-out;
@@ -119,10 +136,12 @@
   text-decoration: underline;
   cursor: pointer;
   font-size: 14px;
+  color: #b0b0b0;
 }
 
 @keyframes dot-blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0;
   }
   50% {
@@ -137,9 +156,10 @@
 }
 
 .UploadPapers-success {
-  background-color: transparent; /* Success alert background color */
-  color: #333;
+  background-color: rgba(102, 16, 242, 0.15);
+  color: #d0d0d0;
   font-size: 1rem;
+  border: 1px solid rgba(102, 16, 242, 0.3);
 }
 
 .UploadPapers-file-list {
@@ -152,16 +172,18 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background-color: #fff;
+  background-color: #0f1535;
   margin-bottom: 5px;
   border-radius: 5px;
   font-size: 0.9rem;
   margin-left: 80px;
   margin-right: 80px;
+  color: #d0d0d0;
+  border: 1px solid rgba(102, 16, 242, 0.1);
 }
 
 .UploadPapers-delete-icon {
-  color: #dc3545; /* Delete icon color */
+  color: #ff416c;
   cursor: pointer;
 }
 
@@ -174,25 +196,32 @@
 }
 
 .UploadPapers-button-link button {
-  background-color: #ff416c;
+  background: linear-gradient(90deg, #6610f2, #6f42c1);
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(102, 16, 242, 0.3);
+}
+
+.UploadPapers-button-link button:hover {
+  box-shadow: 0 6px 16px rgba(102, 16, 242, 0.5);
 }
 
 .UploadPapers-button-link button:disabled {
-  background-color: #ddd;
+  background-color: #1a1f4d;
   cursor: not-allowed;
+  box-shadow: none;
+  color: #7e7e7e;
 }
 
 @media (max-width: 768px) {
-
   .UploadPapers-bigbox {
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+    border: 1px solid rgba(102, 16, 242, 0.2);
     padding: 10px;
     margin-bottom: 60px;
   }
@@ -208,7 +237,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px;
-    background-color: #fff;
+    background-color: #0f1535;
     margin-bottom: 5px;
     border-radius: 5px;
     font-size: 0.9rem;
@@ -219,9 +248,9 @@
 
   .UploadPapers-uploads-container h3 {
     font-weight: 500;
-    background-color: #fff;
+    background-color: #1a1f4d;
     z-index: 10;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     padding-left: 20px;
     padding-right: 20px;
     margin-left: 18%;
@@ -232,21 +261,21 @@
   .UploadPapers-button-link button {
     width: 250px;
   }
-
 }
 
-/* UploadPapers.css */
 .UploadPapers-bulk-input {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(102, 16, 242, 0.2);
   border-radius: 4px;
   margin-bottom: 10px;
   font-size: 16px;
   margin-right: 10px;
+  background-color: #0f1535;
+  color: #d0d0d0;
 }
 
 .UploadPapers-bulk-p {
-  color: #7e7e7e;
+  color: #b0b0b0;
   font-size: 13px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
