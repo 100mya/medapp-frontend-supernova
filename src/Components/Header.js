@@ -173,6 +173,27 @@ function Header() {
             <Link to="/community" className="supernova-nav-link">
               Community
             </Link>
+            {!isLoggedIn ? (
+              <button
+                className="supernova-nav-link supernova-login-button-header supernova-login-mobile-item"
+                onClick={() => {
+                  setShowLoginModal(true)
+                  setIsNavOpen(false)
+                }}
+              >
+                Login
+              </button>
+            ) : (
+              <button
+                className="supernova-nav-link supernova-logout-button-header supernova-login-mobile-item"
+                onClick={() => {
+                  handleLogout()
+                  setIsNavOpen(false)
+                }}
+              >
+                Logout
+              </button>
+            )}
           </nav>
           <div className="supernova-header-auth-buttons">
             {!isLoggedIn ? (

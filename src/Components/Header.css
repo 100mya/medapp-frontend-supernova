@@ -162,3 +162,14 @@
     background-color: rgba(255, 255, 255, 0.1);
   }
 }
+
+/* Mobile-only login/logout menu item */
+.supernova-login-mobile-item {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .supernova-login-mobile-item {
+    display: block;
+  }
+}
