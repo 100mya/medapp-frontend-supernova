@@ -423,26 +423,29 @@ const UploadPapers = () => {
       </div>
 
       <div className="UploadPapers-buttons-container">
-        <Link to="/dashboard/summary-generator" className="UploadPapers-button-link">
+        {/*<Link to="/dashboard/summary-generator" className="UploadPapers-button-link">
           <button disabled={summaryDisabled}>Generate Summaries</button>
         </Link>
         <Link to="/dashboard/comparison-tool" className="UploadPapers-button-link">
           <button disabled={allSummaryDisabled}>Compare Summaries</button>
-        </Link>
-        <Link to="/dashboard/ai-chat" className="UploadPapers-button-link">
-          <button disabled={indexDisabled}>Chat with Document</button>
         </Link>
         <Link to="/dashboard/compare-and-chat" className="UploadPapers-button-link">
           <button disabled={allIndexDisabled}>Chat Across Documents</button>
         </Link>
         <Link to="/dashboard/notes" className="UploadPapers-button-link">
           <button disabled={indexDisabled}>Generate Notes</button>
+        </Link>*/}
+        <Link to="/dashboard/ai-chat" className="UploadPapers-button-link">
+          <button disabled={indexDisabled}>Chat with Document</button>
         </Link>
         <Link to="/dashboard/questions-generator" className="UploadPapers-button-link">
           <button disabled={indexDisabled}>Generate Quiz</button>
         </Link>
         <Link to="/dashboard/mind-maps" className="UploadPapers-button-link">
           <button disabled={indexDisabled}>Generate Mind Maps</button>
+        </Link>
+        <Link to="/dashboard/flashcards" className="UploadPapers-button-link">
+          <button disabled={indexDisabled}>Generate Flashcards</button>
         </Link>
       </div>
     </div>
