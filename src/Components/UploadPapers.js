@@ -26,6 +26,9 @@ const UploadPapers = () => {
   const [indexDisabled, setIndexDisabled] = useState(true)
   const [allIndexDisabled, setAllIndexDisabled] = useState(true)
 
+  const [shouldPollButtons, setShouldPollButtons] = useState(false)
+
+
   useEffect(() => {
     const handleLoginWithStoredCredentials = async () => {
       try {
@@ -74,32 +77,54 @@ const UploadPapers = () => {
   }, [])
 
   useEffect(() => {
-    const fetchDisabledButtons = async () => {
-      if (userEmail) {
-        try {
-          const response = await fetch("/api/get-disabled-buttons", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ filenames: uploadedFiles, user_id: userEmail }),
-          })
-          const data = await response.json()
-          setSummaryDisabled(data.summary_disabled)
-          setAllSummaryDisabled(data.all_summary_disabled)
-          setIndexDisabled(data.index_disabled)
-          setAllIndexDisabled(data.all_index_disabled)
-        } catch (error) {
-          console.error("Error fetching button states:", error)
-        }
+  if (!userEmail || !shouldPollButtons) return
+
+  let intervalId
+  let timeoutId
+
+  const fetchDisabledButtons = async () => {
+    try {
+      const response = await fetch("/api/get-disabled-buttons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filenames: uploadedFiles, user_id: userEmail }),
+      })
+      const data = await response.json()
+      setSummaryDisabled(data.summary_disabled)
+      setAllSummaryDisabled(data.all_summary_disabled)
+      setIndexDisabled(data.index_disabled)
+      setAllIndexDisabled(data.all_index_disabled)
+
+      // If ALL buttons are enabled, stop polling
+      const allEnabled =
+        !data.summary_disabled &&
+        !data.all_summary_disabled &&
+        !data.index_disabled &&
+        !data.all_index_disabled
+
+      if (allEnabled) {
+        clearInterval(intervalId)
+        setShouldPollButtons(false)
       }
+    } catch (error) {
+      console.error("Error fetching button states:", error)
     }
+  }
 
+  // Wait 30 seconds before hitting the API
+  timeoutId = setTimeout(() => {
+    // After the initial 30s delay, start polling every 5s
+    intervalId = setInterval(fetchDisabledButtons, 5000)
+    // Also do one fetch immediately after the delay
     fetchDisabledButtons()
-    const intervalId = setInterval(fetchDisabledButtons, 5000)
+  }, 30000)
 
-    return () => clearInterval(intervalId)
-  }, [uploadedFiles, userEmail])
+  return () => {
+    clearTimeout(timeoutId)
+    clearInterval(intervalId)
+  }
+}, [uploadedFiles, userEmail, shouldPollButtons])
+
 
   const handleIndividualFileChange = (e) => {
     const files = e.target.files
@@ -163,6 +188,8 @@ const UploadPapers = () => {
       if (filenamesResponse.ok) {
         const filenamesData = await filenamesResponse.json()
         setUploadedFiles(filenamesData.filenames || [])
+        // inside handleSubmit, after setUploadedFiles(...)
+        setShouldPollButtons(true)
         setAttachedFiles([]) // Clear the attached files after upload
       } else {
         throw new Error("Failed to fetch filenames after upload")
@@ -257,6 +284,8 @@ const UploadPapers = () => {
       if (filenamesResponse.ok) {
         const filenamesData = await filenamesResponse.json()
         setUploadedFiles(filenamesData.filenames || [])
+        // inside handleBulkUploadSubmit, after setUploadedFiles(...)
+        setShouldPollButtons(true)
         setBulkAttachedFiles([]) // Clear the attached files after upload
       } else {
         throw new Error("Failed to fetch filenames after bulk upload")
