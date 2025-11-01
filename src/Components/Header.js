@@ -105,10 +105,7 @@ function Header() {
     if (!isLoggedIn) {
       e.preventDefault()
       setShowLoginModal(true)
-    } else if (!subscriptionStatus) {
-      e.preventDefault()
-      navigate("/pricing")
-    }
+    } 
   }
 
   const toggleNav = () => {
