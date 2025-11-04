@@ -49,6 +49,7 @@
   cursor: pointer;
 }
 
+/* Center the headings on the page */
 .UploadPapers-uploads-container h3 {
   font-weight: 500;
   background-color: #1a1f4d;
@@ -56,7 +57,8 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding-left: 20px;
   padding-right: 20px;
-  margin-left: 40%;
+  margin-left: auto;
+  margin-right: auto;
   width: fit-content;
   margin-top: -15px;
   color: #ffffff;
@@ -253,7 +255,8 @@
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     padding-left: 20px;
     padding-right: 20px;
-    margin-left: 18%;
+    margin-left: auto;
+    margin-right: auto;
     width: fit-content;
     margin-top: -15px;
   }

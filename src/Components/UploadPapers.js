@@ -28,6 +28,8 @@ const UploadPapers = () => {
 
   const [shouldPollButtons, setShouldPollButtons] = useState(false)
 
+  const [isDraggingIndividual, setIsDraggingIndividual] = useState(false)
+  const [isDraggingBulk, setIsDraggingBulk] = useState(false)
 
   useEffect(() => {
     const handleLoginWithStoredCredentials = async () => {
@@ -77,54 +79,50 @@ const UploadPapers = () => {
   }, [])
 
   useEffect(() => {
-  if (!userEmail || !shouldPollButtons) return
+    if (!userEmail || !shouldPollButtons) return
 
-  let intervalId
-  let timeoutId
+    let intervalId
+    let timeoutId
 
-  const fetchDisabledButtons = async () => {
-    try {
-      const response = await fetch("/api/get-disabled-buttons", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filenames: uploadedFiles, user_id: userEmail }),
-      })
-      const data = await response.json()
-      setSummaryDisabled(data.summary_disabled)
-      setAllSummaryDisabled(data.all_summary_disabled)
-      setIndexDisabled(data.index_disabled)
-      setAllIndexDisabled(data.all_index_disabled)
+    const fetchDisabledButtons = async () => {
+      try {
+        const response = await fetch("/api/get-disabled-buttons", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filenames: uploadedFiles, user_id: userEmail }),
+        })
+        const data = await response.json()
+        setSummaryDisabled(data.summary_disabled)
+        setAllSummaryDisabled(data.all_summary_disabled)
+        setIndexDisabled(data.index_disabled)
+        setAllIndexDisabled(data.all_index_disabled)
 
-      // If ALL buttons are enabled, stop polling
-      const allEnabled =
-        !data.summary_disabled &&
-        !data.all_summary_disabled &&
-        !data.index_disabled &&
-        !data.all_index_disabled
+        // If ALL buttons are enabled, stop polling
+        const allEnabled =
+          !data.summary_disabled && !data.all_summary_disabled && !data.index_disabled && !data.all_index_disabled
 
-      if (allEnabled) {
-        clearInterval(intervalId)
-        setShouldPollButtons(false)
+        if (allEnabled) {
+          clearInterval(intervalId)
+          setShouldPollButtons(false)
+        }
+      } catch (error) {
+        console.error("Error fetching button states:", error)
       }
-    } catch (error) {
-      console.error("Error fetching button states:", error)
     }
-  }
 
-  // Wait 30 seconds before hitting the API
-  timeoutId = setTimeout(() => {
-    // After the initial 30s delay, start polling every 5s
-    intervalId = setInterval(fetchDisabledButtons, 5000)
-    // Also do one fetch immediately after the delay
-    fetchDisabledButtons()
-  }, 30000)
+    // Wait 30 seconds before hitting the API
+    timeoutId = setTimeout(() => {
+      // After the initial 30s delay, start polling every 5s
+      intervalId = setInterval(fetchDisabledButtons, 5000)
+      // Also do one fetch immediately after the delay
+      fetchDisabledButtons()
+    }, 30000)
 
-  return () => {
-    clearTimeout(timeoutId)
-    clearInterval(intervalId)
-  }
-}, [uploadedFiles, userEmail, shouldPollButtons])
-
+    return () => {
+      clearTimeout(timeoutId)
+      clearInterval(intervalId)
+    }
+  }, [uploadedFiles, userEmail, shouldPollButtons])
 
   const handleIndividualFileChange = (e) => {
     const files = e.target.files
@@ -143,6 +141,46 @@ const UploadPapers = () => {
       names.push(files[i].name)
     }
     setBulkAttachedFiles(names)
+  }
+
+  const handleIndividualDragOver = (e) => {
+    e.preventDefault()
+    setIsDraggingIndividual(true)
+  }
+
+  const handleIndividualDragLeave = (e) => {
+    e.preventDefault()
+    setIsDraggingIndividual(false)
+  }
+
+  const handleIndividualDrop = (e) => {
+    e.preventDefault()
+    setIsDraggingIndividual(false)
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      individualFileInputRef.current.files = files
+      handleIndividualFileChange({ target: { files } })
+    }
+  }
+
+  const handleBulkDragOver = (e) => {
+    e.preventDefault()
+    setIsDraggingBulk(true)
+  }
+
+  const handleBulkDragLeave = (e) => {
+    e.preventDefault()
+    setIsDraggingBulk(false)
+  }
+
+  const handleBulkDrop = (e) => {
+    e.preventDefault()
+    setIsDraggingBulk(false)
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      bulkFileInputRef.current.files = files
+      handleBulkFileChange({ target: { files } })
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -312,7 +350,12 @@ const UploadPapers = () => {
       <div className="UploadPapers-bigbox">
         <form id="UploadPapers-upload-form" className="UploadPapers-form" onSubmit={handleSubmit}>
           <div className="UploadPapers-upload-box">
-            <div className="UploadPapers-drag-box">
+            <div
+              className="UploadPapers-drag-box"
+              onDragOver={handleIndividualDragOver}
+              onDragLeave={handleIndividualDragLeave}
+              onDrop={handleIndividualDrop}
+            >
               <input
                 id="individual-file-upload"
                 type="file"
@@ -325,8 +368,8 @@ const UploadPapers = () => {
               <label htmlFor="individual-file-upload" className="UploadPapers-uicon">
                 <FiUpload />
                 <br />
-                <p>Drag and drop files here, or click to select files</p>
-                <p>Supported file types: pdf, doc, docs, txt</p>
+                <p>Click here or drag and drop files to select them</p>
+                <p>Then click Upload to upload your files</p>
               </label>
             </div>
             {loading && (
@@ -368,7 +411,12 @@ const UploadPapers = () => {
         {showBulkUpload && (
           <form id="UploadPapers-bulk-upload-form" className="UploadPapers-form" onSubmit={handleBulkUploadSubmit}>
             <div className="UploadPapers-upload-box">
-              <div className="UploadPapers-drag-box">
+              <div
+                className="UploadPapers-drag-box"
+                onDragOver={handleBulkDragOver}
+                onDragLeave={handleBulkDragLeave}
+                onDrop={handleBulkDrop}
+              >
                 <input
                   id="bulk-file-upload"
                   type="file"
@@ -381,8 +429,8 @@ const UploadPapers = () => {
                 <label htmlFor="bulk-file-upload" className="UploadPapers-uicon">
                   <FiUpload />
                   <br />
-                  <p>Drag and drop files here, or click to select files</p>
-                  <p>Supported file types: pdf, doc, docs, txt</p>
+                  <p>Click here or drag and drop files to select them</p>
+                  <p>Then click Bulk Upload to upload your files</p>
                 </label>
               </div>
               {loading && (
