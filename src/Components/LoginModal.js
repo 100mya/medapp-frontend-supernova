@@ -45,7 +45,7 @@ function LoginModal({ onClose, onLoginSuccess }) {
       // store whatever id the server gave; we'll canonicalize after fetching user details
       const initialUserId = loginData.user_id || loginData.id || loginData._id || loginData.partner_user_id
       if (initialUserId) {
-        localStorage.setItem("id", initialUserId)
+        localStorage.setItem("id", String(initialUserId))
         localStorage.setItem("isLoggedIn", "true")
       }
 
