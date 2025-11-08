@@ -29,12 +29,13 @@ const UserPost = ({ post }) => {
   useEffect(() => {
     const fetchUserData = async (userId) => {
       try {
+        const id = localStorage.getItem("id")
         const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
+          body: JSON.stringify({ user_id: id }),
         })
         const data = await response.json()
         setUserName(data.name)

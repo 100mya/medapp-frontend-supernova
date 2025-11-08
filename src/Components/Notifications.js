@@ -25,22 +25,55 @@ const Notifications = () => {
     }
   }, [activeTab])
 
+  const [userInfo, setUserInfo] = useState(null)
+  const [userId, setUserId] = useState("")
+
+
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const userId = localStorage.getItem("id")
-
+        const storedUserId = localStorage.getItem("id")
+        setUserId(storedUserId)
         if (!userId) {
-          setError("User not logged in")
+          console.error("User ID not found in local storage")
           return
         }
+
+        const user_response = await fetch("/api/get-user-by-userid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: storedUserId }),
+        })
+
+        if (!user_response.ok) {
+          throw new Error("Failed to fetch user information")
+        }
+
+        const userData = await user_response.json()
+
+        if (userData && !userData.error) {
+          const user = {
+            name: userData.name || "",
+            email: userData.email || "",
+            cellNumber: userData.cellNumber || "",
+            collegeName: userData.collegeName || "",
+            country: userData.country || "",
+            bio: userData.bio || "",
+            followersCount: Array.isArray(userData.followers) ? userData.followers.length : 0,
+            followingCount: Array.isArray(userData.following) ? userData.following.length : 0,
+          }
+
+          setUserInfo(user)
+        
 
         const response = await fetch("/api/get-notifications", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
+          body: JSON.stringify({ user_id: user.email }),
         })
         const result = await response.json()
         if (response.ok) {
@@ -48,6 +81,10 @@ const Notifications = () => {
           setNotifications(parsedNotifications.reverse())
         } else {
           setError(result.error || "Failed to fetch notifications")
+        }
+
+    }else {
+          throw new Error(userData.error || "User data format is incorrect")
         }
       } catch (error) {
         setError(error.message)

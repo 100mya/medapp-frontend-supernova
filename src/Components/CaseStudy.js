@@ -66,8 +66,11 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
 
         if (response.ok) {
           const userData = await response.json()
-          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
+          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+          if (storedSubscriptionStatus) {
+            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+          }
         }
       } catch (error) {
         console.error("Error fetching user:", error)

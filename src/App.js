@@ -30,10 +30,32 @@ function App() {
   const [message, setMessage] = useState("")
   const [userEmail, setUserEmail] = useState(null)
 
+  // helper: normalize response.json() which might sometimes return a string
+  const normalizeJson = (data) => {
+    try {
+      if (typeof data === "string") return JSON.parse(data)
+      return data
+    } catch (e) {
+      console.error("Failed to normalize JSON:", e, data)
+      return data
+    }
+  }
+
+  // robust getter for stored id (check multiple possible keys)
+  const getStoredUserId = () => {
+    return (
+      localStorage.getItem("id") ||
+      localStorage.getItem("_id") ||
+      localStorage.getItem("user_id") ||
+      localStorage.getItem("partner_user_id") ||
+      null
+    )
+  }
+
   useEffect(() => {
     const checkAuthAndFetchDetails = async () => {
       try {
-        const storedUserId = localStorage.getItem("id")
+        const storedUserId = getStoredUserId()
 
         if (!storedUserId) {
           setIsLoggedIn(false)
@@ -52,7 +74,13 @@ function App() {
 
         if (userDetailsResponse.ok) {
           const userDetails = await userDetailsResponse.json()
-          const parsed = JSON.parse(userDetails)
+          const parsed = normalizeJson(userDetails)
+
+          // canonicalize id into localStorage.id
+          const canonicalId = parsed?.id || parsed?._id || parsed?.user_id || parsed?.partner_user_id || storedUserId
+          if (canonicalId && canonicalId !== localStorage.getItem("id")) {
+            localStorage.setItem("id", canonicalId)
+          }
 
           setUserEmail(parsed?.email)
 
@@ -66,16 +94,23 @@ function App() {
           setIsPremiumPlan(isPremium)
           setIsSubscribed(isSubscribedStatus)
 
+          // fallbacks: static whitelist or invitation code
           if (!isSubscribedStatus) {
             if (subscribedEmails.includes(parsed?.email?.toLowerCase())) {
               setIsSubscribed(true)
               setIsPremiumPlan(true)
+              localStorage.setItem("isSubscribed", "true")
+              localStorage.setItem("isPremiumPlan", "true")
             } else if (invitation_code) {
-              const isValid = await validateInvitationCode(invitation_code, storedUserId)
+              const isValid = await validateInvitationCode(invitation_code, canonicalId)
               if (isValid) {
                 setIsSubscribed(true)
+                localStorage.setItem("isSubscribed", "true")
               }
             }
+          } else {
+            localStorage.setItem("isSubscribed", "true")
+            localStorage.setItem("isPremiumPlan", JSON.stringify(isPremium))
           }
         } else {
           setIsLoggedIn(false)
@@ -111,7 +146,7 @@ function App() {
     }
 
     checkAuthAndFetchDetails()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGetStartedClick = () => {
     if (isLoggedIn) {
@@ -123,6 +158,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("id")
+    localStorage.removeItem("_id")
     localStorage.removeItem("follower_id")
     localStorage.removeItem("subscriptionID")
     localStorage.removeItem("invitation_code")
@@ -146,11 +182,6 @@ function App() {
             path="/dashboard/*"
             element={<Dashboard isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} handleLogout={handleLogout} />}
           />
-          {/*<Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />*/}
           <Route
             path="/community"
             element={<CommunityPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} handleLogout={handleLogout} />}
@@ -165,8 +196,6 @@ function App() {
             path="/community/notifications"
             element={<Notifications isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />}
           />
-          {/*<Route path="/exam" element={<Exam isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
-          <Route path="/pricing" element={<Pricing isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />*/}
           <Route path="/simulator" element={<SimulatorPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
           <Route path="/case-studies" element={<CaseStudyPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
         </Routes>

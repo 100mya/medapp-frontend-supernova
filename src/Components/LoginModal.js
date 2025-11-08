@@ -10,6 +10,16 @@ function LoginModal({ onClose, onLoginSuccess }) {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const normalizeJson = (data) => {
+    try {
+      if (typeof data === "string") return JSON.parse(data)
+      return data
+    } catch (e) {
+      console.error("Failed to normalize JSON:", e, data)
+      return data
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
@@ -26,36 +36,47 @@ function LoginModal({ onClose, onLoginSuccess }) {
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
         setError(data?.message || "Invalid email or password")
+        setLoading(false)
         return
       }
 
       const loginData = await response.json()
 
-      localStorage.setItem("id", loginData.user_id)
-      localStorage.setItem("isLoggedIn", "true")
+      // store whatever id the server gave; we'll canonicalize after fetching user details
+      const initialUserId = loginData.user_id || loginData.id || loginData._id || loginData.partner_user_id
+      if (initialUserId) {
+        localStorage.setItem("id", initialUserId)
+        localStorage.setItem("isLoggedIn", "true")
+      }
 
-      // 2) Fetch user details to set subscription flags
+      // 2) Fetch user details to set subscription flags (safe parse)
       try {
         const userDetailsResponse = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: loginData.user_id }),
+          body: JSON.stringify({ user_id: initialUserId }),
         })
 
         if (userDetailsResponse.ok) {
-          const userDetails = await userDetailsResponse.json()
-          const parsed = JSON.parse(userDetails || "{}")
+          const userDetailsRaw = await userDetailsResponse.json()
+          const parsed = normalizeJson(userDetailsRaw || "{}")
 
           const status = parsed?.subscription_status
           const plan = parsed?.plan
           const invitation_code = parsed?.invitation_code
 
-          const isSubscribedStatus = status === "active"
+          const isSubscribedStatus = status === "active" || status === true
           const isPremium = plan === "PREMIUM"
 
           localStorage.setItem("isSubscribed", JSON.stringify(isSubscribedStatus))
           localStorage.setItem("isPremiumPlan", JSON.stringify(isPremium))
           if (invitation_code) localStorage.setItem("invitation_code", invitation_code)
+
+          // canonicalize id into localStorage.id if backend returned different field
+          const canonicalId = parsed?.id || parsed?._id || parsed?.user_id || parsed?.partner_user_id || initialUserId
+          if (canonicalId && canonicalId !== localStorage.getItem("id")) {
+            localStorage.setItem("id", canonicalId)
+          }
         }
       } catch (err) {
         console.error("Failed to fetch user details after login:", err)

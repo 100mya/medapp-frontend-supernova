@@ -27,32 +27,75 @@ const Post = ({ post }) => {
   const [userProfilePic, setUserProfilePic] = useState(defaultImg)
 
   useEffect(() => {
-    const fetchUserData = async (userId) => {
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        })
-        const data = await response.json()
-        setUserName(data.name)
-        if (data.profilePic) {
-          setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
+  // Fetch author/profile data (for the post owner)
+  const fetchAuthorData = async (authorId) => {
+    try {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: authorId }),
+      })
+      if (!response.ok) {
+        const txt = await response.text().catch(() => null)
+        throw new Error(`fetchAuthorData failed: ${response.status} ${response.statusText} ${txt || ""}`)
       }
+      const data = await response.json()
+      setUserName(data.name || "")
+      if (data.profilePic) {
+        setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+      } else {
+        setUserProfilePic(defaultImg)
+      }
+    } catch (error) {
+      console.error("Error fetching author data:", error)
     }
+  }
 
-    const id = localStorage.getItem("id")
-    if (id) {
-      setUserId(id)
-      setLikedByUser(post.likes.includes(id))
-      fetchUserData(post.user_id)
+  // Translate local storage id -> email and set userId (email) for API calls
+  const initCurrentUser = async () => {
+    try {
+      const idFromStorage = localStorage.getItem("id")
+      if (!idFromStorage) {
+        console.warn("No local id found in localStorage")
+        return
+      }
+
+      // call your existing endpoint to get user object (email)
+      const resp = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: idFromStorage }),
+      })
+
+      if (!resp.ok) {
+        const txt = await resp.text().catch(() => null)
+        throw new Error(`get-user-by-userid failed: ${resp.status} ${resp.statusText} ${txt || ""}`)
+      }
+
+      const userData = await resp.json()
+      if (!userData || userData.error) {
+        throw new Error("get-user-by-userid returned no user or error: " + (userData?.error || "unknown"))
+      }
+
+      const email = userData.email
+      if (!email) {
+        throw new Error("Email not found on user data from get-user-by-userid")
+      }
+
+      // set userId to email (other APIs expect email as user_id)
+      setUserId(email)
+
+      // set likedByUser using email (likes array contains user identifiers used by other APIs — email)
+      setLikedByUser(Array.isArray(post.likes) ? post.likes.includes(email) : false)
+    } catch (error) {
+      console.error("Error initializing current user in Post:", error)
     }
-  }, [post.user_id, post.likes])
+  }
+
+  // run both: fetch post author's profile (post.user_id) and init current user
+  fetchAuthorData(post.user_id)
+  initCurrentUser()
+}, [post.user_id, post.likes])
 
   const handleToggleLikePost = async () => {
     try {

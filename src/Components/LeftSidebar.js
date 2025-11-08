@@ -6,11 +6,13 @@ import defaultProfilePic from "./default.jpeg"
 
 const LeftSidebar = () => {
   const [userInfo, setUserInfo] = useState(null)
+  const [userId, setUserId] = useState("")
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const userId = localStorage.getItem("id")
+        const storedUserId = localStorage.getItem("id")
+        setUserId(storedUserId)
         if (!userId) {
           console.error("User ID not found in local storage")
           return
@@ -21,7 +23,7 @@ const LeftSidebar = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
+          body: JSON.stringify({ user_id: storedUserId }),
         })
 
         if (!response.ok) {

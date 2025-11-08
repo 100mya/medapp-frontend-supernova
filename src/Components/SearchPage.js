@@ -43,12 +43,13 @@ const SearchPage = () => {
 
         const profilesPromises = userIds.map(async (userId) => {
           try {
+            const id = localStorage.getItem("id")
             const userResponse = await fetch("/api/get-user-by-userid", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ user_id: userId }),
+              body: JSON.stringify({ user_id: id }),
             })
 
             if (!userResponse.ok) {

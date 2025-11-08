@@ -147,10 +147,14 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
         if (response.ok) {
           const userData = await response.json()
           setUserEmail(userData.email)
-          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
+          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+          if (storedSubscriptionStatus) {
+            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+          }
+
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userData.email}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
