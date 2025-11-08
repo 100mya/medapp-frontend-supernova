@@ -158,7 +158,7 @@ const QuestionsGenerator = () => {
             setIsSubscribed(JSON.parse(storedSubscriptionStatus))
           }
 
-          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userEmail}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${userEmail}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

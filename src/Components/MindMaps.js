@@ -154,7 +154,7 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
             setIsSubscribed(JSON.parse(storedSubscriptionStatus))
           }
 
-          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userData.email}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${userData.email}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

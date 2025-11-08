@@ -31,7 +31,7 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
           const userData = await response.json()
           setUserEmail(userData.email)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: userId }),
+        body: JSON.stringify({ email: userEmail }),
       })
 
       if (response.ok) {
@@ -93,7 +93,7 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
         body: JSON.stringify({
           filename: selectedFilename,
           note: noteText,
-          user_id: userId,
+          email: userEmail,
         }),
       })
 
@@ -119,7 +119,7 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filename, note, user_id: userId }),
+        body: JSON.stringify({ filename, note, email: userEmail }),
       })
 
       if (response.ok) {

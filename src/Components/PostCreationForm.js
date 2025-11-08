@@ -43,7 +43,7 @@ const PostCreationForm = () => {
     // 2) Build form data where user_id is the user's email (as required by other APIs)
     const hashtags = postText.match(/#[\w]+/g) || []
     const formData = new FormData()
-    formData.append("user_id", userEmail) // <-- send email as user_id
+    formData.append("email", userEmail) // <-- send email as user_id
     formData.append("text", postText)
     formData.append("title", "")
     formData.append("topics", JSON.stringify(hashtags))

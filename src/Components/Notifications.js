@@ -151,7 +151,7 @@ const Notifications = () => {
     useEffect(() => {
       const fetchUserName = async () => {
         try {
-          const response = await fetch("/api/get-user-by-userid", {
+          const response = await fetch("/api/get-user-by-useremail", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

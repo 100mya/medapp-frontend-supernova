@@ -30,10 +30,11 @@ const Post = ({ post }) => {
   // Fetch author/profile data (for the post owner)
   const fetchAuthorData = async (authorId) => {
     try {
+      const idFromStorage = localStorage.getItem("id")
       const response = await fetch("/api/get-user-by-userid", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: authorId }),
+        body: JSON.stringify({ user_id: idFromStorage }),
       })
       if (!response.ok) {
         const txt = await response.text().catch(() => null)
@@ -104,7 +105,7 @@ const Post = ({ post }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: post._id.$oid, user_id: userId }),
+        body: JSON.stringify({ post_id: post._id.$oid, email: userId }),
       })
       const data = await response.json()
       if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
@@ -128,7 +129,7 @@ const Post = ({ post }) => {
         body: JSON.stringify({
           post_id: post._id.$oid,
           reply_to_id: replyToId,
-          user_id: userId,
+          email: userId,
           text: replyText,
         }),
       })
@@ -136,7 +137,7 @@ const Post = ({ post }) => {
       if (data.message === "Reply added successfully") {
         const newReply = {
           _id: data.id,
-          user_id: userId,
+          email: userId,
           text: replyText,
           created_at: new Date().toISOString(),
           likes: [],
@@ -235,12 +236,13 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
   useEffect(() => {
     const fetchUserData = async (userId) => {
       try {
+        const idFromStorage = localStorage.getItem("id")
         const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
+          body: JSON.stringify({ user_id: idFromStorage }),
         })
         const data = await response.json()
         setReplyUserName(data.name)
@@ -313,7 +315,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         body: JSON.stringify({
           post_id: postId,
           reply_to_id: nestedReplyToId,
-          user_id: userId,
+          email: userId,
           text: replyText,
         }),
       })
@@ -322,7 +324,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
       if (data.message === "Reply added successfully") {
         const newReply = {
           _id: data.id,
-          user_id: userId,
+          email: userId,
           text: replyText,
           created_at: new Date().toISOString(),
           likes: [],

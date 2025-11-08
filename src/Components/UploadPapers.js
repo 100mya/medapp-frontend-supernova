@@ -40,7 +40,7 @@ const UploadPapers = () => {
       setIsLoggedIn(true)
 
       try {
-        const response = await fetch(`/api/get-filenames?user_id=${userId}`, {
+        const response = await fetch(`/api/get-filenames?email=${userId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -196,7 +196,7 @@ const UploadPapers = () => {
         throw new Error("Upload failed")
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -278,7 +278,7 @@ const UploadPapers = () => {
         throw new Error(errorResponse.error)
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
