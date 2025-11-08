@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm"
 import "./AIChat.css"
 
 const AIChat = () => {
+  const [userId, setUserId] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [filenames, setFilenames] = useState([])
   const [selectedFile, setSelectedFile] = useState("")
@@ -134,40 +135,43 @@ const AIChat = () => {
   ]
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
+    const handleLoginWithStoredId = async () => {
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+        const storedUserId = localStorage.getItem("id")
 
-        if (storedSubscriptionStatus) {
-          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-        }
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
-
-        const storedPlanStatus = localStorage.getItem("isPremiumPlan")
-        console.log(storedPlanStatus)
-        if (storedPlanStatus) {
-          setIsPremiumPlan(JSON.parse(storedPlanStatus))
+        if (!storedUserId) {
+          setIsLoggedIn(false)
+          return
         }
 
-        const loginResponse = await fetch("/api/login", {
+        setUserId(storedUserId)
+        setIsLoggedIn(true)
+
+        const userDetailsResponse = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: storedUserId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
-          setUserEmail(email)
-          setIsLoggedIn(true)
+        if (userDetailsResponse.ok) {
+          const userDetails = await userDetailsResponse.json()
+          const parsed = JSON.parse(userDetails)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+          setUserEmail(parsed?.email)
+
+          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+          if (storedSubscriptionStatus) {
+            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+          }
+
+          const storedPlanStatus = localStorage.getItem("isPremiumPlan")
+          if (storedPlanStatus) {
+            setIsPremiumPlan(JSON.parse(storedPlanStatus))
+          }
+
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(parsed?.email)}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -177,23 +181,22 @@ const AIChat = () => {
           if (filenamesResponse.ok) {
             const filenamesData = await filenamesResponse.json()
             setFilenames(filenamesData.filenames || [])
-          } else {
-            throw new Error("Failed to fetch filenames")
           }
         } else {
-          throw new Error("Failed to login with stored credentials")
+          setIsLoggedIn(false)
+          localStorage.removeItem("id")
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error logging in with stored id:", error)
+        setIsLoggedIn(false)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    handleLoginWithStoredId()
   }, [])
 
   const handleStream = async (url, formData) => {
     try {
-      // Abort any previous stream
       if (streamControllerRef.current) {
         try {
           streamControllerRef.current.abort()
@@ -224,20 +227,17 @@ const AIChat = () => {
       const decoder = new TextDecoder()
       let fullContent = ""
 
-      // Add bot message placeholder
       setMessages((prevMessages) => [...prevMessages, { type: "bot", content: "" }])
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        // Only process if this is still the current stream
         if (myRunId !== streamRunIdRef.current) return
 
         const chunk = decoder.decode(value, { stream: true })
         fullContent = chunk
 
-        // Update the last bot message with accumulated content
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages]
           if (updatedMessages.length > 0 && updatedMessages[updatedMessages.length - 1].type === "bot") {
@@ -251,7 +251,7 @@ const AIChat = () => {
         console.error("Error handling stream", error)
       }
     } finally {
-      const myRunId = streamRunIdRef.current // Declare myRunId here
+      const myRunId = streamRunIdRef.current
       if (myRunId === streamRunIdRef.current) {
         streamControllerRef.current = null
       }
@@ -263,7 +263,7 @@ const AIChat = () => {
     const formData = new FormData(event.target)
     formData.set("filename", selectedFile)
     formData.set("language", selectedLanguage)
-    formData.set("user_id", userEmail)
+    formData.set("user_id", userId)
 
     setMessages((prevMessages) => [...prevMessages, { type: "user", content: formData.get("prompt") }])
 

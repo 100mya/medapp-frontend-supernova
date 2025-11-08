@@ -1,6 +1,6 @@
 /* src/styles/PostCreationForm.css */
 .post-creation-form {
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   padding: 30px;
   margin: 20px;
@@ -24,7 +24,7 @@
   border: 0px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   resize: none;
-  background-color: #0a0e27;
+  background-color: #000;
   /* Very dark background */
   color: #d0d0d0;
   /* Light text */
@@ -42,7 +42,7 @@
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   /* Purple gradient button */
   color: white;
   font-size: 1rem;
@@ -57,7 +57,7 @@
 
 @media (max-width: 768px) {
   .post-creation-form {
-    background-color: #1a1f4d;
+    background-color: #270044;
     /* Dark background for mobile */
     padding: 20px;
     margin-left: 10px;
@@ -79,7 +79,7 @@
     border: 0px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     resize: none;
-    background-color: #0a0e27;
+    background-color: #000;
     /* Very dark background */
     color: #d0d0d0;
     /* Light text */
@@ -91,7 +91,7 @@
     padding: 10px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(90deg, #6610f2, #6f42c1);
+    background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
     /* Purple gradient */
     color: white;
     font-size: 0.8rem;

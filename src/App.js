@@ -24,117 +24,67 @@ import subscribedEmails from "./Components/subscribedEmails.json"
 
 function App() {
   const [showModal, setShowModal] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(true)
-  const [isSubscribed, setIsSubscribed] = useState(true)
-  const [isPremiumPlan, setIsPremiumPlan] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isPremiumPlan, setIsPremiumPlan] = useState(false)
   const [message, setMessage] = useState("")
   const [userEmail, setUserEmail] = useState(null)
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
+    const checkAuthAndFetchDetails = async () => {
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedInvitationCode = localStorage.getItem("invitation_code")
-        console.log(storedInvitationCode)
+        const storedUserId = localStorage.getItem("id")
 
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
+        if (!storedUserId) {
+          setIsLoggedIn(false)
+          return
         }
 
-        const { email, password } = JSON.parse(storedCredentials)
-        setUserEmail(email)
+        setIsLoggedIn(true)
 
-        const loginResponse = await fetch("/api/login", {
+        const userDetailsResponse = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: storedUserId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
-          setIsLoggedIn(true)
+        if (userDetailsResponse.ok) {
+          const userDetails = await userDetailsResponse.json()
+          const parsed = JSON.parse(userDetails)
 
-          // Fetch user details and subscription status
-          const fetchUserDetails = async () => {
-            try {
-              const userDetailsResponse = await fetch("/api/fetch-user-by-id", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email_id: email }),
-              })
+          setUserEmail(parsed?.email)
 
-              if (userDetailsResponse.ok) {
-                const userDetails = await userDetailsResponse.json()
-                const { invitation_code } = JSON.parse(userDetails)
-                const invitationCode = invitation_code
+          const status = parsed?.subscription_status
+          const plan = parsed?.plan
+          const invitation_code = parsed?.invitation_code
 
-                const { subscription_status } = JSON.parse(userDetails)
-                const status = subscription_status
+          const isSubscribedStatus = status === "active"
+          const isPremium = plan === "PREMIUM"
 
-                const { plan } = JSON.parse(userDetails)
-                const found_plan = plan
+          setIsPremiumPlan(isPremium)
+          setIsSubscribed(isSubscribedStatus)
 
-                setIsPremiumPlan(found_plan === "PREMIUM")
-                localStorage.setItem("isPremiumPlan", JSON.stringify(found_plan === "PREMIUM"))
-
-                console.log(status)
-
-                // Assuming the subscription status is part of the user details response
-                const isSubscribedStatus = status === "active"
-                setIsSubscribed(isSubscribedStatus)
-                localStorage.setItem("isSubscribed", JSON.stringify(isSubscribedStatus))
-                console.log("Fetched Subscription Status:", isSubscribedStatus)
-
-                // Check subscription status in the subscribedEmails list
-                if (!isSubscribedStatus) {
-                  if (subscribedEmails.includes(email.toLowerCase())) {
-                    setIsSubscribed(true)
-                    setIsPremiumPlan(found_plan === "PREMIUM")
-                    localStorage.setItem("isPremiumPlan", JSON.stringify(found_plan === "PREMIUM"))
-                    localStorage.setItem("isSubscribed", JSON.stringify(true))
-                    console.log("Email is in subscribedEmails list")
-                  } else if (storedInvitationCode) {
-                    const isValid = await validateInvitationCode(storedInvitationCode, email)
-                    console.log("Invitation Code Valid:", isValid)
-                    if (isValid) {
-                      setIsSubscribed(true)
-                      localStorage.setItem("isSubscribed", JSON.stringify(true))
-                      console.log("Invitation code is valid")
-                    }
-                  } else if (invitationCode) {
-                    const isValid = await validateInvitationCode(invitationCode, email)
-                    console.log("Invitation Code Valid:", isValid)
-                    if (isValid) {
-                      setIsSubscribed(true)
-                      localStorage.setItem("isSubscribed", JSON.stringify(true))
-                      console.log("Invitation code is valid")
-                    }
-                  } else {
-                    console.log("Invitation code is not valid")
-                  }
-                }
-              } else {
-                console.error("Failed to fetch user details")
+          if (!isSubscribedStatus) {
+            if (subscribedEmails.includes(parsed?.email?.toLowerCase())) {
+              setIsSubscribed(true)
+              setIsPremiumPlan(true)
+            } else if (invitation_code) {
+              const isValid = await validateInvitationCode(invitation_code, storedUserId)
+              if (isValid) {
+                setIsSubscribed(true)
               }
-            } catch (error) {
-              console.error("Error fetching user details:", error)
             }
           }
-
-          fetchUserDetails()
         } else {
-          throw new Error("Failed to login with stored credentials")
+          setIsLoggedIn(false)
+          localStorage.removeItem("id")
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
-        // Handle error, e.g., show error message, redirect to login page
+        console.error("Error checking auth:", error)
+        setIsLoggedIn(false)
       }
-      console.log("Final Subscription Status:", isSubscribed)
     }
 
     const validateInvitationCode = async (code, user_id) => {
@@ -149,26 +99,18 @@ function App() {
 
         const data = await response.json()
 
-        if (response.ok) {
-          if (data.success) {
-            setIsSubscribed(true)
-            localStorage.setItem("isSubscribed", "true")
-            console.log("Invitation code is valid")
-          } else {
-            console.log("Invitation code is not valid")
-          }
-          return data.success
-        } else {
-          console.error(`Error: ${data.message}`)
-          return false
+        if (response.ok && data.success) {
+          setIsSubscribed(true)
+          return true
         }
+        return false
       } catch (error) {
-        console.error("Error:", error)
+        console.error("Error validating invitation code:", error)
         return false
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchDetails()
   }, [])
 
   const handleGetStartedClick = () => {
@@ -180,11 +122,13 @@ function App() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("rx_chatbot_credentials")
+    localStorage.removeItem("id")
     localStorage.removeItem("follower_id")
     localStorage.removeItem("subscriptionID")
     localStorage.removeItem("invitation_code")
     localStorage.removeItem("isPremiumPlan")
+    localStorage.removeItem("isSubscribed")
+    localStorage.removeItem("isLoggedIn")
     setIsLoggedIn(false)
     window.location.href = "/"
     console.log("Logged out successfully")
@@ -202,11 +146,11 @@ function App() {
             path="/dashboard/*"
             element={<Dashboard isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} handleLogout={handleLogout} />}
           />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          {/*<Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />*/}
           <Route
             path="/community"
             element={<CommunityPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} handleLogout={handleLogout} />}
@@ -221,8 +165,8 @@ function App() {
             path="/community/notifications"
             element={<Notifications isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />}
           />
-          <Route path="/exam" element={<Exam isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
-          <Route path="/pricing" element={<Pricing isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
+          {/*<Route path="/exam" element={<Exam isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
+          <Route path="/pricing" element={<Pricing isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />*/}
           <Route path="/simulator" element={<SimulatorPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
           <Route path="/case-studies" element={<CaseStudyPage isLoggedIn={isLoggedIn} isSubscribed={isSubscribed} />} />
         </Routes>

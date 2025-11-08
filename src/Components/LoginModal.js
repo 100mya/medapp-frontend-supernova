@@ -29,16 +29,17 @@ function LoginModal({ onClose, onLoginSuccess }) {
         return
       }
 
-      // 2) Store credentials the same way App.js expects
-      localStorage.setItem("rx_chatbot_credentials", JSON.stringify({ email, password }))
+      const loginData = await response.json()
+
+      localStorage.setItem("id", loginData.user_id)
       localStorage.setItem("isLoggedIn", "true")
 
-      // 3) Fetch user details -> write isSubscribed / isPremiumPlan to localStorage
+      // 2) Fetch user details to set subscription flags
       try {
-        const userDetailsResponse = await fetch("/api/fetch-user-by-id", {
+        const userDetailsResponse = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email_id: email }),
+          body: JSON.stringify({ user_id: loginData.user_id }),
         })
 
         if (userDetailsResponse.ok) {
@@ -58,10 +59,9 @@ function LoginModal({ onClose, onLoginSuccess }) {
         }
       } catch (err) {
         console.error("Failed to fetch user details after login:", err)
-        // leave storage as-is; App.js will reconcile on next mount
       }
 
-      // 4) Bounce control to Header (will update UI and navigate if needed)
+      // 3) Notify parent component
       if (typeof onLoginSuccess === "function") onLoginSuccess()
     } catch (err) {
       setError("An error occurred. Please try again.")

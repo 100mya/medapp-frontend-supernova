@@ -129,50 +129,46 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
   ]
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
+      }
+
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-
-        if (storedSubscriptionStatus) {
-          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-        }
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
-
-        const loginResponse = await fetch("/api/login", {
+        const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: userId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
+        if (response.ok) {
+          const userData = await response.json()
+          setUserEmail(userData.email)
+          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
-          setUserEmail(email)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           })
-          const filenamesData = await filenamesResponse.json()
-          setFilenames(filenamesData.filenames || [])
-        } else {
-          throw new Error("Failed to login with stored credentials")
+
+          if (filenamesResponse.ok) {
+            const filenamesData = await filenamesResponse.json()
+            setFilenames(filenamesData.filenames || [])
+          }
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error fetching user:", error)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchUser()
   }, [])
 
   useEffect(() => {
@@ -196,6 +192,7 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
     setIsLoading(true)
 
     try {
+      const userId = localStorage.getItem("id")
       const response = await fetch("/api/ai-generated-notes", {
         method: "POST",
         headers: {
@@ -204,7 +201,7 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
         body: JSON.stringify({
           filename: selectedFile,
           language: selectedLanguage,
-          email: userEmail,
+          user_id: userId,
           content: userMessage,
         }),
       })
@@ -285,10 +282,10 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
   }
 
   const handleClearWindow = () => {
-    localStorage.removeItem(chatMessages)
-    localStorage.removeItem(userMessage)
-    localStorage.removeItem(selectedFile)
-    localStorage.removeItem(selectedLanguage)
+    localStorage.removeItem("chatMessages")
+    localStorage.removeItem("userMessage")
+    localStorage.removeItem("selectedFile")
+    localStorage.removeItem("selectedLanguage")
   }
 
   const handleCopy = (text) => {
@@ -301,7 +298,7 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
         Generate <span>Notes</span>
       </h1>
       <p>Prompt out the content in the text area and generate notes</p>
-      {1 ? (
+      {isLoggedIn && isSubscribed ? (
         <div className="wl-NotesGenerator-chat-container-dark">
           <div className="wl-NotesGenerator-chat-dark">
             {chatMessages.map((message, index) => (

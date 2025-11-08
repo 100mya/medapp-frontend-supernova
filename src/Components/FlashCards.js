@@ -10,13 +10,13 @@ const Flashcards = () => {
   const [flashcards, setFlashcards] = useState({})
   const [loading, setLoading] = useState(false)
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState("en")
   const [showPopup, setShowPopup] = useState(false)
   const [selectedFlashcardIndex, setSelectedFlashcardIndex] = useState(null)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [title, setTitle] = useState("")
   const [tags, setTags] = useState("")
-  const [cardText, setCardText] = useState("")
+  const [cardText, setCardText] = useState("") // Declare cardText variable
 
   const languages = [
     { code: "en", name: "English" },
@@ -130,40 +130,29 @@ const Flashcards = () => {
   ]
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
+      }
+
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-
-        if (storedSubscriptionStatus) {
-          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-        }
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
-
-        {/*const storedPlanStatus = localStorage.getItem("isPremiumPlan")
-        console.log(storedPlanStatus)
-        if (storedPlanStatus) {
-          setIsPremiumPlan(JSON.parse(storedPlanStatus))
-        }*/}
-
-        const loginResponse = await fetch("/api/login", {
+        const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: userId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
-          setUserEmail(email)
+        if (response.ok) {
+          const userData = await response.json()
+          setUserEmail(userData.email)
+          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -173,71 +162,35 @@ const Flashcards = () => {
           if (filenamesResponse.ok) {
             const filenamesData = await filenamesResponse.json()
             setFilenames(filenamesData.filenames || [])
-          } else {
-            throw new Error("Failed to fetch filenames")
           }
-        } else {
-          throw new Error("Failed to login with stored credentials")
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error fetching user:", error)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchUser()
   }, [])
-
-  useEffect(() => {
-    const savedCredentials = localStorage.getItem("rx_chatbot_credentials")
-    if (savedCredentials) {
-      const { email } = JSON.parse(savedCredentials)
-      setUserEmail(email)
-    }
-  }, [])
-
-  useEffect(() => {
-    const fetchFilenames = async () => {
-      if (userEmail) {
-        try {
-          const response = await fetch(`/api/get-filenames?email=${encodeURIComponent(userEmail)}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          const data = await response.json()
-          setFilenames(data.filenames)
-        } catch (error) {
-          console.error("Error fetching filenames:", error)
-        }
-      }
-    }
-
-    fetchFilenames()
-  }, [userEmail])
 
   const generateFlashcards = async () => {
     if (selectedFile) {
       setLoading(true)
       try {
+        const userId = localStorage.getItem("id")
         const response = await fetch("/api/generate-flashcards", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userEmail, filename: selectedFile, language: selectedLanguage }),
+          body: JSON.stringify({ user_id: userId, filename: selectedFile, language: selectedLanguage }),
         })
         const data = await response.json()
 
         if (data && data.flashcards) {
           setFlashcards(data.flashcards)
-        } else {
-          console.error("Failed to fetch flashcards:", data)
-          setFlashcards({})
         }
       } catch (error) {
         console.error("Error generating flashcards:", error)
-        setFlashcards({})
       } finally {
         setLoading(false)
       }
@@ -295,58 +248,58 @@ const Flashcards = () => {
       </h1>
       {isLoggedIn && isSubscribed ? (
         <div className="wl-FlashCard-form-dark">
-        <label className="wl-FlashCard-label-dark">Select Document</label>
-        <select
-          className="wl-FlashCard-select-dark"
-          value={selectedFile}
-          onChange={(e) => setSelectedFile(e.target.value)}
-        >
-          <option value="">Select a file</option>
-          {filenames.map((filename, index) => (
-            <option key={index} value={filename}>
-              {filename}
-            </option>
-          ))}
-        </select>
+          <label className="wl-FlashCard-label-dark">Select Document</label>
+          <select
+            className="wl-FlashCard-select-dark"
+            value={selectedFile}
+            onChange={(e) => setSelectedFile(e.target.value)}
+          >
+            <option value="">Select a file</option>
+            {filenames.map((filename, index) => (
+              <option key={index} value={filename}>
+                {filename}
+              </option>
+            ))}
+          </select>
 
-        <label className="wl-FlashCard-label-dark">Select Language</label>
-        <select className="wl-FlashCard-select-dark" value={selectedLanguage} onChange={handleLanguageChange}>
-          {languages.map(({ code, name }) => (
-            <option key={code} value={code}>
-              {name}
-            </option>
-          ))}
-        </select>
+          <label className="wl-FlashCard-label-dark">Select Language</label>
+          <select className="wl-FlashCard-select-dark" value={selectedLanguage} onChange={handleLanguageChange}>
+            {languages.map(({ code, name }) => (
+              <option key={code} value={code}>
+                {name}
+              </option>
+            ))}
+          </select>
 
-        <button className="wl-FlashCard-button-dark" onClick={generateFlashcards} disabled={loading}>
-          {loading ? "Generating Flashcards..." : "Generate Flashcards"}
-        </button>
+          <button className="wl-FlashCard-button-dark" onClick={generateFlashcards} disabled={loading}>
+            {loading ? "Generating Flashcards..." : "Generate Flashcards"}
+          </button>
 
-        {Object.keys(flashcards).length > 0 && (
-          <div className="wl-FlashCard-results-dark">
-            <div className="wl-FlashCard-item-container-dark">
-              {Object.entries(flashcards).map(([key, flashcard], index) => (
-                <div key={index} className="wl-FlashCard-item-dark">
-                  <div className="wl-FlashCard-inner-dark">
-                    <div className="wl-FlashCard-front-dark">
-                      <p>{flashcard.Question}</p>
+          {Object.keys(flashcards).length > 0 && (
+            <div className="wl-FlashCard-results-dark">
+              <div className="wl-FlashCard-item-container-dark">
+                {Object.entries(flashcards).map(([key, flashcard], index) => (
+                  <div key={index} className="wl-FlashCard-item-dark">
+                    <div className="wl-FlashCard-inner-dark">
+                      <div className="wl-FlashCard-front-dark">
+                        <p>{flashcard.Question}</p>
+                      </div>
+                      <div className="wl-FlashCard-back-dark">
+                        <p>{flashcard.Answer}</p>
+                      </div>
                     </div>
-                    <div className="wl-FlashCard-back-dark">
-                      <p>{flashcard.Answer}</p>
-                    </div>
+                    <button
+                      className="wl-FlashCard-save-dark"
+                      onClick={() => handleSaveFlashcard(JSON.stringify(flashcard), index)}
+                    >
+                      Save
+                    </button>
                   </div>
-                  <button
-                    className="wl-FlashCard-save-dark"
-                    onClick={() => handleSaveFlashcard(JSON.stringify(flashcard), index)}
-                  >
-                    Save
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       ) : (
         <div>Please login and subscribe to generate Flashcards.</div>
       )}

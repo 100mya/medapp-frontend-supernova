@@ -1,77 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import './LeftSidebar.css';
-import defaultProfilePic from './default.jpeg'; // Adjust the path as necessary
+"use client"
+
+import { useEffect, useState } from "react"
+import "./LeftSidebar.css"
+import defaultProfilePic from "./default.jpeg"
 
 const LeftSidebar = () => {
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState(null)
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const storedData = localStorage.getItem('rx_chatbot_credentials');
-        if (storedData) {
-          const { email } = JSON.parse(storedData);
-          localStorage.setItem('follower_id', email);
-          const response = await fetch('/api/fetch-user-by-id', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email_id: email }),
-          });
+        const userId = localStorage.getItem("id")
+        if (!userId) {
+          console.error("User ID not found in local storage")
+          return
+        }
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch user information');
+        const response = await fetch("/api/get-user-by-userid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user information")
+        }
+
+        const userData = await response.json()
+
+        if (userData && !userData.error) {
+          const user = {
+            name: userData.name || "",
+            email: userData.email || "",
+            cellNumber: userData.cellNumber || "",
+            collegeName: userData.collegeName || "",
+            country: userData.country || "",
+            bio: userData.bio || "",
+            profilePic: getProfilePicUrl(userData.profilePic, userData.profilePicType),
+            followersCount: Array.isArray(userData.followers) ? userData.followers.length : 0,
+            followingCount: Array.isArray(userData.following) ? userData.following.length : 0,
           }
 
-          const userd = await response.json(); // Parse response as JSON
-          const userData = JSON.parse(userd);
-
-          if (userData && !userData.error) {
-            const user = {
-              name: userData.name || '',
-              email: userData.email || '',
-              cellNumber: userData.cellNumber || '',
-              collegeName: userData.collegeName || '',
-              country: userData.country || '',
-              bio: userData.bio || '',
-              profilePic: getProfilePicUrl(userData.profilePic, userData.profilePicType), // Get profile pic URL based on type
-              followersCount: Array.isArray(userData.followers) ? userData.followers.length : 0,
-              followingCount: Array.isArray(userData.following) ? userData.following.length : 0,
-            };
-
-            setUserInfo(user);
-          } else {
-            throw new Error(userData.error || 'User data format is incorrect');
-          }
+          setUserInfo(user)
         } else {
-          throw new Error('No stored data found in local storage');
+          throw new Error(userData.error || "User data format is incorrect")
         }
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error("Error fetching user info:", error)
       }
-    };
+    }
 
-    fetchUserInfo();
-  }, []);
+    fetchUserInfo()
+  }, [])
 
-  // Function to generate media URL based on type
   const getProfilePicUrl = (profilePic, profilePicType) => {
     if (profilePic) {
-      return `data:image/jpeg;base64,${profilePic}`; // Assuming profilePic is base64 encoded JPEG
+      return `data:image/jpeg;base64,${profilePic}`
     } else {
-      return defaultProfilePic; // Fallback to default profile picture
+      return defaultProfilePic
     }
-  };
-
-  
+  }
 
   return (
     <div className="left-sidebar">
       {userInfo && (
         <div className="profiles-info">
           <div className="profiles-header">
-            <img src={userInfo.profilePic} alt="Profile" className="profile-pic" />
+            <img src={userInfo.profilePic || "/placeholder.svg"} alt="Profile" className="profile-pic" />
             <h3>{userInfo.name}</h3>
             <p className="profiles-email">{userInfo.email}</p>
           </div>
@@ -90,7 +87,7 @@ const LeftSidebar = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LeftSidebar;
+export default LeftSidebar

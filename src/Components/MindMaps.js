@@ -128,40 +128,29 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
   ]
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
+      }
+
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-
-        if (storedSubscriptionStatus) {
-          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-        }
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
-
-        {/*const storedPlanStatus = localStorage.getItem("isPremiumPlan")
-        console.log(storedPlanStatus)
-        if (storedPlanStatus) {
-          setIsPremiumPlan(JSON.parse(storedPlanStatus))
-        }*/}
-
-        const loginResponse = await fetch("/api/login", {
+        const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: userId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
-          setUserEmail(email)
+        if (response.ok) {
+          const userData = await response.json()
+          setUserEmail(userData.email)
+          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -171,86 +160,40 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
           if (filenamesResponse.ok) {
             const filenamesData = await filenamesResponse.json()
             setFilenames(filenamesData.filenames || [])
-          } else {
-            throw new Error("Failed to fetch filenames")
           }
-        } else {
-          throw new Error("Failed to login with stored credentials")
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error fetching user:", error)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchUser()
   }, [])
-
-  useEffect(() => {
-    const savedCredentials = localStorage.getItem("rx_chatbot_credentials")
-    if (savedCredentials) {
-      const { email } = JSON.parse(savedCredentials)
-      setUserEmail(email)
-    }
-  }, [])
-
-  useEffect(() => {
-    const fetchFilenames = async () => {
-      if (userEmail) {
-        try {
-          const response = await fetch(`/api/get-filenames?email=${encodeURIComponent(userEmail)}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          const data = await response.json()
-          setFilenames(data.filenames)
-        } catch (error) {
-          console.error("Error fetching filenames:", error)
-        }
-      }
-    }
-
-    fetchFilenames()
-  }, [userEmail])
 
   const generateMindMap = async () => {
     if (selectedFile) {
       setLoading(true)
       try {
+        const userId = localStorage.getItem("id")
         const response = await fetch("/api/generate-mind-map", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userEmail, filename: selectedFile, language: selectedLanguage }),
+          body: JSON.stringify({ user_id: userId, filename: selectedFile, language: selectedLanguage }),
         })
         const data = await response.json()
-        const bytes_dict = data.mind_map_image_bytes
-        console.log("Mind Map Data:", data)
 
-        if (bytes_dict && typeof bytes_dict === "object") {
-          const imageUrls = Object.entries(bytes_dict).map(([title, imageBytes]) => ({
+        if (data.mind_map_image_bytes && typeof data.mind_map_image_bytes === "object") {
+          const imageUrls = Object.entries(data.mind_map_image_bytes).map(([title, imageBytes]) => ({
             title,
             url: `data:image/png;base64,${imageBytes}`,
           }))
-
           setMindMapImages(imageUrls)
-          setZoomLevels(
-            imageUrls.reduce((acc, { title }) => {
-              acc[title] = 1
-              return acc
-            }, {}),
-          )
-
           onMindMapGenerated(imageUrls)
-        } else {
-          console.error("Failed to fetch mind map:", data)
-          setMindMapImages([])
         }
       } catch (error) {
         console.error("Error generating mind map:", error)
-        setMindMapImages([])
       } finally {
         setLoading(false)
       }
@@ -294,42 +237,42 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
         Mind Map <span>Generator</span>
       </h1>
       {isLoggedIn && isSubscribed ? (
-      <div className="wl-MindMapGenerator-form-dark">
-        <label style={{ color: "#e0e0e0" }}>Select Document</label>
-        <select
-          id="filename"
-          name="filename"
-          className="wl-MindMapGenerator-select-dark"
-          value={selectedFile}
-          onChange={(e) => setSelectedFile(e.target.value)}
-        >
-          <option value="">Select a file</option>
-          {filenames.map((filename, index) => (
-            <option key={index} value={filename}>
-              {filename}
-            </option>
-          ))}
-        </select>
-        <label style={{ color: "#e0e0e0" }}>Select Language</label>
-        <select
-          id="language"
-          name="language"
-          className="wl-MindMapGenerator-select-dark"
-          value={selectedLanguage}
-          onChange={handleLanguageChange}
-        >
-          {languages.map((language) => (
-            <option key={language.code} value={language.name}>
-              {language.name}
-            </option>
-          ))}
-        </select>
-        <button className="wl-MindMapGenerator-button-dark" onClick={generateMindMap} disabled={loading}>
-          {loading ? "Generating Mind Map..." : "Generate Mind Map"}
-        </button>
-      </div>
+        <div className="wl-MindMapGenerator-form-dark">
+          <label style={{ color: "#e0e0e0" }}>Select Document</label>
+          <select
+            id="filename"
+            name="filename"
+            className="wl-MindMapGenerator-select-dark"
+            value={selectedFile}
+            onChange={(e) => setSelectedFile(e.target.value)}
+          >
+            <option value="">Select a file</option>
+            {filenames.map((filename, index) => (
+              <option key={index} value={filename}>
+                {filename}
+              </option>
+            ))}
+          </select>
+          <label style={{ color: "#e0e0e0" }}>Select Language</label>
+          <select
+            id="language"
+            name="language"
+            className="wl-MindMapGenerator-select-dark"
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+          >
+            {languages.map((language) => (
+              <option key={language.code} value={language.name}>
+                {language.name}
+              </option>
+            ))}
+          </select>
+          <button className="wl-MindMapGenerator-button-dark" onClick={generateMindMap} disabled={loading}>
+            {loading ? "Generating Mind Map..." : "Generate Mind Map"}
+          </button>
+        </div>
       ) : (
-        <div >Please login and subscribe to generate Mind Maps.</div>
+        <div>Please login and subscribe to generate Mind Maps.</div>
       )}
       {mindMapImages.length > 0 && (
         <div className="wl-MindMapGenerator-images-container-dark">

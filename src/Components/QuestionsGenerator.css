@@ -4,7 +4,7 @@
   margin: 20px;
   padding: 20px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #0f1535 0%, #1a1f4d 100%);
+  background: linear-gradient(135deg, #000 0%, #270044 100%);
   box-shadow: 0 2px 4px rgba(102, 16, 242, 0.15);
   border: 1px solid rgba(102, 16, 242, 0.2);
 }
@@ -18,7 +18,7 @@
 }
 
 .wl-QuestionsGenerator-title-dark span {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -38,7 +38,7 @@
   padding: 10px;
   border: 1px solid #6610f2;
   border-radius: 10px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #ffffff;
   cursor: pointer;
   transition: all 0.3s;
@@ -52,7 +52,7 @@
 
 .wl-QuestionsGenerator-button-dark {
   padding: 10px 20px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -94,7 +94,7 @@
 }
 
 .wl-QuestionsGenerator-option-dark {
-  background: #1a1f4d;
+  background: #270044;
   padding: 10px;
   margin-bottom: 5px;
   border-radius: 5px;
@@ -118,7 +118,7 @@
 }
 
 .wl-QuestionsGenerator-option-dark.wl-incorrect-dark {
-  background: #1a1f4d;
+  background: #270044;
   color: #e0e0e0;
 }
 
@@ -172,12 +172,12 @@
   border: 1px solid #6610f2;
   border-radius: 4px;
   font-size: 1rem;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #ffffff;
 }
 
 .wl-QuestionsGenerator-popup-content-dark button {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   padding: 10px 20px;

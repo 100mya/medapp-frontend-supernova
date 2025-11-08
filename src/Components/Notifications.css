@@ -8,7 +8,7 @@
 }
 
 .right-sidebar-notifications {
-  background-color: #0a0e27;
+  background-color: #000;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   margin-top: 0;
   z-index: 100;
@@ -17,7 +17,7 @@
 .notifications-container-notifications {
   display: flex;
   flex-direction: column;
-  background-color: #1a1f4d;
+  background-color: #270044;
   margin: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border-radius: 20px;

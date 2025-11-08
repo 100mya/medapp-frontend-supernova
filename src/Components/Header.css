@@ -68,11 +68,11 @@
 }
 
 .supernova-login-button-header {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #ffffff;
   border: none;
   padding: 10px 24px;
-  border-radius: 6px;
+  border-radius: 20px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;

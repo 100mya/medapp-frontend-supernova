@@ -132,79 +132,46 @@ const QuestionsGenerator = () => {
   ]
 
   useEffect(() => {
-    const savedCredentials = localStorage.getItem("rx_chatbot_credentials")
-    if (savedCredentials) {
-      const { email } = JSON.parse(savedCredentials)
-      setUserEmail(email)
-    }
-  }, [])
-
-  useEffect(() => {
-    const fetchFilenames = async () => {
-      if (userEmail) {
-        try {
-          const response = await fetch(`/api/get-filenames?email=${encodeURIComponent(userEmail)}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          const data = await response.json()
-          setFilenames(data.filenames)
-        } catch (error) {
-          console.error("Error fetching filenames:", error)
-        }
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
       }
-    }
 
-    fetchFilenames()
-  }, [userEmail])
-
-  useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-
-        if (storedSubscriptionStatus) {
-          setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-        }
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
-
-        const loginResponse = await fetch("/api/login", {
+        const response = await fetch("/api/get-user-by-userid", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ user_id: userId }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
+        if (response.ok) {
+          const userData = await response.json()
+          setUserEmail(userData.email)
+          setIsSubscribed(userData.subscription_status === true)
           setIsLoggedIn(true)
-          setUserEmail(email)
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           })
-          const filenamesData = await filenamesResponse.json()
-          setFilenames(filenamesData.filenames || [])
-        } else {
-          throw new Error("Failed to login with stored credentials")
+
+          if (filenamesResponse.ok) {
+            const filenamesData = await filenamesResponse.json()
+            setFilenames(filenamesData.filenames || [])
+          }
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error fetching user:", error)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchUser()
   }, [])
 
   const generateQuiz = async () => {
@@ -217,13 +184,14 @@ const QuestionsGenerator = () => {
     if (selectedFile) {
       setLoading(true)
       try {
+        const userId = localStorage.getItem("id")
         const response = await fetch("/api/get-quiz", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: userEmail,
+            user_id: userId,
             filename: selectedFile,
             language: selectedLanguage,
             number_of_questions: validNumberOfQuestions,

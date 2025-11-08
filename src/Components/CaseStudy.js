@@ -1,7 +1,7 @@
 "use client"
 
 //CaseStudy.js
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import "./CaseStudy.css"
 import historyTakingData from "./CaseStudy/HistoryTaking.json"
@@ -31,6 +31,8 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
   const [response, setResponse] = useState("")
   const location = useLocation()
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
 
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedItems, setSelectedItems] = useState({})
@@ -44,6 +46,40 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
   const [isReportGenerating, setIsReportGenerating] = useState(false)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
+      }
+
+      try {
+        const response = await fetch("/api/get-user-by-userid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId }),
+        })
+
+        if (response.ok) {
+          const userData = await response.json()
+          setIsSubscribed(userData.subscription_status === true)
+          setIsLoggedIn(true)
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error)
+      }
+    }
+
+    checkAuthAndFetchUser()
+  }, [])
+
+  if (!isLoggedIn || !isSubscribed) {
+    return <div>Please login and subscribe to access case studies.</div>
+  }
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(selectedCategory === category ? null : category)

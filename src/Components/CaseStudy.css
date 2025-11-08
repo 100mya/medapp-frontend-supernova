@@ -1,6 +1,6 @@
 /* Updated to match dashboard dark theme with purple/pink accent colors */
 .case-study {
-  background-color: #0a0e27;
+  background-color: #000;
   padding: 20px;
   height: calc(100vh - 80px);
   overflow-y: auto;
@@ -38,7 +38,7 @@
 }
 
 .case-study button {
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #d0d0d0;
   border: 1px solid rgba(102, 16, 242, 0.2);
   border-radius: 4px;
@@ -54,7 +54,7 @@
 }
 
 .case-study button:hover {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border-color: #6610f2;
 }
@@ -88,7 +88,7 @@
   font-size: 14px;
   cursor: pointer;
   padding: 20px 40px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #d0d0d0;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .case-study .submit-button {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -155,7 +155,7 @@
 
 .card {
   align-items: center;
-  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(135deg, #270044 0%, #0f1535 100%);
   border-radius: 8px;
   padding: 20px;
   width: 35%;
@@ -190,7 +190,7 @@ button:disabled {
 }
 
 button:disabled:hover {
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #7e7e7e;
 }
 
@@ -207,7 +207,7 @@ button:disabled:hover {
 }
 
 .popup-content {
-  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(135deg, #270044 0%, #0f1535 100%);
   padding: 30px;
   padding-bottom: 50px;
   border-radius: 10px;
@@ -220,7 +220,7 @@ button:disabled:hover {
 .popup-button button {
   margin-top: 0px;
   padding: 10px 20px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: white;
   border: none;
   border-radius: 20px;
@@ -248,7 +248,7 @@ button:disabled:hover {
 }
 
 .cs-report-popup-modal {
-  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(135deg, #270044 0%, #0f1535 100%);
   width: 85vw;
   max-width: 900px;
   max-height: 85vh;
@@ -261,7 +261,7 @@ button:disabled:hover {
 }
 
 .cs-report-popup-header {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   padding: 20px;
   border-bottom: 1px solid rgba(102, 16, 242, 0.2);
 }
@@ -327,7 +327,7 @@ button:disabled:hover {
 
 .cs-report-close-button {
   padding: 12px 30px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #ffffff;
   border: none;
   border-radius: 25px;

@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #0a0e27;
+  background-color: #000;
   min-height: 100vh;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .case-page-card {
-  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(135deg, #330044 0%, #0f1535 100%);
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(102, 16, 242, 0.2);
   overflow: hidden;
@@ -75,7 +75,7 @@
 }
 
 .case-page-card-button {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 20px;

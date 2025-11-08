@@ -19,7 +19,7 @@
 }
 
 .wl-FlashCard-title-dark span {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -58,13 +58,13 @@
 }
 
 .wl-FlashCard-select-dark option {
-  background-color: #0a0e27;
+  background-color: #000;
   color: #ffffff;
 }
 
 .wl-FlashCard-button-dark {
   padding: 10px 20px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -146,7 +146,7 @@
 }
 
 .wl-FlashCard-back-dark {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   transform: rotateY(180deg);
   display: flex;
@@ -158,7 +158,7 @@
 
 .wl-FlashCard-save-dark {
   margin-top: 10px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -188,7 +188,7 @@
 }
 
 .wl-QuestionsGenerator-popup-content-dark {
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1f4d 100%);
+  background: linear-gradient(135deg, #000 0%, #270044 100%);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 8px 32px rgba(102, 16, 242, 0.3);
@@ -236,7 +236,7 @@
 }
 
 .wl-QuestionsGenerator-popup-content-dark button:first-of-type {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
 }
 

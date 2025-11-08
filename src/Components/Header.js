@@ -16,45 +16,25 @@ function Header() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // --- Bootstrap: try auto-login using stored credentials and mirror App.js behavior
   useEffect(() => {
     const attemptAutoLogin = async () => {
       try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        if (!storedCredentials) {
+        const storedUserId = localStorage.getItem("id")
+
+        if (!storedUserId) {
           setIsLoggedIn(false)
-          setIsSubscribed(localStorage.getItem("isSubscribed") === "true")
+          setIsSubscribed(false)
           return
         }
 
-        const { email, password } = JSON.parse(storedCredentials || "{}")
-        if (!email || !password) {
-          setIsLoggedIn(false)
-          return
-        }
-
-        // Login with stored credentials
-        const loginResp = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        })
-
-        if (!loginResp.ok) {
-          setIsLoggedIn(false)
-          return
-        }
-
-        // Mark logged-in
-        localStorage.setItem("isLoggedIn", "true")
         setIsLoggedIn(true)
 
-        // Fetch user details to compute subscription flags (mirrors App.js)
+        // Fetch user details to get subscription status
         try {
-          const userDetailsResponse = await fetch("/api/fetch-user-by-id", {
+          const userDetailsResponse = await fetch("/api/get-user-by-userid", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email_id: email }),
+            body: JSON.stringify({ user_id: storedUserId }),
           })
 
           if (userDetailsResponse.ok) {
@@ -63,19 +43,17 @@ function Header() {
 
             const status = parsed?.subscription_status
             const plan = parsed?.plan
-            const invitation_code = parsed?.invitation_code
 
             const isSubscribedStatus = status === "active"
             const isPremium = plan === "PREMIUM"
 
             localStorage.setItem("isSubscribed", JSON.stringify(isSubscribedStatus))
             localStorage.setItem("isPremiumPlan", JSON.stringify(isPremium))
-            if (invitation_code) localStorage.setItem("invitation_code", invitation_code)
 
             setIsSubscribed(isSubscribedStatus)
           } else {
-            // Fallback to whatever was already in storage
-            setIsSubscribed(localStorage.getItem("isSubscribed") === "true")
+            setIsLoggedIn(false)
+            localStorage.removeItem("id")
           }
         } catch (err) {
           console.error("Failed to fetch user details:", err)
@@ -91,7 +69,6 @@ function Header() {
     attemptAutoLogin()
   }, [])
 
-  // If user is on /dashboard and not logged in, auto-open login modal after bootstrap
   useEffect(() => {
     if (!bootstrapped) return
     const onDashboard = location.pathname.startsWith("/dashboard")
@@ -101,11 +78,10 @@ function Header() {
   }, [bootstrapped, isLoggedIn, location.pathname])
 
   const handleDashboardClick = (e) => {
-    const subscriptionStatus = localStorage.getItem("isSubscribed") === "true"
     if (!isLoggedIn) {
       e.preventDefault()
       setShowLoginModal(true)
-    } 
+    }
   }
 
   const toggleNav = () => {
@@ -113,13 +89,11 @@ function Header() {
   }
 
   const handleLoginSuccess = () => {
-    // Read the latest values that LoginModal just wrote
     setIsLoggedIn(true)
     setIsSubscribed(localStorage.getItem("isSubscribed") === "true")
     setShowLoginModal(false)
     setIsNavOpen(false)
 
-    // If user opened dashboard directly, keep them there; otherwise navigate to default dashboard page
     if (location.pathname.startsWith("/dashboard")) {
       // stay put
     } else {
@@ -131,18 +105,15 @@ function Header() {
     try {
       await fetch("/api/logout", { method: "POST" })
     } catch (e) {
-      // Even if logout API fails, proceed to clear on client
       console.error("Logout API error:", e)
     } finally {
-      // Clear everything we set anywhere
-      localStorage.removeItem("rx_chatbot_credentials")
+      localStorage.removeItem("id")
       localStorage.removeItem("follower_id")
       localStorage.removeItem("subscriptionID")
       localStorage.removeItem("invitation_code")
       localStorage.removeItem("isPremiumPlan")
       localStorage.removeItem("isSubscribed")
       localStorage.removeItem("isLoggedIn")
-      // Full refresh to reset app state cleanly
       window.location.reload()
     }
   }
@@ -206,9 +177,7 @@ function Header() {
         </div>
       </header>
 
-      {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={handleLoginSuccess} />
-      )}
+      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
     </>
   )
 }

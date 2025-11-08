@@ -4,7 +4,7 @@
   right: 0;
   width: 300px;
   height: calc(100% - 50px);
-  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  background: linear-gradient(180deg, #000, #270044);
   /* Dark gradient background */
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   padding: 0px;
@@ -16,7 +16,7 @@
 
 .right-sidebar-notifications {
   height: calc(100% - 50px);
-  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  background: linear-gradient(180deg, #270044, #0f1535);
   /* Dark gradient */
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
 }
@@ -33,7 +33,7 @@
 .notifications-container {
   display: flex;
   flex-direction: column;
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   margin: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -49,7 +49,7 @@
 }
 
 .notification-item {
-  background-color: #0a0e27;
+  background-color: #000;
   /* Very dark background for items */
   margin-bottom: 15px;
   padding: 10px;
@@ -114,7 +114,7 @@
 .nav-links {
   display: flex;
   flex-direction: column;
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   margin: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

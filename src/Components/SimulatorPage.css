@@ -5,7 +5,7 @@
 
 .left-window {
   width: 10%;
-  background-color: #0f1535;
+  background-color: #230f35;
   color: #d0d0d0;
   padding: 10px;
 }
@@ -34,7 +34,7 @@
 
 .middle-window {
   width: 50%;
-  background-color: #0a0e27;
+  background-color: #000;
   color: #d0d0d0;
   overflow-y: auto;
   padding: 20px;
@@ -42,7 +42,7 @@
 
 .right-window {
   width: 40%;
-  background-color: #1a1f4d;
+  background-color: #270044;
   padding: 20px;
   color: #d0d0d0;
   overflow-y: auto;
@@ -91,7 +91,7 @@
 
 /* Bot message styling */
 .cs-bot-response {
-  background-color: #1a1f4d;
+  background-color: #351a4d;
   align-self: flex-start;
   width: 80%;
   text-align: left;

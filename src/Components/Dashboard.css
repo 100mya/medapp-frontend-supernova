@@ -5,12 +5,12 @@
   flex-direction: column;
   height: 100vh;
   font-family: "Segoe UI", sans-serif;
-  background-color: #0a0e27;
+  background-color: #000;
 }
 
 .wl-sidebar-dark {
   width: 210px;
-  background: linear-gradient(180deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(180deg, #000 0%, #270044 100%);
   padding: 20px;
   color: #d0d0d0;
   display: flex;
@@ -53,7 +53,7 @@
 
 .wl-sidebar-dark a:hover,
 .wl-sidebar-dark a.active {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   transform: translateX(5px);
   box-shadow: 0 4px 12px rgba(102, 16, 242, 0.4);
@@ -73,7 +73,7 @@
   flex: 1;
   margin-left: 250px;
   padding: 20px;
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1f4d 100%);
+  background: linear-gradient(135deg, #000 0%, #270044 100%);
   color: #d0d0d0;
   overflow-y: auto;
   position: relative;
@@ -104,7 +104,7 @@
   right: 0px;
   transform: translateY(-50%);
   padding: 5px 10px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 5px 0 0 5px;
@@ -132,7 +132,7 @@
   top: 60px;
   left: 0px;
   padding: 13px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #9d4edd;
   border: none;
   cursor: pointer;
@@ -147,7 +147,7 @@
 }
 
 .wl-toggle-sidebar-button-dark:hover {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
 }
 

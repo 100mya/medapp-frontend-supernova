@@ -12,60 +12,78 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
   const [message, setMessage] = useState("")
 
   useEffect(() => {
-    const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-    if (storedCredentials) {
-      const { email } = JSON.parse(storedCredentials)
-      setUserEmail(email)
-      fetchFilenames(email)
-      fetchNotes(email)
-    } else {
-      console.error("User credentials not found in localStorage")
+    const checkAuthAndFetchUser = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        return
+      }
+
+      try {
+        const response = await fetch("/api/get-user-by-userid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id: userId }),
+        })
+
+        if (response.ok) {
+          const userData = await response.json()
+          setUserEmail(userData.email)
+
+          const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+
+          if (filenamesResponse.ok) {
+            const filenamesData = await filenamesResponse.json()
+            setFilenames(filenamesData.filenames || [])
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error)
+      }
     }
+
+    checkAuthAndFetchUser()
   }, [])
 
-  useEffect(() => {
-    if (showNotes) {
-      fetchNotes(userEmail)
-    }
-  }, [showNotes, userEmail])
+  const fetchNotes = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) return
 
-  const fetchFilenames = async (email) => {
-    try {
-      const response = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`)
-      if (response.ok) {
-        const data = await response.json()
-        setFilenames(data.filenames || [])
-      } else {
-        throw new Error("Failed to fetch filenames")
-      }
-    } catch (error) {
-      console.error("Error fetching filenames:", error)
-    }
-  }
-
-  const fetchNotes = async (email) => {
     try {
       const response = await fetch("/api/get-notes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ user_id: userId }),
       })
 
       if (response.ok) {
         const data = await response.json()
         setNotes(data.notes || [])
-      } else {
-        throw new Error("Failed to fetch notes")
       }
     } catch (error) {
       console.error("Error fetching notes:", error)
     }
   }
 
+  useEffect(() => {
+    if (showNotes) {
+      fetchNotes()
+    }
+  }, [showNotes])
+
   const handleAddNote = async (event) => {
     event.preventDefault()
+    const userId = localStorage.getItem("id")
+    if (!userId) return
+
     try {
       const response = await fetch("/api/add-note", {
         method: "POST",
@@ -75,7 +93,7 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
         body: JSON.stringify({
           filename: selectedFilename,
           note: noteText,
-          email: userEmail,
+          user_id: userId,
         }),
       })
 
@@ -83,12 +101,8 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
         const data = await response.json()
         if (data.success) {
           setMessage("Note added successfully")
-          fetchNotes(userEmail)
-        } else {
-          throw new Error("Failed to add note")
+          fetchNotes()
         }
-      } else {
-        throw new Error("Failed to add note")
       }
     } catch (error) {
       console.error("Error adding note:", error)
@@ -96,29 +110,24 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
   }
 
   const handleDeleteNote = async (filename, note) => {
+    const userId = localStorage.getItem("id")
+    if (!userId) return
+
     try {
       const response = await fetch("/api/delete-note", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          filename,
-          note,
-          email: userEmail,
-        }),
+        body: JSON.stringify({ filename, note, user_id: userId }),
       })
 
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setMessage("Note deleted successfully")
-          fetchNotes(userEmail)
-        } else {
-          throw new Error("Failed to delete note")
+          fetchNotes()
         }
-      } else {
-        throw new Error("Failed to delete note")
       }
     } catch (error) {
       console.error("Error deleting note:", error)

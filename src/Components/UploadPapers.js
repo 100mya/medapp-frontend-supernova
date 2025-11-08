@@ -10,11 +10,9 @@ const UploadPapers = () => {
   const [attachedFiles, setAttachedFiles] = useState([])
   const [bulkAttachedFiles, setBulkAttachedFiles] = useState([])
   const [uploadedFiles, setUploadedFiles] = useState([])
-  const [filenames, setFilenames] = useState([])
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [deleteSuccess, setDeleteSuccess] = useState(false)
-  const [userEmail, setUserEmail] = useState(null)
   const [loading, setLoading] = useState(false)
   const [bulkUploadFilename, setBulkUploadFilename] = useState("")
   const [showBulkUpload, setShowBulkUpload] = useState(false)
@@ -32,64 +30,48 @@ const UploadPapers = () => {
   const [isDraggingBulk, setIsDraggingBulk] = useState(false)
 
   useEffect(() => {
-    const handleLoginWithStoredCredentials = async () => {
-      try {
-        const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-        if (!storedCredentials) {
-          throw new Error("No stored credentials found")
-        }
-        const { email, password } = JSON.parse(storedCredentials)
+    const checkAuthAndFetchFiles = async () => {
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        setIsLoggedIn(false)
+        return
+      }
 
-        const loginResponse = await fetch("/api/login", {
-          method: "POST",
+      setIsLoggedIn(true)
+
+      try {
+        const response = await fetch(`/api/get-filenames?user_id=${userId}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
         })
 
-        if (loginResponse.ok) {
-          const loginData = await loginResponse.json()
-          console.log("Logged in successfully:", loginData)
-          setIsLoggedIn(true)
-          setUserEmail(email)
-
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(email)}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-
-          if (filenamesResponse.ok) {
-            const filenamesData = await filenamesResponse.json()
-            setUploadedFiles(filenamesData.filenames || [])
-          } else {
-            throw new Error("Failed to fetch filenames")
-          }
-        } else {
-          throw new Error("Failed to login with stored credentials")
+        if (response.ok) {
+          const data = await response.json()
+          setUploadedFiles(data.filenames || [])
         }
       } catch (error) {
-        console.error("Error logging in with stored credentials:", error)
+        console.error("Error fetching filenames:", error)
       }
     }
 
-    handleLoginWithStoredCredentials()
+    checkAuthAndFetchFiles()
   }, [])
 
   useEffect(() => {
-    if (!userEmail || !shouldPollButtons) return
+    if (!isLoggedIn) return
 
     let intervalId
     let timeoutId
 
     const fetchDisabledButtons = async () => {
       try {
+        const userId = localStorage.getItem("id")
         const response = await fetch("/api/get-disabled-buttons", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filenames: uploadedFiles, user_id: userEmail }),
+          body: JSON.stringify({ filenames: uploadedFiles, user_id: userId }),
         })
         const data = await response.json()
         setSummaryDisabled(data.summary_disabled)
@@ -122,7 +104,7 @@ const UploadPapers = () => {
       clearTimeout(timeoutId)
       clearInterval(intervalId)
     }
-  }, [uploadedFiles, userEmail, shouldPollButtons])
+  }, [uploadedFiles, isLoggedIn, shouldPollButtons])
 
   const handleIndividualFileChange = (e) => {
     const files = e.target.files
@@ -188,11 +170,9 @@ const UploadPapers = () => {
     setLoading(true)
 
     try {
-      const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-      const userEmail = storedCredentials ? JSON.parse(storedCredentials).email : null
-
-      if (!userEmail) {
-        throw new Error("User email not found in local storage")
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        throw new Error("User ID not found")
       }
 
       const formData = new FormData()
@@ -205,7 +185,7 @@ const UploadPapers = () => {
       for (let i = 0; i < files.length; i++) {
         formData.append("files[]", files[i])
       }
-      formData.append("email", userEmail)
+      formData.append("user_id", userId)
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -216,7 +196,7 @@ const UploadPapers = () => {
         throw new Error("Upload failed")
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(userEmail)}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -226,18 +206,11 @@ const UploadPapers = () => {
       if (filenamesResponse.ok) {
         const filenamesData = await filenamesResponse.json()
         setUploadedFiles(filenamesData.filenames || [])
-        // inside handleSubmit, after setUploadedFiles(...)
-        setShouldPollButtons(true)
-        setAttachedFiles([]) // Clear the attached files after upload
-      } else {
-        throw new Error("Failed to fetch filenames after upload")
+        setAttachedFiles([])
       }
 
       setUploadSuccess(true)
-      setTimeout(() => {
-        setUploadSuccess(false)
-      }, 3000)
-      console.log("Files uploaded successfully")
+      setTimeout(() => setUploadSuccess(false), 3000)
     } catch (error) {
       console.error("Error uploading files:", error.message)
     } finally {
@@ -246,14 +219,14 @@ const UploadPapers = () => {
   }
 
   const handleFileDelete = async (filename) => {
-    console.log("Deleting file:", filename)
     try {
+      const userId = localStorage.getItem("id")
       const response = await fetch("/api/delete-file", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: userEmail, filename }),
+        body: JSON.stringify({ user_id: userId, filename }),
       })
 
       if (!response.ok) {
@@ -262,15 +235,10 @@ const UploadPapers = () => {
 
       const data = await response.json()
       if (data.success) {
-        console.log("File deleted successfully:", filename)
         const updatedFilenames = uploadedFiles.filter((name) => name !== filename)
         setUploadedFiles(updatedFilenames)
         setDeleteSuccess(true)
-        setTimeout(() => {
-          setDeleteSuccess(false)
-        }, 3000)
-      } else {
-        console.error("Error deleting file:", data.error)
+        setTimeout(() => setDeleteSuccess(false), 3000)
       }
     } catch (error) {
       console.error("Error deleting file:", error.message)
@@ -282,11 +250,9 @@ const UploadPapers = () => {
     setLoading(true)
 
     try {
-      const storedCredentials = localStorage.getItem("rx_chatbot_credentials")
-      const userEmail = storedCredentials ? JSON.parse(storedCredentials).email : null
-
-      if (!userEmail) {
-        throw new Error("User email not found in local storage")
+      const userId = localStorage.getItem("id")
+      if (!userId) {
+        throw new Error("User ID not found")
       }
 
       const formData = new FormData()
@@ -299,7 +265,7 @@ const UploadPapers = () => {
       for (let i = 0; i < files.length; i++) {
         formData.append("files[]", files[i])
       }
-      formData.append("email", userEmail)
+      formData.append("user_id", userId)
       formData.append("group_name", bulkUploadFilename)
 
       const response = await fetch("/api/upload-files-bulk", {
@@ -312,7 +278,7 @@ const UploadPapers = () => {
         throw new Error(errorResponse.error)
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?email=${encodeURIComponent(userEmail)}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?user_id=${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -322,21 +288,13 @@ const UploadPapers = () => {
       if (filenamesResponse.ok) {
         const filenamesData = await filenamesResponse.json()
         setUploadedFiles(filenamesData.filenames || [])
-        // inside handleBulkUploadSubmit, after setUploadedFiles(...)
-        setShouldPollButtons(true)
-        setBulkAttachedFiles([]) // Clear the attached files after upload
-      } else {
-        throw new Error("Failed to fetch filenames after bulk upload")
+        setBulkAttachedFiles([])
       }
 
       setUploadSuccess(true)
-      setTimeout(() => {
-        setUploadSuccess(false)
-      }, 3000)
-      console.log("Files uploaded successfully")
+      setTimeout(() => setUploadSuccess(false), 3000)
     } catch (error) {
       console.error("Error uploading files:", error.message)
-      // Display the error message to the user or handle it accordingly
     } finally {
       setLoading(false)
     }
@@ -500,18 +458,6 @@ const UploadPapers = () => {
       </div>
 
       <div className="UploadPapers-buttons-container">
-        {/*<Link to="/dashboard/summary-generator" className="UploadPapers-button-link">
-          <button disabled={summaryDisabled}>Generate Summaries</button>
-        </Link>
-        <Link to="/dashboard/comparison-tool" className="UploadPapers-button-link">
-          <button disabled={allSummaryDisabled}>Compare Summaries</button>
-        </Link>
-        <Link to="/dashboard/compare-and-chat" className="UploadPapers-button-link">
-          <button disabled={allIndexDisabled}>Chat Across Documents</button>
-        </Link>
-        <Link to="/dashboard/notes" className="UploadPapers-button-link">
-          <button disabled={indexDisabled}>Generate Notes</button>
-        </Link>*/}
         <Link to="/dashboard/ai-chat" className="UploadPapers-button-link">
           <button disabled={indexDisabled}>Chat with Document</button>
         </Link>

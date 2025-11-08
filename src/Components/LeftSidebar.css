@@ -1,7 +1,7 @@
 /* src/styles/LeftSidebar.css */
 .left-sidebar {
   width: 300px;
-  background: linear-gradient(180deg, #1a1f4d, #0f1535);
+  background: linear-gradient(180deg, #000, #270044);
   /* Changed to dark gradient background */
   position: fixed;
   top: 80px;
@@ -54,7 +54,7 @@
 
 .profiles-details {
   margin-bottom: 10px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   margin: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -72,7 +72,7 @@
 }
 
 .profiles-counts {
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   margin: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -85,7 +85,7 @@
 }
 
 .profiles-bio {
-  background-color: #1a1f4d;
+  background-color: #270044;
   /* Dark card background */
   margin: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

@@ -15,7 +15,7 @@
 }
 
 .login-modal-content-wrapper {
-  background: linear-gradient(135deg, #1a1f4d 0%, #0f1535 100%);
+  background: linear-gradient(135deg, #000 0%, #270044 100%);
   border: 1px solid rgba(102, 16, 242, 0.3);
   border-radius: 12px;
   padding: 40px;
@@ -149,11 +149,11 @@
 }
 
 .login-modal-submit-button-wrapper {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #ffffff;
   border: none;
   padding: 14px 20px;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;

@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #0a0e27;
+  background-color: #000;
 }
 
 .community-page-content-unique {
@@ -39,7 +39,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: linear-gradient(180deg, #1a1f4d 0%, #0f1535 100%);
+    background: linear-gradient(180deg, #270044 0%, #0f1535 100%);
     border-top: 1px solid rgba(102, 16, 242, 0.2);
     box-shadow: 0 -2px 10px rgba(102, 16, 242, 0.2);
     justify-content: space-around;

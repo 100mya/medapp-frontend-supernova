@@ -5,7 +5,7 @@
   right: -500px;
   width: 500px;
   height: calc(100% - 70px);
-  background: linear-gradient(135deg, #0f1535 0%, #1a1f4d 100%);
+  background: linear-gradient(135deg, #0f1535 0%, #270044 100%);
   box-shadow: 0 0 20px rgba(102, 16, 242, 0.2);
   transition: right 0.3s ease;
   z-index: 1000;
@@ -45,7 +45,7 @@
 }
 
 .wl-NotesGenerator-heading-dark span {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -70,7 +70,7 @@
   padding: 20px;
   overflow-y: auto;
   border-bottom: 1px solid rgba(102, 16, 242, 0.2);
-  background-color: #0a0e27;
+  background-color: #000;
 }
 
 .wl-NotesGenerator-message-dark {
@@ -101,13 +101,13 @@
 }
 
 .wl-NotesGenerator-message-dark.user .wl-NotesGenerator-message-content-dark {
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #ffffff;
   text-align: right;
 }
 
 .wl-NotesGenerator-message-dark.bot .wl-NotesGenerator-message-content-dark {
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #e0e0e0;
   text-align: left;
   border: 1px solid rgba(102, 16, 242, 0.2);
@@ -136,7 +136,7 @@
   padding: 10px;
   border: 1px solid #6610f2;
   border-radius: 10px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #ffffff;
   cursor: pointer;
   transition: all 0.3s;
@@ -161,7 +161,7 @@
   width: 100%;
   box-sizing: border-box;
   margin-right: 10px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #ffffff;
 }
 
@@ -172,7 +172,7 @@
 
 .wl-NotesGenerator-button-dark {
   padding: 10px 20px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -244,13 +244,13 @@
   border: 1px solid #6610f2;
   border-radius: 4px;
   box-sizing: border-box;
-  background-color: #1a1f4d;
+  background-color: #270044;
   color: #ffffff;
 }
 
 .wl-NotesGenerator-popup-content-dark button {
   padding: 10px 20px;
-  background: linear-gradient(90deg, #6610f2, #6f42c1);
+  background: linear-gradient(90deg, #7F55F7 0%, #C31DFA 100%);
   color: #fff;
   border: none;
   border-radius: 20px;

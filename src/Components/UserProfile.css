@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #0a0e27;
+  background-color: #000;
 }
 
 .user-page-content {
@@ -16,7 +16,7 @@
   flex: 1;
   margin: 50px 350px;
   padding: 20px;
-  background-color: #1a1f4d;
+  background-color: #270044;
   min-height: 100vh;
   width: 100%;
   width: 800px;
@@ -58,7 +58,7 @@
   text-align: left;
   border-radius: 20px;
   min-width: 500px;
-  background-color: #0f1535;
+  background-color: #270044;
   border: 1px solid rgba(102, 16, 242, 0.2);
 }
 
@@ -123,7 +123,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #1a1f4d;
+  background-color: #270044;
   padding: 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1000;
@@ -150,7 +150,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   margin-left: 20px;
-  background-color: #0f1535;
+  background-color: #270044;
   color: #d0d0d0;
 }
 
@@ -161,7 +161,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   margin-left: 20px;
-  background-color: #0f1535;
+  background-color: #270044;
   color: #d0d0d0;
 }
 
@@ -298,7 +298,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    background-color: #1a1f4d;
+    background-color: #270044;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     padding: 10px 0;
