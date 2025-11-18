@@ -210,7 +210,7 @@ useEffect(() => {
       }
 
       const filesData = await filesRes.json()
-      setUploadedFiles(filesData.filenames || [])
+      setFilenames(filesData.filenames || [])
     } catch (error) {
       console.error("Error fetching filenames:", error)
     }
