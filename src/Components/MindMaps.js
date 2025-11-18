@@ -127,52 +127,95 @@ const MindMapGenerator = ({ onMindMapGenerated }) => {
     { code: "zu", name: "Zulu" },
   ]
 
-  useEffect(() => {
-    const checkAuthAndFetchUser = async () => {
-      const userId = localStorage.getItem("id")
-      if (!userId) {
-        setIsLoggedIn(false)
+useEffect(() => {
+  const checkAuthAndFetchFiles = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      setIsLoggedIn(false)
+      return
+    }
+
+    setIsLoggedIn(true)
+
+    try {
+      // 1) Fetch user by ID
+      const userRes = await fetch(`/api/users/${userId}`)
+      if (!userRes.ok) {
+        console.error("Failed to fetch user")
         return
       }
 
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
+      let userData = await userRes.json()
+
+      // Case 1: backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2: backend returns { payload: "..." } or { payload: { ... } }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      let email
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+      ) {
+        email = userData.email
+      }
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      // 2) Fetch filenames using email
+      const filesRes = await fetch(
+        `/api/get-filenames?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
-        })
-
-        if (response.ok) {
-          const userData = await response.json()
-          setUserEmail(userData.email)
-          setIsLoggedIn(true)
-
-          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-          if (storedSubscriptionStatus) {
-            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-          }
-
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${userData.email}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-
-          if (filenamesResponse.ok) {
-            const filenamesData = await filenamesResponse.json()
-            setFilenames(filenamesData.filenames || [])
-          }
         }
-      } catch (error) {
-        console.error("Error fetching user:", error)
-      }
-    }
+      )
 
-    checkAuthAndFetchUser()
-  }, [])
+      if (!filesRes.ok) {
+        console.error("Failed to fetch filenames")
+        return
+      }
+
+      const filesData = await filesRes.json()
+      setUploadedFiles(filesData.filenames || [])
+    } catch (error) {
+      console.error("Error fetching filenames:", error)
+    }
+  }
+
+  checkAuthAndFetchFiles()
+}, [])
 
   const generateMindMap = async () => {
     if (selectedFile) {

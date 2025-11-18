@@ -12,66 +12,128 @@ const NotesPage = ({ showNotes, setShowNotes }) => {
   const [message, setMessage] = useState("")
 
   useEffect(() => {
-    const checkAuthAndFetchUser = async () => {
-      const userId = localStorage.getItem("id")
-      if (!userId) {
-        return
-      }
-
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        })
-
-        if (response.ok) {
-          const userData = await response.json()
-          setUserEmail(userData.email)
-
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-
-          if (filenamesResponse.ok) {
-            const filenamesData = await filenamesResponse.json()
-            setFilenames(filenamesData.filenames || [])
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error)
-      }
+  const checkAuthAndFetchUser = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      return
     }
 
-    checkAuthAndFetchUser()
-  }, [])
-
-  const fetchNotes = async () => {
-    const userId = localStorage.getItem("id")
-    if (!userId) return
-
     try {
-      const response = await fetch("/api/get-notes", {
+      // Fetch user by ID
+      const response = await fetch("/api/get-user-by-userid", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: userEmail }),
+        body: JSON.stringify({ user_id: userId }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setNotes(data.notes || [])
+      if (!response.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await response.json()
+
+      // Case 1 — backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      // Extract email
+      let email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      // Save email to state
+      setUserEmail(email)
+
+      // Fetch filenames **using correct email**
+      const filenamesResponse = await fetch(
+        `/api/get-filenames?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+
+      if (filenamesResponse.ok) {
+        const filenamesData = await filenamesResponse.json()
+        setFilenames(filenamesData.filenames || [])
       }
     } catch (error) {
-      console.error("Error fetching notes:", error)
+      console.error("Error fetching user:", error)
     }
   }
+
+  checkAuthAndFetchUser()
+}, [])
+
+
+const fetchNotes = async () => {
+  const userId = localStorage.getItem("id")
+  if (!userId) return
+
+  // Use the correct email directly from state
+  const email = userEmail
+
+  if (!email) {
+    console.error("Cannot fetch notes — email is missing.")
+    return
+  }
+
+  try {
+    const response = await fetch("/api/get-notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email }), // 👈 correct email used here
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      setNotes(data.notes || [])
+    }
+  } catch (error) {
+    console.error("Error fetching notes:", error)
+  }
+}
 
   useEffect(() => {
     if (showNotes) {

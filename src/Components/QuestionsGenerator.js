@@ -132,51 +132,102 @@ const QuestionsGenerator = () => {
   ]
 
   useEffect(() => {
-    const checkAuthAndFetchUser = async () => {
-      const userId = localStorage.getItem("id")
-      if (!userId) {
-        setIsLoggedIn(false)
+  const checkAuthAndFetchUser = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      setIsLoggedIn(false)
+      return
+    }
+
+    try {
+      // Fetch user by ID
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch user")
         return
       }
 
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        })
+      let userData = await response.json()
 
-        if (response.ok) {
-          const userData = await response.json()
-          setUserEmail(userData.email)
-          setIsLoggedIn(true)
-
-          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-          if (storedSubscriptionStatus) {
-            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-          }
-
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${userEmail}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-
-          if (filenamesResponse.ok) {
-            const filenamesData = await filenamesResponse.json()
-            setFilenames(filenamesData.filenames || [])
-          }
+      // Case 1: backend returns JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
         }
-      } catch (error) {
-        console.error("Error fetching user:", error)
       }
-    }
 
-    checkAuthAndFetchUser()
-  }, [])
+      // Case 2: backend returns { payload: "..." } or { payload: {} }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      let email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found in userData:", userData)
+        return
+      }
+
+      setUserEmail(email)
+      setIsLoggedIn(true)
+
+      // Load subscription status
+      const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+      if (storedSubscriptionStatus) {
+        setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+      }
+
+      // Fetch filenames using email
+      const filenamesResponse = await fetch(
+        `/api/get-filenames?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+
+      if (filenamesResponse.ok) {
+        const filenamesData = await filenamesResponse.json()
+        setFilenames(filenamesData.filenames || [])
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error)
+    }
+  }
+
+  checkAuthAndFetchUser()
+}, [])
+
 
   const generateQuiz = async () => {
     const validNumberOfQuestions = Number.parseInt(numberOfQuestions, 10)

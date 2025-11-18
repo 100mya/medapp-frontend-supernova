@@ -41,18 +41,36 @@ const UploadPapers = () => {
 
     try {
       // 1) Get user by ID (same as AI Chat page)
-      const userRes = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        })
+      const userRes = await fetch(`/api/users/${userId}`)
       if (!userRes.ok) return
 
-      const userData = await userRes.json()
+      let userData = await userRes.json()
+
+      // 🔧 If backend returns a JSON string, parse it
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // 🔧 If backend wraps it like { payload: "..." }
+      if (userData?.payload && typeof userData.payload === "string") {
+        try {
+          userData = JSON.parse(userData.payload)
+        } catch (e) {
+          console.error("Failed to parse userData.payload:", e)
+          return
+        }
+      }
+
       const email = userData?.email
-      if (!email) return
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
 
       // 2) Fetch filenames using the user's email (same as AI Chat page logic)
       const fileRes = await fetch(`/api/get-filenames?email=${email}`)
