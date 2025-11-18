@@ -141,6 +141,7 @@ function Header() {
             <Link to="/community" className="supernova-nav-link">
               Community
             </Link>
+            {/* 
             {!isLoggedIn ? (
               <button
                 className="supernova-nav-link supernova-login-button-header supernova-login-mobile-item"
@@ -161,7 +162,7 @@ function Header() {
               >
                 Logout
               </button>
-            )}
+            )}*/}
           </nav>
           <div className="supernova-header-auth-buttons">
             {!isLoggedIn ? (
