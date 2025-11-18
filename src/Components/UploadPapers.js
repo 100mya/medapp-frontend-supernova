@@ -30,34 +30,43 @@ const UploadPapers = () => {
   const [isDraggingBulk, setIsDraggingBulk] = useState(false)
 
   useEffect(() => {
-    const checkAuthAndFetchFiles = async () => {
-      const userId = localStorage.getItem("id")
-      if (!userId) {
-        setIsLoggedIn(false)
-        return
-      }
+  const checkAuthAndFetchFiles = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      setIsLoggedIn(false)
+      return
+    }
 
-      setIsLoggedIn(true)
+    setIsLoggedIn(true)
 
-      try {
-        const response = await fetch(`/api/get-filenames?email=${userId}`, {
-          method: "GET",
+    try {
+      // 1) Get user by ID (same as AI Chat page)
+      const userRes = await fetch("/api/get-user-by-userid", {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ user_id: userId }),
         })
+      if (!userRes.ok) return
 
-        if (response.ok) {
-          const data = await response.json()
-          setUploadedFiles(data.filenames || [])
-        }
-      } catch (error) {
-        console.error("Error fetching filenames:", error)
-      }
+      const userData = await userRes.json()
+      const email = userData?.email
+      if (!email) return
+
+      // 2) Fetch filenames using the user's email (same as AI Chat page logic)
+      const fileRes = await fetch(`/api/get-filenames?email=${email}`)
+      if (!fileRes.ok) return
+
+      const fileData = await fileRes.json()
+      setUploadedFiles(fileData.filenames || [])
+    } catch (error) {
+      console.error("Error fetching filenames:", error)
     }
+  }
 
-    checkAuthAndFetchFiles()
-  }, [])
+  checkAuthAndFetchFiles()
+}, [])
 
   useEffect(() => {
     if (!isLoggedIn) return

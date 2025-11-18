@@ -156,7 +156,7 @@ const Flashcards = () => {
             setIsSubscribed(JSON.parse(storedSubscriptionStatus))
           }
 
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${userEmail}`, {
+          const filenamesResponse = await fetch(`/api/get-filenames?email=${userData.email}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
