@@ -137,6 +137,12 @@ useEffect(() => {
 
     setIsLoggedIn(true)
 
+    // Load subscription status
+      const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+      if (storedSubscriptionStatus) {
+        setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+      }
+
     try {
       // 1) Fetch user by ID
       const response = await fetch("/api/get-user-by-userid", {

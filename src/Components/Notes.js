@@ -109,83 +109,19 @@ const fetchNotes = async () => {
   const userId = localStorage.getItem("id")
   if (!userId) return
 
-  // Use the correct email directly from state
-  const email = userEmail
-
-  if (!email) {
+  // Use the email we already got from /api/get-user-by-userid
+  if (!userEmail) {
     console.error("Cannot fetch notes — email is missing.")
     return
   }
 
   try {
-
-    const userResponse = await fetch("/api/get-user-by-userid", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId }),
-      })
-
-      if (!userResponse.ok) {
-        console.error("Failed to fetch user")
-        return
-      }
-
-      let userData = await userResponse.json()
-
-      // Case 1 — backend returns a JSON string
-      if (typeof userData === "string") {
-        try {
-          userData = JSON.parse(userData)
-        } catch (e) {
-          console.error("Failed to parse userData string:", e)
-          return
-        }
-      }
-
-      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
-      if (
-        userData &&
-        typeof userData === "object" &&
-        "payload" in userData
-      ) {
-        const payload = userData.payload
-
-        if (typeof payload === "string") {
-          try {
-            userData = JSON.parse(payload)
-          } catch (e) {
-            console.error("Failed to parse userData.payload string:", e)
-            return
-          }
-        } else if (payload && typeof payload === "object") {
-          userData = payload
-        }
-      }
-
-      // Extract email
-      let email =
-        userData &&
-        typeof userData === "object" &&
-        "email" in userData
-          ? userData.email
-          : undefined
-
-      if (!email) {
-        console.error("Email not found on userData:", userData)
-        return
-      }
-
-      // Save email to state
-      setUserEmail(email)
-
     const response = await fetch("/api/get-notes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: userData.email || email }), // 👈 correct email used here
+      body: JSON.stringify({ email: userEmail }),
     })
 
     if (response.ok) {
@@ -198,10 +134,11 @@ const fetchNotes = async () => {
 }
 
   useEffect(() => {
-    if (showNotes) {
-      fetchNotes()
-    }
-  }, [showNotes])
+  if (showNotes && userEmail) {
+    fetchNotes()
+  }
+}, [showNotes, userEmail])
+
 
   const handleAddNote = async (event) => {
     event.preventDefault()

@@ -9,53 +9,64 @@ const LeftSidebar = () => {
   const [userId, setUserId] = useState("")
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const storedUserId = localStorage.getItem("id")
-        setUserId(storedUserId)
-        if (!userId) {
-          console.error("User ID not found in local storage")
+  const fetchUserInfo = async () => {
+    try {
+      const storedUserId = localStorage.getItem("id")
+
+      if (!storedUserId) {                      // ✅ check storedUserId, not state
+        console.error("User ID not found in local storage")
+        return
+      }
+
+      setUserId(storedUserId)
+
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: storedUserId }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user information")
+      }
+
+      let userData = await response.json()
+
+      // backend is returning a JSON string, so handle that:
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse user JSON:", e)
           return
         }
-
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: storedUserId }),
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user information")
-        }
-
-        const userData = await response.json()
-
-        if (userData && !userData.error) {
-          const user = {
-            name: userData.name || "",
-            email: userData.email || "",
-            cellNumber: userData.cellNumber || "",
-            collegeName: userData.collegeName || "",
-            country: userData.country || "",
-            bio: userData.bio || "",
-            profilePic: getProfilePicUrl(userData.profilePic, userData.profilePicType),
-            followersCount: Array.isArray(userData.followers) ? userData.followers.length : 0,
-            followingCount: Array.isArray(userData.following) ? userData.following.length : 0,
-          }
-
-          setUserInfo(user)
-        } else {
-          throw new Error(userData.error || "User data format is incorrect")
-        }
-      } catch (error) {
-        console.error("Error fetching user info:", error)
       }
-    }
 
-    fetchUserInfo()
-  }, [])
+      if (userData && !userData.error) {
+        const user = {
+          name: userData.name || "",
+          email: userData.email || "",
+          cellNumber: userData.cellNumber || "",
+          collegeName: userData.collegeName || "",
+          country: userData.country || "",
+          bio: userData.bio || "",
+          profilePic: getProfilePicUrl(userData.profilePic, userData.profilePicType),
+          followersCount: Array.isArray(userData.followers) ? userData.followers.length : 0,
+          followingCount: Array.isArray(userData.following) ? userData.following.length : 0,
+        }
+
+        setUserInfo(user)
+      } else {
+        throw new Error(userData.error || "User data format is incorrect")
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error)
+    }
+  }
+
+  fetchUserInfo()
+}, [])
+
 
   const getProfilePicUrl = (profilePic, profilePicType) => {
     if (profilePic) {

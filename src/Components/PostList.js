@@ -6,30 +6,39 @@ const PostList = () => {
   const [posts, setPosts] = useState([])
 
   const fetchPosts = async () => {
-    try {
-      const response = await fetch("/api/fetch-all-posts")
+  try {
+    const response = await fetch("/api/fetch-all-posts")
 
-      if (!response.ok) {
-        const txt = await response.text().catch(() => null)
-        throw new Error(`fetch-all-posts failed: ${response.status} ${response.statusText} ${txt || ""}`)
-      }
+    if (!response.ok) {
+      const txt = await response.text().catch(() => null)
+      throw new Error(`fetch-all-posts failed: ${response.status} ${response.statusText} ${txt || ""}`)
+    }
 
-      // response.json() already returns a JS object/array — do not JSON.parse it.
-      const data = await response.json()
+    let data = await response.json()
 
-      // Defensive: ensure data is an array
-      if (!Array.isArray(data)) {
-        console.warn("fetch-all-posts returned non-array data:", data)
+    // If backend returns a JSON string, parse it
+    if (typeof data === "string") {
+      try {
+        data = JSON.parse(data)
+      } catch (e) {
+        console.error("Failed to parse posts JSON string:", e, data)
         setPosts([])
         return
       }
-
-      // reverse a copy to avoid mutating original
-      setPosts([...data].reverse())
-    } catch (error) {
-      console.error("Error fetching posts:", error)
     }
+
+    if (!Array.isArray(data)) {
+      console.warn("fetch-all-posts returned non-array data:", data)
+      setPosts([])
+      return
+    }
+
+    setPosts([...data].reverse())
+  } catch (error) {
+    console.error("Error fetching posts:", error)
   }
+}
+
 
   useEffect(() => {
     fetchPosts()
