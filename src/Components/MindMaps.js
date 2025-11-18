@@ -139,13 +139,20 @@ useEffect(() => {
 
     try {
       // 1) Fetch user by ID
-      const userRes = await fetch(`/api/users/${userId}`)
-      if (!userRes.ok) {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
         console.error("Failed to fetch user")
         return
       }
 
-      let userData = await userRes.json()
+      let userData = await response.json()
 
       // Case 1: backend returns a JSON string
       if (typeof userData === "string") {

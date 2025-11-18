@@ -164,7 +164,7 @@ function Header() {
               </button>
             )}*/}
           </nav>
-          <div className="supernova-header-auth-buttons">
+          {/*<div className="supernova-header-auth-buttons">
             {!isLoggedIn ? (
               <button className="supernova-login-button-header" onClick={() => setShowLoginModal(true)}>
                 Login
@@ -174,7 +174,7 @@ function Header() {
                 Logout
               </button>
             )}
-          </div>
+          </div>*/}
         </div>
       </header>
 

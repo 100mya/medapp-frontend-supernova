@@ -41,10 +41,20 @@ const UploadPapers = () => {
 
     try {
       // 1) Get user by ID (same as AI Chat page)
-      const userRes = await fetch(`/api/users/${userId}`)
-      if (!userRes.ok) return
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
 
-      let userData = await userRes.json()
+      if (!response.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await response.json()
 
       // 🔧 If backend returns a JSON string, parse it
       if (typeof userData === "string") {
