@@ -119,7 +119,7 @@ const NotesEditor = () => {
 
   const handleDelete = async (title) => {
     try {
-      const email = getEmail();
+      const email = userEmail;
       const response = await fetch(`/api/delete`, {
         method: 'DELETE',
         headers: {
@@ -138,7 +138,7 @@ const NotesEditor = () => {
 
   const handleSave = async () => {
     try {
-      const email = getEmail();
+      const email = userEmail;
       const response = await fetch(`/api/update`, {
         method: 'POST',
         headers: {
