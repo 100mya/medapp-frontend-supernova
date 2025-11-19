@@ -52,27 +52,43 @@ function App() {
     )
   }
 
-  // helper: read a cookie by name (works if cookie is scoped to .supernovaacademyincorporated.com)
+// helper: read a cookie by name (more robust)
 const getCookie = (name) => {
   if (typeof document === "undefined") return null
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) return parts.pop().split(";").shift()
+
+  const cookies = document.cookie ? document.cookie.split(";") : []
+
+  for (let cookie of cookies) {
+    const [key, ...rest] = cookie.trim().split("=")
+    if (key === name) {
+      return decodeURIComponent(rest.join("="))
+    }
+  }
+
   return null
 }
 
+// try multiple possible cookie names for user id
+const getUserIdFromCookies = () => {
+  return (
+    getCookie("id") ||
+    getCookie("_id") ||
+    getCookie("user_id") ||
+    getCookie("partner_user_id") ||
+    null
+  )
+}
+
 // sync id from parent-domain cookie into this subdomain's localStorage
-// if cookie is missing, we also clear localStorage.id so that login strictly
-// follows the presence of the parent-domain id
+// runs on every reload via useEffect
 const syncIdFromParentCookie = () => {
-  const cookieId = getCookie("id")
+  const cookieId = getUserIdFromCookies()
 
   if (cookieId) {
-    if (localStorage.getItem("id") !== cookieId) {
-      localStorage.setItem("id", cookieId)
-    }
+    // ALWAYS write it on every page load
+    localStorage.setItem("id", cookieId)
   } else {
-    // parent has no id -> make sure this subdomain also considers user logged out
+    // no id in parent cookies -> treat as logged out
     localStorage.removeItem("id")
   }
 
