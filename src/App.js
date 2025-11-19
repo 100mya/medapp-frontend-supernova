@@ -52,52 +52,80 @@ function App() {
     )
   }
 
-// helper: read a cookie by name (more robust)
-const getCookie = (name) => {
-  if (typeof document === "undefined") return null
+  // helper: read a cookie by name (more robust + logging)
+  const getCookie = (name) => {
+    if (typeof document === "undefined") return null
 
-  const cookies = document.cookie ? document.cookie.split(";") : []
+    console.log("[cookies] document.cookie =", document.cookie)
 
-  for (let cookie of cookies) {
-    const [key, ...rest] = cookie.trim().split("=")
-    if (key === name) {
-      return decodeURIComponent(rest.join("="))
+    const cookies = document.cookie ? document.cookie.split(";") : []
+
+    for (let rawCookie of cookies) {
+      const cookie = rawCookie.trim()
+      if (!cookie) continue
+
+      const [key, ...rest] = cookie.split("=")
+      if (!key) continue
+
+      if (key === name) {
+        const value = decodeURIComponent(rest.join("="))
+        console.log(`[cookies] Found cookie "${name}" =`, value)
+        return value
+      }
     }
+
+    console.log(`[cookies] Cookie "${name}" not found`)
+    return null
   }
 
-  return null
-}
+  // try multiple possible cookie names for user id
+  const getUserIdFromCookies = () => {
+    const possibleNames = ["id", "_id", "user_id", "partner_user_id", "userId"]
 
-// try multiple possible cookie names for user id
-const getUserIdFromCookies = () => {
-  return (
-    getCookie("id") ||
-    getCookie("_id") ||
-    getCookie("user_id") ||
-    getCookie("partner_user_id") ||
-    null
-  )
-}
+    for (const name of possibleNames) {
+      const value = getCookie(name)
+      if (value) {
+        console.log("[cookies] Using id from cookie", name, "=", value)
+        return value
+      }
+    }
 
-// sync id from parent-domain cookie into this subdomain's localStorage
-// runs on every reload via useEffect
-const syncIdFromParentCookie = () => {
-  const cookieId = getUserIdFromCookies()
-
-  if (cookieId) {
-    // ALWAYS write it on every page load
-    localStorage.setItem("id", cookieId)
-  } else {
-    // no id in parent cookies -> treat as logged out
-    localStorage.removeItem("id")
+    console.log("[cookies] No id cookie found among", possibleNames)
+    return null
   }
 
-  return cookieId
-}
+  // sync id from cookie into this subdomain's localStorage
+  // runs on every reload via useEffect
+  const syncIdFromParentCookie = () => {
+    const cookieId = getUserIdFromCookies()
+
+    if (cookieId) {
+      console.log("[auth] Writing id from cookie to localStorage:", cookieId)
+      localStorage.setItem("id", cookieId)
+    } else {
+      console.log("[auth] No cookie id - removing id from localStorage")
+      localStorage.removeItem("id")
+    }
+
+    console.log("[auth] localStorage.id after sync:", localStorage.getItem("id"))
+
+    return cookieId
+  }
 
   useEffect(() => {
     const checkAuthAndFetchDetails = async () => {
       try {
+
+        console.log("[auth] App mounted, starting auth check")
+
+        // 🔥 Always remove chatMessages on page reload
+        try {
+          localStorage.removeItem("chatMessages")
+          console.log("[auth] Removed chatMessages from localStorage on load")
+        } catch (err) {
+          console.error("[auth] Failed to remove chatMessages:", err)
+        }
+        
       // NEW: always mirror parent-domain cookie into localStorage on every load
       const cookieId = syncIdFromParentCookie()
 
