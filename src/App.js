@@ -52,35 +52,69 @@ function App() {
     )
   }
 
+  // helper: read a cookie by name (works if cookie is scoped to .supernovaacademyincorporated.com)
+const getCookie = (name) => {
+  if (typeof document === "undefined") return null
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(";").shift()
+  return null
+}
+
+// sync id from parent-domain cookie into this subdomain's localStorage
+// if cookie is missing, we also clear localStorage.id so that login strictly
+// follows the presence of the parent-domain id
+const syncIdFromParentCookie = () => {
+  const cookieId = getCookie("id")
+
+  if (cookieId) {
+    if (localStorage.getItem("id") !== cookieId) {
+      localStorage.setItem("id", cookieId)
+    }
+  } else {
+    // parent has no id -> make sure this subdomain also considers user logged out
+    localStorage.removeItem("id")
+  }
+
+  return cookieId
+}
+
   useEffect(() => {
     const checkAuthAndFetchDetails = async () => {
       try {
-        const storedUserId = getStoredUserId()
+      // NEW: always mirror parent-domain cookie into localStorage on every load
+      const cookieId = syncIdFromParentCookie()
 
-        if (!storedUserId) {
-          setIsLoggedIn(false)
-          return
+      // if there is a cookie id, that is our canonical id
+      const storedUserId = cookieId || getStoredUserId()
+
+      if (!storedUserId) {
+        setIsLoggedIn(false)
+        return
+      }
+
+      setIsLoggedIn(true)
+
+      const userDetailsResponse = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: storedUserId }),
+      })
+
+      if (userDetailsResponse.ok) {
+        const userDetails = await userDetailsResponse.json()
+        const parsed = normalizeJson(userDetails)
+
+        // ⛔️ IMPORTANT CHANGE: do NOT override id from cookie/localStorage
+        // We only use the id we already got (cookieId or storedUserId)
+        const canonicalId = cookieId || storedUserId
+
+        // keep localStorage in sync with canonical id, but don't "invent" a new one
+        if (canonicalId && localStorage.getItem("id") !== canonicalId) {
+          localStorage.setItem("id", canonicalId)
         }
-
-        setIsLoggedIn(true)
-
-        const userDetailsResponse = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: storedUserId }),
-        })
-
-        if (userDetailsResponse.ok) {
-          const userDetails = await userDetailsResponse.json()
-          const parsed = normalizeJson(userDetails)
-
-          // canonicalize id into localStorage.id
-          const canonicalId = parsed?.id || parsed?._id || parsed?.user_id || parsed?.partner_user_id || storedUserId
-          if (canonicalId && canonicalId !== localStorage.getItem("id")) {
-            localStorage.setItem("id", canonicalId)
-          }
 
           setUserEmail(parsed?.email)
 

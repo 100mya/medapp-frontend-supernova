@@ -73,14 +73,14 @@ function Header() {
     if (!bootstrapped) return
     const onDashboard = location.pathname.startsWith("/dashboard")
     if (onDashboard && !isLoggedIn) {
-      setShowLoginModal(true)
+      {/*setShowLoginModal(true)*/}
     }
   }, [bootstrapped, isLoggedIn, location.pathname])
 
   const handleDashboardClick = (e) => {
     if (!isLoggedIn) {
       e.preventDefault()
-      setShowLoginModal(true)
+      {/*setShowLoginModal(true)*/}
     }
   }
 
@@ -178,7 +178,7 @@ function Header() {
         </div>
       </header>
 
-      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
+      {/*{showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}*/}
     </>
   )
 }

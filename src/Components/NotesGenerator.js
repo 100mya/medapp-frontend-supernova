@@ -129,51 +129,108 @@ const NotesGenerator = ({ showNotes, setShowNotes }) => {
   ]
 
   useEffect(() => {
-    const checkAuthAndFetchUser = async () => {
-      const userId = localStorage.getItem("id")
-      if (!userId) {
-        setIsLoggedIn(false)
+  const checkAuthAndFetchFiles = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      setIsLoggedIn(false)
+      return
+    }
+
+    setIsLoggedIn(true)
+
+    // Load subscription status
+      const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
+      if (storedSubscriptionStatus) {
+        setIsSubscribed(JSON.parse(storedSubscriptionStatus))
+      }
+
+    try {
+      // 1) Fetch user by ID
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch user")
         return
       }
 
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
+      let userData = await response.json()
+
+      // Case 1: backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2: backend returns { payload: "..." } or { payload: { ... } }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      let email
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+      ) {
+        email = userData.email
+        setUserEmail(userData.email)
+      }
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      // 2) Fetch filenames using email
+      const filesRes = await fetch(
+        `/api/get-filenames?email=${encodeURIComponent(email)}`,
+        {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
-        })
-
-        if (response.ok) {
-          const userData = await response.json()
-          setUserEmail(userData.email)
-          setIsLoggedIn(true)
-
-          const storedSubscriptionStatus = localStorage.getItem("isSubscribed")
-          if (storedSubscriptionStatus) {
-            setIsSubscribed(JSON.parse(storedSubscriptionStatus))
-          }
-
-          const filenamesResponse = await fetch(`/api/get-filenames?email=${userEmail}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-
-          if (filenamesResponse.ok) {
-            const filenamesData = await filenamesResponse.json()
-            setFilenames(filenamesData.filenames || [])
-          }
         }
-      } catch (error) {
-        console.error("Error fetching user:", error)
-      }
-    }
+      )
 
-    checkAuthAndFetchUser()
-  }, [])
+      if (!filesRes.ok) {
+        console.error("Failed to fetch filenames")
+        return
+      }
+
+      const filesData = await filesRes.json()
+      setFilenames(filesData.filenames || [])
+    } catch (error) {
+      console.error("Error fetching filenames:", error)
+    }
+  }
+
+  checkAuthAndFetchFiles()
+}, [])
 
   useEffect(() => {
     localStorage.setItem("selectedFile", selectedFile)
