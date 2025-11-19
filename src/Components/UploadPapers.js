@@ -219,10 +219,51 @@ const UploadPapers = () => {
         throw new Error("No files selected")
       }
 
+      const userResponse = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!userResponse.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await userResponse.json()
+
+      // 🔧 If backend returns a JSON string, parse it
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // 🔧 If backend wraps it like { payload: "..." }
+      if (userData?.payload && typeof userData.payload === "string") {
+        try {
+          userData = JSON.parse(userData.payload)
+        } catch (e) {
+          console.error("Failed to parse userData.payload:", e)
+          return
+        }
+      }
+
+      const email = userData?.email
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
       for (let i = 0; i < files.length; i++) {
         formData.append("files[]", files[i])
       }
-      formData.append("user_id", userId)
+      formData.append("email", email)
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -302,7 +343,49 @@ const UploadPapers = () => {
       for (let i = 0; i < files.length; i++) {
         formData.append("files[]", files[i])
       }
-      formData.append("user_id", userId)
+
+      const userResponse = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!userResponse.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await userResponse.json()
+
+      // 🔧 If backend returns a JSON string, parse it
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // 🔧 If backend wraps it like { payload: "..." }
+      if (userData?.payload && typeof userData.payload === "string") {
+        try {
+          userData = JSON.parse(userData.payload)
+        } catch (e) {
+          console.error("Failed to parse userData.payload:", e)
+          return
+        }
+      }
+
+      const email = userData?.email
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      formData.append("email", email)
       formData.append("group_name", bulkUploadFilename)
 
       const response = await fetch("/api/upload-files-bulk", {
