@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import "./Post.css"
 import { FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa"
@@ -310,6 +310,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
   const [showNestedReplies, setShowNestedReplies] = useState(false)
   const [replyUserName, setReplyUserName] = useState("")
   const [replyUserProfilePic, setReplyUserProfilePic] = useState(defaultImg)
+  const [userEmail, setUserEmail] = useState("")
 
   useEffect(() => {
     const fetchUserData = async (userId) => {
@@ -324,6 +325,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         })
         const data = await response.json()
         setReplyUserName(data.name)
+        setUserEmail(data.email)
         if (data.profilePic) {
           setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
         }
@@ -383,6 +385,11 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
 
       if (typeof nestedReplyToId === "object" && nestedReplyToId.$oid) {
         nestedReplyToId = nestedReplyToId.$oid
+      }
+
+      if (!userEmail) {
+        console.error("Email not found")
+        return
       }
 
       const response = await fetch("/api/create-reply", {
