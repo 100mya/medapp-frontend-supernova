@@ -28,32 +28,6 @@ const Post = ({ post }) => {
   const [userEmail, setUserEmail] = useState("")
 
   useEffect(() => {
-  // Fetch author/profile data (for the post owner)
-  const fetchAuthorData = async (authorId) => {
-    try {
-      const idFromStorage = localStorage.getItem("id")
-      const response = await fetch("/api/get-user-by-userid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: idFromStorage }),
-      })
-      if (!response.ok) {
-        const txt = await response.text().catch(() => null)
-        throw new Error(`fetchAuthorData failed: ${response.status} ${response.statusText} ${txt || ""}`)
-      }
-      const data = await response.json()
-      setUserName(data.name || "")
-      if (data.profilePic) {
-        setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
-      } else {
-        setUserProfilePic(defaultImg)
-      }
-    } catch (error) {
-      console.error("Error fetching author data:", error)
-    }
-  }
-
-  useEffect(() => {
   const checkAuthAndFetchUser = async () => {
     const userId = localStorage.getItem("id")
     if (!userId) {
@@ -127,6 +101,34 @@ const Post = ({ post }) => {
 
   checkAuthAndFetchUser()
 }, [])
+
+  useEffect(() => {
+  // Fetch author/profile data (for the post owner)
+  const fetchAuthorData = async (authorId) => {
+    try {
+      const idFromStorage = localStorage.getItem("id")
+      const response = await fetch("/api/get-user-by-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: authorId }),
+      })
+      if (!response.ok) {
+        const txt = await response.text().catch(() => null)
+        throw new Error(`fetchAuthorData failed: ${response.status} ${response.statusText} ${txt || ""}`)
+      }
+      const data = await response.json()
+      setUserName(data.name || "")
+      if (data.profilePic) {
+        setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+      } else {
+        setUserProfilePic(defaultImg)
+      }
+    } catch (error) {
+      console.error("Error fetching author data:", error)
+    }
+  }
+
+  
 
   // Translate local storage id -> email and set userId (email) for API calls
   const initCurrentUser = async () => {
@@ -313,12 +315,12 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
     const fetchUserData = async (userId) => {
       try {
         const idFromStorage = localStorage.getItem("id")
-        const response = await fetch("/api/get-user-by-userid", {
+        const response = await fetch("/api/get-user-by-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: idFromStorage }),
+          body: JSON.stringify({ email: userId }),
         })
         const data = await response.json()
         setReplyUserName(data.name)
@@ -391,7 +393,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         body: JSON.stringify({
           post_id: postId,
           reply_to_id: nestedReplyToId,
-          email: userId,
+          email: userEmail,
           text: replyText,
         }),
       })
