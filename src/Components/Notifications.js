@@ -11,6 +11,7 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([])
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("notifications")
+  const [userEmail, setUserEmail] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -28,6 +29,81 @@ const Notifications = () => {
   const [userInfo, setUserInfo] = useState(null)
   const [userId, setUserId] = useState("")
 
+  useEffect(() => {
+  const checkAuthAndFetchUser = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      console.error("No user id found in localStorage")
+      return
+    }
+
+    try {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await response.json()
+
+      // Case 1 — backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      const email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      setUserEmail(email)
+    } catch (error) {
+      console.error("Error fetching user:", error)
+    }
+  }
+
+  checkAuthAndFetchUser()
+}, [])
+
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -39,12 +115,12 @@ const Notifications = () => {
           return
         }
 
-        const user_response = await fetch("/api/get-user-by-userid", {
+        const user_response = await fetch("/api/get-user-by-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: storedUserId }),
+          body: JSON.stringify({ email: userEmail }),
         })
 
         if (!user_response.ok) {
@@ -73,7 +149,7 @@ const Notifications = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: user.email }),
+          body: JSON.stringify({ user_id: userEmail }),
         })
         const result = await response.json()
         if (response.ok) {

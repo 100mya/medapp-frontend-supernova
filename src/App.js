@@ -125,7 +125,7 @@ function App() {
         } catch (err) {
           console.error("[auth] Failed to remove chatMessages:", err)
         }
-        
+
       // NEW: always mirror parent-domain cookie into localStorage on every load
       const cookieId = syncIdFromParentCookie()
 
@@ -192,7 +192,7 @@ function App() {
           }
         } else {
           setIsLoggedIn(false)
-          localStorage.removeItem("id")
+         // localStorage.removeItem("id")
         }
       } catch (error) {
         console.error("Error checking auth:", error)

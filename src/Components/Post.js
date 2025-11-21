@@ -25,6 +25,7 @@ const Post = ({ post }) => {
   const [userId, setUserId] = useState("")
   const [userName, setUserName] = useState("")
   const [userProfilePic, setUserProfilePic] = useState(defaultImg)
+  const [userEmail, setUserEmail] = useState("")
 
   useEffect(() => {
   // Fetch author/profile data (for the post owner)
@@ -52,6 +53,81 @@ const Post = ({ post }) => {
     }
   }
 
+  useEffect(() => {
+  const checkAuthAndFetchUser = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      console.error("No user id found in localStorage")
+      return
+    }
+
+    try {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await response.json()
+
+      // Case 1 — backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      const email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      setUserEmail(email)
+    } catch (error) {
+      console.error("Error fetching user:", error)
+    }
+  }
+
+  checkAuthAndFetchUser()
+}, [])
+
   // Translate local storage id -> email and set userId (email) for API calls
   const initCurrentUser = async () => {
     try {
@@ -62,10 +138,10 @@ const Post = ({ post }) => {
       }
 
       // call your existing endpoint to get user object (email)
-      const resp = await fetch("/api/get-user-by-userid", {
+      const resp = await fetch("/api/get-user-by-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: idFromStorage }),
+        body: JSON.stringify({ email: userEmail }),
       })
 
       if (!resp.ok) {
@@ -105,12 +181,12 @@ const Post = ({ post }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: post._id.$oid, email: userId }),
+        body: JSON.stringify({ post_id: post._id.$oid, email: userEmail }),
       })
       const data = await response.json()
       if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
         setLikes((prevLikes) =>
-          prevLikes.includes(userId) ? prevLikes.filter((like) => like !== userId) : [...prevLikes, userId],
+          prevLikes.includes(userId) ? prevLikes.filter((like) => like !== userEmail) : [...prevLikes, userEmail],
         )
         setLikedByUser(!likedByUser)
       }
@@ -129,7 +205,7 @@ const Post = ({ post }) => {
         body: JSON.stringify({
           post_id: post._id.$oid,
           reply_to_id: replyToId,
-          email: userId,
+          email: userEmail,
           text: replyText,
         }),
       })

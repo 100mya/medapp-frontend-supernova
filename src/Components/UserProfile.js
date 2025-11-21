@@ -25,6 +25,7 @@ const UserProfile = () => {
     profilePic: "",
   })
   const [activeTab, setActiveTab] = useState("profile")
+  const [userEmail, setUserEmail] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -86,6 +87,81 @@ const UserProfile = () => {
   }, [userId])
 
   useEffect(() => {
+  const checkAuthAndFetchUser = async () => {
+    const userId = localStorage.getItem("id")
+    if (!userId) {
+      console.error("No user id found in localStorage")
+      return
+    }
+
+    try {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch user")
+        return
+      }
+
+      let userData = await response.json()
+
+      // Case 1 — backend returns a JSON string
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
+      if (
+        userData &&
+        typeof userData === "object" &&
+        "payload" in userData
+      ) {
+        const payload = userData.payload
+
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      const email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found on userData:", userData)
+        return
+      }
+
+      setUserEmail(email)
+    } catch (error) {
+      console.error("Error fetching user:", error)
+    }
+  }
+
+  checkAuthAndFetchUser()
+}, [])
+
+  useEffect(() => {
     const fetchUserPosts = async () => {
       try {
         const response = await fetch("/api/fetch-posts-by-filter", {
@@ -93,7 +169,7 @@ const UserProfile = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ user_id: userId }),
+          body: JSON.stringify({ email: userEmail }),
         })
 
         if (!response.ok) {
@@ -108,10 +184,10 @@ const UserProfile = () => {
       }
     }
 
-    if (userId) {
+    if (userEmail) {
       fetchUserPosts()
     }
-  }, [userId])
+  }, [userEmail])
 
   const handleEditChange = (e) => {
     const { name, value } = e.target
