@@ -56,12 +56,13 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
+                const id = localStorage.getItem("id")
                 const response = await fetch('/api/fetch-user-by-id', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email_id: email }),
+                    body: JSON.stringify({ user_id: id }),
                 });
 
                 if (!response.ok) {
