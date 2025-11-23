@@ -102,79 +102,61 @@ const Post = ({ post }) => {
   checkAuthAndFetchUser()
 }, [])
 
-  useEffect(() => {
-  // Fetch author/profile data (for the post owner)
-  const fetchAuthorData = async (authorId) => {
-    try {
-      const idFromStorage = localStorage.getItem("id")
-      const response = await fetch("/api/get-user-by-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: authorId }),
-      })
-      if (!response.ok) {
-        const txt = await response.text().catch(() => null)
-        throw new Error(`fetchAuthorData failed: ${response.status} ${response.statusText} ${txt || ""}`)
-      }
-      const data = await response.json()
-      setUserName(data.name || "")
-      if (data.profilePic) {
-        setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
-      } else {
-        setUserProfilePic(defaultImg)
-      }
-    } catch (error) {
-      console.error("Error fetching author data:", error)
-    }
-  }
-
-  
-
-  // Translate local storage id -> email and set userId (email) for API calls
-  const initCurrentUser = async () => {
-    try {
-      const idFromStorage = localStorage.getItem("id")
-      if (!idFromStorage) {
-        console.warn("No local id found in localStorage")
+    useEffect(() => {
+    // Fetch author/profile data (for the post owner)
+    const fetchAuthorData = async (authorEmail) => {
+      if (!authorEmail) {
+        console.warn("No author email on post object")
         return
       }
 
-      // call your existing endpoint to get user object (email)
-      const resp = await fetch("/api/get-user-by-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: userEmail }),
-      })
+      try {
+        const response = await fetch("/api/get-user-by-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: authorEmail }),
+        })
 
-      if (!resp.ok) {
-        const txt = await resp.text().catch(() => null)
-        throw new Error(`get-user-by-userid failed: ${resp.status} ${resp.statusText} ${txt || ""}`)
+        if (!response.ok) {
+          const txt = await response.text().catch(() => null)
+          throw new Error(
+            `fetchAuthorData failed: ${response.status} ${response.statusText} ${txt || ""}`,
+          )
+        }
+
+        const data = await response.json()
+        setUserName(data.name || "")
+        if (data.profilePic) {
+          setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+        } else {
+          setUserProfilePic(defaultImg)
+        }
+      } catch (error) {
+        console.error("Error fetching author data:", error)
       }
-
-      const userData = await resp.json()
-      if (!userData || userData.error) {
-        throw new Error("get-user-by-userid returned no user or error: " + (userData?.error || "unknown"))
-      }
-
-      const email = userData.email
-      if (!email) {
-        throw new Error("Email not found on user data from get-user-by-userid")
-      }
-
-      // set userId to email (other APIs expect email as user_id)
-      setUserId(email)
-
-      // set likedByUser using email (likes array contains user identifiers used by other APIs — email)
-      setLikedByUser(Array.isArray(post.likes) ? post.likes.includes(email) : false)
-    } catch (error) {
-      console.error("Error initializing current user in Post:", error)
     }
-  }
 
-  // run both: fetch post author's profile (post.user_id) and init current user
-  fetchAuthorData(post.user_id)
-  initCurrentUser()
-}, [post.user_id, post.likes])
+    // Initialize current user (use email that was fetched in the first effect)
+    const initCurrentUser = () => {
+      if (!userEmail) {
+        // wait until checkAuthAndFetchUser has set userEmail
+        return
+      }
+
+      // other APIs now identify the user by email
+      setUserId(userEmail)
+
+      setLikedByUser(
+        Array.isArray(post.likes) ? post.likes.includes(userEmail) : false,
+      )
+    }
+
+    // post may have email directly, fall back to user_id
+    const authorEmail = post.email || post.user_id
+
+    fetchAuthorData(authorEmail)
+    initCurrentUser()
+  }, [post.email, post.user_id, post.likes, userEmail])
 
   const handleToggleLikePost = async () => {
     try {
@@ -188,7 +170,9 @@ const Post = ({ post }) => {
       const data = await response.json()
       if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
         setLikes((prevLikes) =>
-          prevLikes.includes(userId) ? prevLikes.filter((like) => like !== userEmail) : [...prevLikes, userEmail],
+          prevLikes.includes(userEmail)
+            ? prevLikes.filter((like) => like !== userEmail)
+            : [...prevLikes, userEmail],
         )
         setLikedByUser(!likedByUser)
       }
@@ -312,16 +296,20 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
   const [replyUserProfilePic, setReplyUserProfilePic] = useState(defaultImg)
   const [userEmail, setUserEmail] = useState("")
 
-  useEffect(() => {
-    const fetchUserData = async (userId) => {
+    useEffect(() => {
+    const fetchUserData = async (email) => {
+      if (!email) {
+        console.warn("No email on reply object")
+        return
+      }
+
       try {
-        const idFromStorage = localStorage.getItem("id")
         const response = await fetch("/api/get-user-by-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: userId }),
+          body: JSON.stringify({ email }),
         })
         const data = await response.json()
         setReplyUserName(data.name)
@@ -334,8 +322,11 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
       }
     }
 
-    fetchUserData(reply.user_id)
-  }, [reply.user_id])
+    // backend might be sending email directly or still using user_id
+    const replyEmail = reply.email || reply.user_id
+    fetchUserData(replyEmail)
+  }, [reply.email, reply.user_id])
+
 
   const handleToggleLikeReply = async () => {
     try {

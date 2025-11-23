@@ -50,41 +50,72 @@ const UserProfile = () => {
   }, [])
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const id = localStorage.getItem("id")
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: id }),
-        })
+  const fetchUserProfile = async () => {
+    try {
+      const id = localStorage.getItem("id")
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: id }),
+      })
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user profile")
-        }
-
-        const profileData = await response.json()
-        setUserProfile(profileData)
-        setEditFormData({
-          name: profileData.name || "",
-          cellNumber: profileData.cellNumber || "",
-          collegeName: profileData.collegeName || "",
-          country: profileData.country || "",
-          bio: profileData.bio || "",
-          profilePic: profileData.profilePic || "",
-        })
-      } catch (error) {
-        console.error("Error fetching user profile:", error)
-        setError("Failed to fetch user profile. Please try again later.")
+      if (!response.ok) {
+        throw new Error("Failed to fetch user profile")
       }
-    }
 
-    if (userId) {
-      fetchUserProfile()
+      let profileData = await response.json()
+
+      // Case 1 — backend returns a JSON string (your sample case)
+      if (typeof profileData === "string") {
+        try {
+          profileData = JSON.parse(profileData)
+        } catch (e) {
+          console.error("Failed to parse profileData string:", e)
+          return
+        }
+      }
+
+      // Case 2 — backend wraps data as { payload: "..." } or { payload: {...} }
+      if (
+        profileData &&
+        typeof profileData === "object" &&
+        "payload" in profileData
+      ) {
+        const payload = profileData.payload
+
+        if (typeof payload === "string") {
+          try {
+            profileData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse profileData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          profileData = payload
+        }
+      }
+
+      setUserProfile(profileData)
+      setEditFormData({
+        name: profileData.name || "",
+        cellNumber: profileData.cellNumber || "",
+        collegeName: profileData.collegeName || "",
+        country: profileData.country || "",
+        bio: profileData.bio || "",
+        profilePic: profileData.profilePic || "",
+      })
+    } catch (error) {
+      console.error("Error fetching user profile:", error)
+      setError("Failed to fetch user profile. Please try again later.")
     }
-  }, [userId])
+  }
+
+  if (userId) {
+    fetchUserProfile()
+  }
+}, [userId])
 
   useEffect(() => {
   const checkAuthAndFetchUser = async () => {
@@ -198,47 +229,54 @@ const UserProfile = () => {
   }
 
   const handleEditSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      const formData = new FormData()
-      formData.append("user_id", userId)
-      formData.append("name", editFormData.name)
-      formData.append("cellNumber", editFormData.cellNumber)
-      formData.append("collegeName", editFormData.collegeName)
-      formData.append("country", editFormData.country)
-      formData.append("bio", editFormData.bio)
-
-      if (editFormData.profilePic instanceof File) {
-        formData.append("profilePic", editFormData.profilePic, "profile_pic.jpg")
-      }
-
-      const response = await fetch("/api/update-profile", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to update user info")
-      }
-
-      const result = await response.json()
-      alert(result.message)
-      setIsEditing(false)
-
-      setUserProfile((prevState) => ({
-        ...prevState,
-        name: editFormData.name,
-        cellNumber: editFormData.cellNumber,
-        collegeName: editFormData.collegeName,
-        country: editFormData.country,
-        bio: editFormData.bio,
-        profilePic: editFormData.profilePic,
-      }))
-    } catch (error) {
-      console.error("Error updating user info:", error)
-      setError("Failed to update user info. Please try again later.")
+  e.preventDefault()
+  try {
+    if (!userEmail) {
+      console.error("No email available for update-profile request")
+      setError("Unable to update profile: missing email.")
+      return
     }
+
+    const formData = new FormData()
+    // 👇 backend now expects email instead of user_id
+    formData.append("email", userEmail)
+    formData.append("name", editFormData.name)
+    formData.append("cellNumber", editFormData.cellNumber)
+    formData.append("collegeName", editFormData.collegeName)
+    formData.append("country", editFormData.country)
+    formData.append("bio", editFormData.bio)
+
+    if (editFormData.profilePic instanceof File) {
+      formData.append("profilePic", editFormData.profilePic, "profile_pic.jpg")
+    }
+
+    const response = await fetch("/api/update-profile", {
+      method: "POST",
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to update user info")
+    }
+
+    const result = await response.json()
+    alert(result.message)
+    setIsEditing(false)
+
+    setUserProfile((prevState) => ({
+      ...prevState,
+      name: editFormData.name,
+      cellNumber: editFormData.cellNumber,
+      collegeName: editFormData.collegeName,
+      country: editFormData.country,
+      bio: editFormData.bio,
+      profilePic: editFormData.profilePic,
+    }))
+  } catch (error) {
+    console.error("Error updating user info:", error)
+    setError("Failed to update user info. Please try again later.")
   }
+}
 
   const handleDeletePost = async (postId) => {
     try {
