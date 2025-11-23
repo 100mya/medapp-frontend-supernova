@@ -19,7 +19,7 @@ const PostCreationForm = () => {
 
   try {
     // 1) Translate local id -> email using your existing API
-    const userResp = await fetch("/api/get-user-by-userid", {
+        const userResp = await fetch("/api/get-user-by-userid", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: idFromStorage }),
@@ -27,16 +27,49 @@ const PostCreationForm = () => {
 
     if (!userResp.ok) {
       const txt = await userResp.text().catch(() => null)
-      throw new Error(`get-user-by-userid failed: ${userResp.status} ${userResp.statusText} ${txt || ""}`)
+      throw new Error(
+        `get-user-by-userid failed: ${userResp.status} ${userResp.statusText} ${txt || ""}`
+      )
     }
 
-    const userData = await userResp.json()
+    let userData = await userResp.json()
     if (!userData || userData.error) {
-      throw new Error("get-user-by-userid returned no user or an error: " + (userData?.error || "unknown"))
+      throw new Error(
+        "get-user-by-userid returned no user or an error: " + (userData?.error || "unknown")
+      )
     }
 
-    const userEmail = userData.email
+    // 🔧 Handle cases where backend returns JSON string or payload wrapper
+    if (typeof userData === "string") {
+      try {
+        userData = JSON.parse(userData)
+      } catch (e) {
+        console.error("Failed to parse userData string:", e)
+        throw new Error("Failed to parse user data from get-user-by-userid")
+      }
+    }
+
+    if (userData && typeof userData === "object" && "payload" in userData) {
+      const payload = userData.payload
+      if (typeof payload === "string") {
+        try {
+          userData = JSON.parse(payload)
+        } catch (e) {
+          console.error("Failed to parse userData.payload string:", e)
+          throw new Error("Failed to parse payload from get-user-by-userid")
+        }
+      } else if (payload && typeof payload === "object") {
+        userData = payload
+      }
+    }
+
+    const userEmail =
+      userData && typeof userData === "object" && "email" in userData
+        ? userData.email
+        : undefined
+
     if (!userEmail) {
+      console.error("Email not found in userData:", userData)
       throw new Error("Email not found in user data returned from get-user-by-userid")
     }
 
@@ -72,7 +105,6 @@ const PostCreationForm = () => {
     alert("Error submitting post")
   }
 }
-
 
   return (
     <div className="post-creation-form">
