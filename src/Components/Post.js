@@ -157,32 +157,35 @@ const Post = ({ post }) => {
   }, [post.email, post.user_id, post.likes, userEmail])
 
   const handleToggleLikePost = async () => {
-    try {
-      const response = await fetch("/api/toggle-like-post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          post_id: post._id.$oid,
-          reply_to_id: replyToId,
-          user_id: userId,
-          text: replyText,
-        })
-      })
-      const data = await response.json()
-      if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
-        setLikes((prevLikes) =>
-          prevLikes.includes(userEmail)
-            ? prevLikes.filter((like) => like !== userEmail)
-            : [...prevLikes, userEmail],
-        )
-        setLikedByUser(!likedByUser)
-      }
-    } catch (error) {
-      console.error("Error toggling like on post:", error)
+  try {
+    const response = await fetch("/api/toggle-like-post", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        post_id: post._id.$oid,
+        email: userEmail,  // backend expects email
+      }),
+    })
+
+    const data = await response.json()
+
+    if (
+      data.message === "Post liked successfully" ||
+      data.message === "Post unliked successfully"
+    ) {
+      setLikes((prevLikes) =>
+        prevLikes.includes(userEmail)
+          ? prevLikes.filter((like) => like !== userEmail)
+          : [...prevLikes, userEmail]
+      )
+      setLikedByUser(!likedByUser)
     }
+  } catch (error) {
+    console.error("Error toggling like on post:", error)
   }
+}
 
   const handleCreateReply = async (replyToId = null) => {
     try {
