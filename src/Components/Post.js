@@ -139,23 +139,21 @@ const Post = ({ post }) => {
     // Initialize current user (use email that was fetched in the first effect)
     const initCurrentUser = () => {
       if (!userEmail) {
-        // wait until checkAuthAndFetchUser has set userEmail
+        // wait until checkAuthAndFetchUser has filled userEmail
         return
       }
 
-      // other APIs now identify the user by email
+      // All social APIs and likes use email
       setUserId(userEmail)
-
       setLikedByUser(
         Array.isArray(post.likes) ? post.likes.includes(userEmail) : false,
       )
     }
 
-    // post may have email directly, fall back to user_id
-    const authorEmail = post.email || post.user_id
-
+    const authorEmail = post.email || post.user_id  // fallback for any legacy data
     fetchAuthorData(authorEmail)
     initCurrentUser()
+
   }, [post.email, post.user_id, post.likes, userEmail])
 
   const handleToggleLikePost = async () => {
@@ -165,7 +163,12 @@ const Post = ({ post }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: post._id.$oid, email: userEmail }),
+        body: JSON.stringify({
+          post_id: post._id.$oid,
+          reply_to_id: replyToId,
+          user_id: userId,
+          text: replyText,
+        })
       })
       const data = await response.json()
       if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
@@ -199,7 +202,7 @@ const Post = ({ post }) => {
       if (data.message === "Reply added successfully") {
         const newReply = {
           _id: data.id,
-          email: userId,
+          email: userEmail,
           text: replyText,
           created_at: new Date().toISOString(),
           likes: [],
@@ -236,7 +239,7 @@ const Post = ({ post }) => {
     <div className="post">
       <div className="post-header">
         <img src={userProfilePic || "/placeholder.svg"} alt="User" className="user-img" />
-        <Link to={`/community/profile?id=${post.user_id}`} className="user-link">
+        <Link to={`/community/profile?id=${post.email}`} className="user-link">
           <h3>{userName}</h3>
         </Link>
       </div>
@@ -297,35 +300,33 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
   const [userEmail, setUserEmail] = useState("")
 
     useEffect(() => {
-    const fetchUserData = async (email) => {
-      if (!email) {
-        console.warn("No email on reply object")
-        return
-      }
-
-      try {
-        const response = await fetch("/api/get-user-by-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        })
-        const data = await response.json()
-        setReplyUserName(data.name)
-        setUserEmail(data.email)
-        if (data.profilePic) {
-          setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+      const fetchUserData = async (email) => {
+        if (!email) {
+          console.warn("No email on reply object")
+          return
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-      }
-    }
 
-    // backend might be sending email directly or still using user_id
-    const replyEmail = reply.email || reply.user_id
-    fetchUserData(replyEmail)
-  }, [reply.email, reply.user_id])
+        try {
+          const response = await fetch("/api/get-user-by-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          })
+          const data = await response.json()
+          setReplyUserName(data.name)
+          if (data.profilePic) {
+            setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error)
+        }
+      }
+
+      const replyEmail = reply.email || reply.user_id
+      fetchUserData(replyEmail)
+    }, [reply.email, reply.user_id])
 
 
   const handleToggleLikeReply = async () => {
@@ -341,7 +342,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: postId, reply_id: replyId }),
+        body: JSON.stringify({ post_id: postId, reply_id: replyId, email: userId }),
       })
 
       const data = await response.json()
@@ -378,7 +379,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         nestedReplyToId = nestedReplyToId.$oid
       }
 
-      if (!userEmail) {
+      if (!userId) {
         console.error("Email not found")
         return
       }
@@ -391,7 +392,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         body: JSON.stringify({
           post_id: postId,
           reply_to_id: nestedReplyToId,
-          email: userEmail,
+          email: userId,
           text: replyText,
         }),
       })
@@ -473,7 +474,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
     <div className="reply">
       <div className="reply-header">
         <img src={replyUserProfilePic || "/placeholder.svg"} alt="User" className="user-img" />
-        <Link to={`/community/profile?id=${reply.user_id}`} className="user-link">
+        <Link to={`/community/profile?id=${reply.email || ""}`} className="user-link">
           <h4>{replyUserName}</h4>
         </Link>
       </div>

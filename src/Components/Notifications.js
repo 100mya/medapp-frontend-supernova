@@ -105,16 +105,15 @@ const Notifications = () => {
 }, [])
 
 
-  useEffect(() => {
+    useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const storedUserId = localStorage.getItem("id")
-        setUserId(storedUserId)
-        if (!userId) {
-          console.error("User ID not found in local storage")
+        // Wait until we actually have the email
+        if (!userEmail) {
           return
         }
 
+        // (Optional) fetch full user info using the email
         const user_response = await fetch("/api/get-user-by-email", {
           method: "POST",
           headers: {
@@ -142,24 +141,25 @@ const Notifications = () => {
           }
 
           setUserInfo(user)
-        
 
-        const response = await fetch("/api/get-notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userEmail }),
-        })
-        const result = await response.json()
-        if (response.ok) {
-          const parsedNotifications = JSON.parse(result)
-          setNotifications(parsedNotifications.reverse())
+          // 🔴 Backend expects key `user_id`, value = EMAIL
+          const response = await fetch("/api/get-notifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: userEmail }),
+          })
+
+          const result = await response.json()
+
+          if (response.ok) {
+            const parsedNotifications = JSON.parse(result)
+            setNotifications(parsedNotifications.reverse())
+          } else {
+            setError(result.error || "Failed to fetch notifications")
+          }
         } else {
-          setError(result.error || "Failed to fetch notifications")
-        }
-
-    }else {
           throw new Error(userData.error || "User data format is incorrect")
         }
       } catch (error) {
@@ -168,7 +168,7 @@ const Notifications = () => {
     }
 
     fetchNotifications()
-  }, [])
+  }, [userEmail])
 
   const deleteNotification = async (notificationId) => {
     try {
