@@ -205,7 +205,7 @@ const UserPost = ({ post }) => {
         body: JSON.stringify({
           post_id: post._id.$oid,
           reply_to_id: replyToId,
-          email: email,
+          email: userEmail,
           text: replyText,
         }),
       })
