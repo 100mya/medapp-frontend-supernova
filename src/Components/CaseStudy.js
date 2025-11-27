@@ -1,7 +1,7 @@
 "use client"
 
 //CaseStudy.js
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import "./CaseStudy.css"
 import historyTakingData from "./CaseStudy/HistoryTaking.json"
@@ -44,6 +44,9 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
   const [reportPopup, setReportPopup] = useState(false)
   const [reportData, setReportData] = useState("")
   const [isReportGenerating, setIsReportGenerating] = useState(false)
+  
+  const caseStreamControllerRef = useRef(null)
+  const caseStreamRunIdRef = useRef(0)
 
   const navigate = useNavigate()
 
@@ -111,27 +114,75 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
     addResponse(action)
     setIsLoading(true)
 
-    // Then, fetch the bot's response
-    const caseInfo = JSON.stringify(patientInfo) // Send the entire case study info
-    const response = await fetch("/api/case-study-response", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ case_info: caseInfo, section, action }),
-    })
-
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder("utf-8")
-    let result = ""
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      result = decoder.decode(value)
+    // Abort any previous stream
+    if (caseStreamControllerRef.current) {
+      try {
+        caseStreamControllerRef.current.abort()
+      } catch (e) {
+        // ignore
+      }
     }
 
-    // Display the bot's response after fetching
-    addResponse(null, result)
+    const controller = new AbortController()
+    caseStreamControllerRef.current = controller
+    const myRunId = ++caseStreamRunIdRef.current
+
+    try {
+      const caseInfo = JSON.stringify(patientInfo) // Send the entire case study info
+      const response = await fetch("/api/case-study-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ case_info: caseInfo, section, action }),
+        signal: controller.signal,
+      })
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder("utf-8")
+      let result = ""
+
+      const delayMs = 60 // small delay between chunks, like throttling
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        if (myRunId !== caseStreamRunIdRef.current) return // stale stream
+
+        const chunkText = decoder.decode(value, { stream: true })
+        if (!chunkText) continue
+
+        // Just like AIChat: each chunk is treated as the full text-so-far
+        // so we overwrite instead of accumulating with +=
+        result = chunkText
+
+        // optional tiny delay to slow down stream processing
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+
+      // flush any remaining buffered text
+      const remaining = decoder.decode()
+      if (remaining) {
+        result = remaining
+      }
+
+      if (myRunId === caseStreamRunIdRef.current) {
+        addResponse(null, result)
+      }
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        console.error("Error fetching section response:", error)
+        addResponse(
+          null,
+          "Sorry, there was an error generating the response for this section."
+        )
+      }
+    } finally {
+      if (myRunId === caseStreamRunIdRef.current) {
+        caseStreamControllerRef.current = null
+        setIsLoading(false)
+      }
+    }
   }
 
   const handleCheckboxChange = (item, category) => {

@@ -22,6 +22,8 @@ const AIChat = () => {
 
   const streamControllerRef = useRef(null)
   const streamRunIdRef = useRef(0)
+  const streamUpdateRef = useRef("")          // stores latest streamed text
+  const lastStreamUpdateTimeRef = useRef(0)   // throttles updates
 
   const languages = [
     { code: "en", name: "English" },
@@ -238,13 +240,23 @@ const AIChat = () => {
         const chunk = decoder.decode(value, { stream: true })
         fullContent = chunk
 
-        setMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages]
-          if (updatedMessages.length > 0 && updatedMessages[updatedMessages.length - 1].type === "bot") {
-            updatedMessages[updatedMessages.length - 1].content = fullContent
-          }
-          return updatedMessages
-        })
+        // store the newest content but DO NOT trigger a rerender yet
+        streamUpdateRef.current = fullContent
+
+        const now = Date.now()
+
+        // throttle React updates to every 60ms
+        if (now - lastStreamUpdateTimeRef.current > 60) {
+          lastStreamUpdateTimeRef.current = now
+
+          setMessages((prevMessages) => {
+            const updated = [...prevMessages]
+            if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
+              updated[updated.length - 1].content = streamUpdateRef.current
+            }
+            return updated
+          })
+        }
       }
     } catch (error) {
       if (error?.name !== "AbortError") {
