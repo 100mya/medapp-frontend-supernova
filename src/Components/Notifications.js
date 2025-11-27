@@ -126,7 +126,30 @@ const Notifications = () => {
           throw new Error("Failed to fetch user information")
         }
 
-        const userData = await user_response.json()
+        let userData = await user_response.json()
+
+        if (typeof userData === "string") {
+          try {
+            userData = JSON.parse(userData)
+          } catch (e) {
+            console.error("Failed to parse userData string from get-user-by-email:", e)
+            return
+          }
+        }
+
+        if (userData && typeof userData === "object" && "payload" in userData) {
+          const payload = userData.payload
+          if (typeof payload === "string") {
+            try {
+              userData = JSON.parse(payload)
+            } catch (e) {
+              console.error("Failed to parse userData.payload string:", e)
+              return
+            }
+          } else if (payload && typeof payload === "object") {
+            userData = payload
+          }
+        }
 
         if (userData && !userData.error) {
           const user = {
@@ -142,12 +165,12 @@ const Notifications = () => {
 
           setUserInfo(user)
 
-          // 🔴 Backend expects key `user_id`, value = EMAIL
           const response = await fetch("/api/get-notifications", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            // key stays user_id, value is email
             body: JSON.stringify({ user_id: userEmail }),
           })
 
@@ -162,6 +185,7 @@ const Notifications = () => {
         } else {
           throw new Error(userData.error || "User data format is incorrect")
         }
+
       } catch (error) {
         setError(error.message)
       }
@@ -227,20 +251,53 @@ const Notifications = () => {
     useEffect(() => {
       const fetchUserName = async () => {
         try {
-          const response = await fetch("/api/get-user-by-useremail", {
+          if (!notification.from_user_id) {
+            setUserName("Unknown User")
+            return
+          }
+
+          const response = await fetch("/api/get-user-by-email", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: notification.from_user_id }),
+            // from_user_id in notifications is an EMAIL
+            body: JSON.stringify({ email: notification.from_user_id }),
           })
-          if (response.ok) {
-            const userData = await response.json()
-            const name = userData.name || "Unknown User"
-            setUserName(name)
-          } else {
+
+          if (!response.ok) {
             throw new Error("Failed to fetch user data")
           }
+
+          let userData = await response.json()
+
+          if (typeof userData === "string") {
+            try {
+              userData = JSON.parse(userData)
+            } catch (e) {
+              console.error("Failed to parse notification user data string:", e)
+              setUserName("Unknown User")
+              return
+            }
+          }
+
+          if (userData && typeof userData === "object" && "payload" in userData) {
+            const payload = userData.payload
+            if (typeof payload === "string") {
+              try {
+                userData = JSON.parse(payload)
+              } catch (e) {
+                console.error("Failed to parse notification payload string:", e)
+                setUserName("Unknown User")
+                return
+              }
+            } else if (payload && typeof payload === "object") {
+              userData = payload
+            }
+          }
+
+          const name = userData.name || "Unknown User"
+          setUserName(name)
         } catch (error) {
           console.error("Error fetching user data:", error)
           setUserName("Unknown User")

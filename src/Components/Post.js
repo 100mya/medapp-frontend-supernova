@@ -124,7 +124,33 @@ const Post = ({ post }) => {
           )
         }
 
-        const data = await response.json()
+        let data = await response.json()
+
+        // Backend returns a JSON string; parse it
+        if (typeof data === "string") {
+          try {
+            data = JSON.parse(data)
+          } catch (e) {
+            console.error("Failed to parse user data string from get-user-by-email:", e)
+            return
+          }
+        }
+
+        // Also handle possible { payload: "..." } wrapping, same as elsewhere
+        if (data && typeof data === "object" && "payload" in data) {
+          const payload = data.payload
+          if (typeof payload === "string") {
+            try {
+              data = JSON.parse(payload)
+            } catch (e) {
+              console.error("Failed to parse payload string from get-user-by-email:", e)
+              return
+            }
+          } else if (payload && typeof payload === "object") {
+            data = payload
+          }
+        }
+
         setUserName(data.name || "")
         if (data.profilePic) {
           setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
@@ -317,8 +343,34 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
             },
             body: JSON.stringify({ email }),
           })
-          const data = await response.json()
-          setReplyUserName(data.name)
+
+          let data = await response.json()
+
+          // Response is a JSON string from json_util.dumps
+          if (typeof data === "string") {
+            try {
+              data = JSON.parse(data)
+            } catch (e) {
+              console.error("Failed to parse reply user data string:", e)
+              return
+            }
+          }
+
+          if (data && typeof data === "object" && "payload" in data) {
+            const payload = data.payload
+            if (typeof payload === "string") {
+              try {
+                data = JSON.parse(payload)
+              } catch (e) {
+                console.error("Failed to parse reply payload string:", e)
+                return
+              }
+            } else if (payload && typeof payload === "object") {
+              data = payload
+            }
+          }
+
+          setReplyUserName(data.name || "")
           if (data.profilePic) {
             setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
           }

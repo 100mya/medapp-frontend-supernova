@@ -274,7 +274,7 @@ const UploadPapers = () => {
         throw new Error("Upload failed")
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?email=${email}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -398,7 +398,7 @@ const UploadPapers = () => {
         throw new Error(errorResponse.error)
       }
 
-      const filenamesResponse = await fetch(`/api/get-filenames?email=${userId}`, {
+      const filenamesResponse = await fetch(`/api/get-filenames?email=${email}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

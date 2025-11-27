@@ -25,35 +25,133 @@ const UserPost = ({ post }) => {
   const [userId, setUserId] = useState("")
   const [userName, setUserName] = useState("")
   const [userProfilePic, setUserProfilePic] = useState(defaultImg)
+  const [userEmail, setUserEmail] = useState("")
 
   useEffect(() => {
-    const fetchUserData = async (userId) => {
-      try {
-        const id = localStorage.getItem("id")
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: id }),
-        })
-        const data = await response.json()
-        setUserName(data.name)
-        if (data.profilePic) {
-          setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-      }
+  const fetchCurrentUserEmail = async () => {
+    const storedId = localStorage.getItem("id")
+    if (!storedId) {
+      console.error("No user id found in localStorage")
+      return
     }
 
-    const id = localStorage.getItem("id")
-    if (id) {
-      setUserId(id)
-      setLikedByUser(post.likes.includes(id))
-      fetchUserData(post.user_id)
+    try {
+      const response = await fetch("/api/get-user-by-userid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: storedId }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch current user")
+        return
+      }
+
+      let userData = await response.json()
+
+      if (typeof userData === "string") {
+        try {
+          userData = JSON.parse(userData)
+        } catch (e) {
+          console.error("Failed to parse userData string:", e)
+          return
+        }
+      }
+
+      if (userData && typeof userData === "object" && "payload" in userData) {
+        const payload = userData.payload
+        if (typeof payload === "string") {
+          try {
+            userData = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse userData.payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          userData = payload
+        }
+      }
+
+      const email =
+        userData &&
+        typeof userData === "object" &&
+        "email" in userData
+          ? userData.email
+          : undefined
+
+      if (!email) {
+        console.error("Email not found on current user:", userData)
+        return
+      }
+
+      setUserId(email)       // in this file, treat userId prop as email
+      setUserEmail(email)
+      setLikedByUser(Array.isArray(post.likes) ? post.likes.includes(email) : false)
+    } catch (error) {
+      console.error("Error fetching current user data:", error)
     }
-  }, [post.user_id, post.likes])
+  }
+
+  const fetchAuthorData = async () => {
+    const authorEmail = post.email
+    if (!authorEmail) {
+      console.warn("No author email on post object")
+      return
+    }
+
+    try {
+      const response = await fetch("/api/get-user-by-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: authorEmail }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch post author")
+        return
+      }
+
+      let data = await response.json()
+
+      if (typeof data === "string") {
+        try {
+          data = JSON.parse(data)
+        } catch (e) {
+          console.error("Failed to parse author data string:", e)
+          return
+        }
+      }
+
+      if (data && typeof data === "object" && "payload" in data) {
+        const payload = data.payload
+        if (typeof payload === "string") {
+          try {
+            data = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse author payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          data = payload
+        }
+      }
+
+      setUserName(data.name || "")
+      if (data.profilePic) {
+        setUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+      }
+    } catch (error) {
+      console.error("Error fetching author data:", error)
+    }
+  }
+
+  fetchCurrentUserEmail()
+  fetchAuthorData()
+}, [post.email, post.likes])
 
   const handleToggleLikePost = async () => {
     try {
@@ -62,12 +160,14 @@ const UserPost = ({ post }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: post._id.$oid, user_id: userId }),
+        body: JSON.stringify({ post_id: post._id.$oid, email: userEmail }),
       })
       const data = await response.json()
       if (data.message === "Post liked successfully" || data.message === "Post unliked successfully") {
         setLikes((prevLikes) =>
-          prevLikes.includes(userId) ? prevLikes.filter((like) => like !== userId) : [...prevLikes, userId],
+          prevLikes.includes(userEmail)
+            ? prevLikes.filter((like) => like !== userEmail)
+            : [...prevLikes, userEmail],
         )
         setLikedByUser(!likedByUser)
       }
@@ -105,7 +205,7 @@ const UserPost = ({ post }) => {
         body: JSON.stringify({
           post_id: post._id.$oid,
           reply_to_id: replyToId,
-          user_id: userId,
+          email: email,
           text: replyText,
         }),
       })
@@ -113,7 +213,7 @@ const UserPost = ({ post }) => {
       if (data.message === "Reply added successfully") {
         const newReply = {
           _id: data.id,
-          user_id: userId,
+          email: userEmail,
           text: replyText,
           created_at: new Date().toISOString(),
           likes: [],
@@ -150,7 +250,7 @@ const UserPost = ({ post }) => {
     <div className="post">
       <div className="post-header">
         <img src={userProfilePic || "/placeholder.svg"} alt="User" className="user-img" />
-        <Link to={`/community/profile?id=${post.user_id}`} className="user-link">
+        <Link to={`/community/profile?id=${post.email}`} className="user-link">
           <h3>{userName}</h3>
         </Link>
         <button onClick={handleDeletePost} className="delete-post-button">
@@ -213,27 +313,58 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
   const [replyUserProfilePic, setReplyUserProfilePic] = useState(defaultImg)
 
   useEffect(() => {
-    const fetchUserData = async (userId) => {
-      try {
-        const response = await fetch("/api/get-user-by-userid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId }),
-        })
-        const data = await response.json()
-        setReplyUserName(data.name)
-        if (data.profilePic) {
-          setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-      }
+  const fetchUserData = async (email) => {
+    if (!email) {
+      console.warn("No email on reply object")
+      return
     }
 
-    fetchUserData(reply.user_id)
-  }, [reply.user_id])
+    try {
+      const response = await fetch("/api/get-user-by-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      let data = await response.json()
+
+      if (typeof data === "string") {
+        try {
+          data = JSON.parse(data)
+        } catch (e) {
+          console.error("Failed to parse reply user data string:", e)
+          return
+        }
+      }
+
+      if (data && typeof data === "object" && "payload" in data) {
+        const payload = data.payload
+        if (typeof payload === "string") {
+          try {
+            data = JSON.parse(payload)
+          } catch (e) {
+            console.error("Failed to parse reply payload string:", e)
+            return
+          }
+        } else if (payload && typeof payload === "object") {
+          data = payload
+        }
+      }
+
+      setReplyUserName(data.name || "")
+      if (data.profilePic) {
+        setReplyUserProfilePic(`data:image/jpeg;base64,${data.profilePic}`)
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error)
+    }
+  }
+
+  const replyEmail = reply.email || reply.user_id
+  fetchUserData(replyEmail)
+}, [reply.email, reply.user_id])
 
   const handleToggleLikeReply = async () => {
     try {
@@ -248,7 +379,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ post_id: postId, reply_id: replyId }),
+        body: JSON.stringify({ post_id: postId, reply_id: replyId, email: userId }),
       })
 
       const data = await response.json()
@@ -293,7 +424,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
         body: JSON.stringify({
           post_id: postId,
           reply_to_id: nestedReplyToId,
-          user_id: userId,
+          email: userId,
           text: replyText,
         }),
       })
@@ -302,7 +433,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
       if (data.message === "Reply added successfully") {
         const newReply = {
           _id: data.id,
-          user_id: userId,
+          email: userId,
           text: replyText,
           created_at: new Date().toISOString(),
           likes: [],
@@ -375,7 +506,7 @@ const Reply = ({ reply, postId, setReplies, userId }) => {
     <div className="reply">
       <div className="reply-header">
         <img src={replyUserProfilePic || "/placeholder.svg"} alt="User" className="user-img" />
-        <Link to={`/community/profile?id=${reply.user_id}`} className="user-link">
+        <Link to={`/community/profile?id=${reply.email}`} className="user-link">
           <h4>{replyUserName}</h4>
         </Link>
         <button onClick={handleDeleteReply} className="delete-reply-button">
