@@ -111,32 +111,37 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
   }
 
 const fetchSectionResponse = async (section, action) => {
-    // Immediately show the user's action in the chat
-    addResponse(action);
-    setIsLoading(true);
-  
-    // Then, fetch the bot's response
-    const caseInfo = JSON.stringify(patientInfo); // Send the entire case study info
-    const response = await fetch('/api/case-study-response', {
-      method: 'POST',
+  // Immediately show the user's action in the chat
+  addResponse(action)
+  setIsLoading(true)
+
+  try {
+    const caseInfo = JSON.stringify(patientInfo) // Send the entire case study info
+
+    const response = await fetch("/api/case-study-response", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ case_info: caseInfo, section, action }),
-    });
-  
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let result = '';
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      result = decoder.decode(value);
+    })
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`)
     }
-  
+
+    const data = await response.json()
+    const result = data.response ?? ""
+
     // Display the bot's response after fetching
-    addResponse(null, result);
-  };
+    addResponse(null, result)
+  } catch (error) {
+    console.error("Error fetching case study section response:", error)
+    addResponse(null, "Sorry, there was an error generating the response for this section.")
+  } finally {
+    setIsLoading(false)
+  }
+}
 
   const handleCheckboxChange = (item, category) => {
     setSelectedItems((prevSelectedItems) => {

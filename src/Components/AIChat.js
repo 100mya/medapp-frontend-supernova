@@ -24,7 +24,7 @@ const AIChat = () => {
   const streamRunIdRef = useRef(0)
   const streamUpdateRef = useRef("")          // stores latest streamed text
   const lastStreamUpdateTimeRef = useRef(0)   // throttles updates
-  const lastChunkRef = useRef("") 
+  const lastRenderedRef = useRef("") 
 
   const languages = [
     { code: "en", name: "English" },
@@ -199,6 +199,7 @@ const AIChat = () => {
   }, [])
 
   const handleStream = async (url, formData) => {
+    let myRunId
     try {
       // Abort any previous stream
       if (streamControllerRef.current) {
@@ -209,7 +210,12 @@ const AIChat = () => {
 
       const controller = new AbortController()
       streamControllerRef.current = controller
-      const myRunId = ++streamRunIdRef.current
+      myRunId = ++streamRunIdRef.current
+
+      // Reset streaming helpers
+      streamUpdateRef.current = ""
+      lastStreamUpdateTimeRef.current = 0
+      lastRenderedRef.current = ""
 
       const payload = {
         prompt: formData.get("prompt"),
@@ -227,30 +233,69 @@ const AIChat = () => {
         signal: controller.signal,
       })
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let fullContent = ""
+      if (!response.body) {
+        throw new Error("No response body")
+      }
 
-      // Add bot message placeholder
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder("utf-8")
+
+      // Add bot message placeholder ONCE
       setMessages((prevMessages) => [...prevMessages, { type: "bot", content: "" }])
+
+      let fullContent = ""
+      const throttleMs = 60
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        // Only process if this is still the current stream
+        // If a newer request started, stop this one
         if (myRunId !== streamRunIdRef.current) return
 
-        const chunk = decoder.decode(value, { stream: true })
-        fullContent = chunk
+        // 👇 Your backend: "gives the complete thing on every stream"
+        // So we TREAT this as the full message-so-far, not a delta
+        const chunkText = decoder.decode(value, { stream: true })
+        if (!chunkText) continue
 
-        // Update the last bot message with accumulated content
+        fullContent = chunkText              // ⬅️ overwrite, NOT +=
+        streamUpdateRef.current = fullContent
+
+        const now = Date.now()
+        // Throttle + avoid re-setting the same content again and again
+        if (
+          now - lastStreamUpdateTimeRef.current > throttleMs &&
+          streamUpdateRef.current !== lastRenderedRef.current
+        ) {
+          lastStreamUpdateTimeRef.current = now
+          lastRenderedRef.current = streamUpdateRef.current
+
+          setMessages((prevMessages) => {
+            const updated = [...prevMessages]
+            if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
+              updated[updated.length - 1].content = streamUpdateRef.current
+            }
+            return updated
+          })
+        }
+      }
+
+      // Flush any remaining buffered text
+      const remaining = decoder.decode()
+      if (remaining) {
+        fullContent = remaining // still "full message"
+        streamUpdateRef.current = fullContent
+      }
+
+      // Final update so we definitely show the complete final content ONCE
+      if (streamUpdateRef.current && streamUpdateRef.current !== lastRenderedRef.current) {
+        lastRenderedRef.current = streamUpdateRef.current
         setMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages]
-          if (updatedMessages.length > 0 && updatedMessages[updatedMessages.length - 1].type === "bot") {
-            updatedMessages[updatedMessages.length - 1].content = fullContent
+          const updated = [...prevMessages]
+          if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
+            updated[updated.length - 1].content = streamUpdateRef.current
           }
-          return updatedMessages
+          return updated
         })
       }
     } catch (error) {
@@ -258,12 +303,12 @@ const AIChat = () => {
         console.error("Error handling stream", error)
       }
     } finally {
-      const myRunId = streamRunIdRef.current // Declare myRunId here
       if (myRunId === streamRunIdRef.current) {
         streamControllerRef.current = null
       }
     }
   }
+
 
   const handleSubmit = async (event) => {
     event.preventDefault()
