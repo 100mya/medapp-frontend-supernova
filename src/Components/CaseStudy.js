@@ -110,93 +110,33 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
     setIsGenerating(false) // Set loading state to false after completion
   }
 
-  const fetchSectionResponse = async (section, action) => {
+const fetchSectionResponse = async (section, action) => {
     // Immediately show the user's action in the chat
-    addResponse(action)
-    setIsLoading(true)
-
-    // Abort any previous stream
-    if (caseStreamControllerRef.current) {
-      try {
-        caseStreamControllerRef.current.abort()
-      } catch (e) {
-        // ignore
-      }
+    addResponse(action);
+    setIsLoading(true);
+  
+    // Then, fetch the bot's response
+    const caseInfo = JSON.stringify(patientInfo); // Send the entire case study info
+    const response = await fetch('/api/case-study-response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ case_info: caseInfo, section, action }),
+    });
+  
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let result = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      result = decoder.decode(value);
     }
-
-    const controller = new AbortController()
-    caseStreamControllerRef.current = controller
-    const myRunId = ++caseStreamRunIdRef.current
-    caseLastChunkRef.current = "" // reset for this run
-
-    try {
-      const caseInfo = JSON.stringify(patientInfo) // Send the entire case study info
-      const response = await fetch("/api/case-study-response", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ case_info: caseInfo, section, action }),
-        signal: controller.signal,
-      })
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder("utf-8")
-      let result = ""
-
-      const delayMs = 60 // small delay between chunks, like throttling
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        if (myRunId !== caseStreamRunIdRef.current) return // stale stream
-
-        const chunkText = decoder.decode(value, { stream: true })
-        if (!chunkText) continue
-
-        // BACKEND sends full text-so-far each time.
-        // We only want the *new* part beyond the previous chunk.
-        const prevFull = caseLastChunkRef.current
-        const newPart = chunkText.startsWith(prevFull)
-          ? chunkText.slice(prevFull.length)
-          : chunkText // fallback if something weird happens
-
-        caseLastChunkRef.current = chunkText
-        result = newPart
-
-        // small delay so the stream doesn't feel too "instant"
-        await new Promise((resolve) => setTimeout(resolve, delayMs))
-      }
-
-      // flush any remaining buffered text
-      const remaining = decoder.decode()
-      if (remaining) {
-        const prevFull = caseLastChunkRef.current
-        const full = prevFull + remaining
-        const newPart = full.startsWith(prevFull) ? full.slice(prevFull.length) : remaining
-        caseLastChunkRef.current = full
-        result = newPart
-      }
-
-      if (myRunId === caseStreamRunIdRef.current) {
-        addResponse(null, result)
-      }
-    } catch (error) {
-      if (error?.name !== "AbortError") {
-        console.error("Error fetching section response:", error)
-        addResponse(
-          null,
-          "Sorry, there was an error generating the response for this section."
-        )
-      }
-    } finally {
-      if (myRunId === caseStreamRunIdRef.current) {
-        caseStreamControllerRef.current = null
-        caseLastChunkRef.current = ""
-        setIsLoading(false)
-      }
-    }
-  }
+  
+    // Display the bot's response after fetching
+    addResponse(null, result);
+  };
 
   const handleCheckboxChange = (item, category) => {
     setSelectedItems((prevSelectedItems) => {

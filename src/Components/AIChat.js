@@ -200,6 +200,7 @@ const AIChat = () => {
 
   const handleStream = async (url, formData) => {
     try {
+      // Abort any previous stream
       if (streamControllerRef.current) {
         try {
           streamControllerRef.current.abort()
@@ -209,10 +210,6 @@ const AIChat = () => {
       const controller = new AbortController()
       streamControllerRef.current = controller
       const myRunId = ++streamRunIdRef.current
-
-      lastChunkRef.current = ""
-      streamUpdateRef.current = ""
-      lastStreamUpdateTimeRef.current = 0
 
       const payload = {
         prompt: formData.get("prompt"),
@@ -234,58 +231,34 @@ const AIChat = () => {
       const decoder = new TextDecoder()
       let fullContent = ""
 
+      // Add bot message placeholder
       setMessages((prevMessages) => [...prevMessages, { type: "bot", content: "" }])
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
+        // Only process if this is still the current stream
         if (myRunId !== streamRunIdRef.current) return
 
         const chunk = decoder.decode(value, { stream: true })
-        if (!chunk) continue
+        fullContent = chunk
 
-        // BACKEND sends "full text so far" (and sometimes repeats it entirely)
-        // We only want the *new* part beyond the previous chunk.
-        const prevFull = lastChunkRef.current
-        let newPart
-
-        if (chunk.startsWith(prevFull)) {
-          // normal case: chunk extends previous
-          newPart = chunk.slice(prevFull.length)
-        } else {
-          // fallback: if something weird happens, just take chunk as-is
-          newPart = chunk
-        }
-
-        lastChunkRef.current = chunk
-        fullContent = newPart
-
-        // store newest full content (de-duplicated) but do not always rerender
-        streamUpdateRef.current = fullContent
-
-        const now = Date.now()
-
-        // throttle React updates to every 60ms
-        if (now - lastStreamUpdateTimeRef.current > 60) {
-          lastStreamUpdateTimeRef.current = now
-
-          setMessages((prevMessages) => {
-            const updated = [...prevMessages]
-            if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
-              updated[updated.length - 1].content = streamUpdateRef.current
-            }
-            return updated
-          })
-        }
+        // Update the last bot message with accumulated content
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages]
+          if (updatedMessages.length > 0 && updatedMessages[updatedMessages.length - 1].type === "bot") {
+            updatedMessages[updatedMessages.length - 1].content = fullContent
+          }
+          return updatedMessages
+        })
       }
-
     } catch (error) {
       if (error?.name !== "AbortError") {
         console.error("Error handling stream", error)
       }
     } finally {
-      const myRunId = streamRunIdRef.current
+      const myRunId = streamRunIdRef.current // Declare myRunId here
       if (myRunId === streamRunIdRef.current) {
         streamControllerRef.current = null
       }
