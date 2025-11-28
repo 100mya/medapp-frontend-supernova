@@ -212,11 +212,6 @@ const AIChat = () => {
       streamControllerRef.current = controller
       myRunId = ++streamRunIdRef.current
 
-      // Reset streaming helpers
-      streamUpdateRef.current = ""
-      lastStreamUpdateTimeRef.current = 0
-      lastRenderedRef.current = ""
-
       const payload = {
         prompt: formData.get("prompt"),
         filename: formData.get("filename"),
@@ -240,61 +235,55 @@ const AIChat = () => {
       const reader = response.body.getReader()
       const decoder = new TextDecoder("utf-8")
 
-      // Add bot message placeholder ONCE
-      setMessages((prevMessages) => [...prevMessages, { type: "bot", content: "" }])
-
-      let fullContent = ""
-      const throttleMs = 60
+      // Add a bot message placeholder ONCE
+      setMessages((prev) => [...prev, { type: "bot", content: "" }])
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        // If a newer request started, stop this one
+        // If a newer request started, stop updating this one
         if (myRunId !== streamRunIdRef.current) return
 
-        // 👇 Your backend: "gives the complete thing on every stream"
-        // So we TREAT this as the full message-so-far, not a delta
         const chunkText = decoder.decode(value, { stream: true })
         if (!chunkText) continue
 
-        fullContent = chunkText              // ⬅️ overwrite, NOT +=
-        streamUpdateRef.current = fullContent
-
-        const now = Date.now()
-        // Throttle + avoid re-setting the same content again and again
-        if (
-          now - lastStreamUpdateTimeRef.current > throttleMs &&
-          streamUpdateRef.current !== lastRenderedRef.current
-        ) {
-          lastStreamUpdateTimeRef.current = now
-          lastRenderedRef.current = streamUpdateRef.current
-
-          setMessages((prevMessages) => {
-            const updated = [...prevMessages]
-            if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
-              updated[updated.length - 1].content = streamUpdateRef.current
-            }
-            return updated
-          })
-        }
-      }
-
-      // Flush any remaining buffered text
-      const remaining = decoder.decode()
-      if (remaining) {
-        fullContent = remaining // still "full message"
-        streamUpdateRef.current = fullContent
-      }
-
-      // Final update so we definitely show the complete final content ONCE
-      if (streamUpdateRef.current && streamUpdateRef.current !== lastRenderedRef.current) {
-        lastRenderedRef.current = streamUpdateRef.current
+        // 🔑 Each chunk is the new delta – append it to the last bot message
         setMessages((prevMessages) => {
           const updated = [...prevMessages]
-          if (updated.length > 0 && updated[updated.length - 1].type === "bot") {
-            updated[updated.length - 1].content = streamUpdateRef.current
+          if (updated.length === 0) return updated
+
+          const lastIndex = updated.length - 1
+          const lastMsg = updated[lastIndex]
+
+          if (lastMsg.type === "bot") {
+            updated[lastIndex] = {
+              ...lastMsg,
+              content: (lastMsg.content || "") + chunkText,
+            }
           }
+
+          return updated
+        })
+      }
+
+      // Flush any remaining buffered text from the decoder
+      const remaining = decoder.decode()
+      if (remaining) {
+        setMessages((prevMessages) => {
+          const updated = [...prevMessages]
+          if (updated.length === 0) return updated
+
+          const lastIndex = updated.length - 1
+          const lastMsg = updated[lastIndex]
+
+          if (lastMsg.type === "bot") {
+            updated[lastIndex] = {
+              ...lastMsg,
+              content: (lastMsg.content || "") + remaining,
+            }
+          }
+
           return updated
         })
       }
@@ -308,7 +297,6 @@ const AIChat = () => {
       }
     }
   }
-
 
   const handleSubmit = async (event) => {
     event.preventDefault()
