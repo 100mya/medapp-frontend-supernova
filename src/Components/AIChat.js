@@ -259,7 +259,7 @@ const AIChat = () => {
         }
 
         lastChunkRef.current = chunk
-        fullContent += newPart
+        fullContent = newPart
 
         // store newest full content (de-duplicated) but do not always rerender
         streamUpdateRef.current = fullContent

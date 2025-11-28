@@ -162,7 +162,7 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
           : chunkText // fallback if something weird happens
 
         caseLastChunkRef.current = chunkText
-        result += newPart
+        result = newPart
 
         // small delay so the stream doesn't feel too "instant"
         await new Promise((resolve) => setTimeout(resolve, delayMs))
@@ -175,7 +175,7 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
         const full = prevFull + remaining
         const newPart = full.startsWith(prevFull) ? full.slice(prevFull.length) : remaining
         caseLastChunkRef.current = full
-        result += newPart
+        result = newPart
       }
 
       if (myRunId === caseStreamRunIdRef.current) {
