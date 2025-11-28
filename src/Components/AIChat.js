@@ -24,6 +24,7 @@ const AIChat = () => {
   const streamRunIdRef = useRef(0)
   const streamUpdateRef = useRef("")          // stores latest streamed text
   const lastStreamUpdateTimeRef = useRef(0)   // throttles updates
+  const lastChunkRef = useRef("") 
 
   const languages = [
     { code: "en", name: "English" },
@@ -209,6 +210,10 @@ const AIChat = () => {
       streamControllerRef.current = controller
       const myRunId = ++streamRunIdRef.current
 
+      lastChunkRef.current = ""
+      streamUpdateRef.current = ""
+      lastStreamUpdateTimeRef.current = 0
+
       const payload = {
         prompt: formData.get("prompt"),
         filename: formData.get("filename"),
@@ -238,9 +243,25 @@ const AIChat = () => {
         if (myRunId !== streamRunIdRef.current) return
 
         const chunk = decoder.decode(value, { stream: true })
-        fullContent = chunk
+        if (!chunk) continue
 
-        // store the newest content but DO NOT trigger a rerender yet
+        // BACKEND sends "full text so far" (and sometimes repeats it entirely)
+        // We only want the *new* part beyond the previous chunk.
+        const prevFull = lastChunkRef.current
+        let newPart
+
+        if (chunk.startsWith(prevFull)) {
+          // normal case: chunk extends previous
+          newPart = chunk.slice(prevFull.length)
+        } else {
+          // fallback: if something weird happens, just take chunk as-is
+          newPart = chunk
+        }
+
+        lastChunkRef.current = chunk
+        fullContent += newPart
+
+        // store newest full content (de-duplicated) but do not always rerender
         streamUpdateRef.current = fullContent
 
         const now = Date.now()
@@ -258,6 +279,7 @@ const AIChat = () => {
           })
         }
       }
+
     } catch (error) {
       if (error?.name !== "AbortError") {
         console.error("Error handling stream", error)

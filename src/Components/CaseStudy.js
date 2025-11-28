@@ -47,6 +47,7 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
   
   const caseStreamControllerRef = useRef(null)
   const caseStreamRunIdRef = useRef(0)
+  const caseLastChunkRef = useRef("")
 
   const navigate = useNavigate()
 
@@ -126,6 +127,7 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
     const controller = new AbortController()
     caseStreamControllerRef.current = controller
     const myRunId = ++caseStreamRunIdRef.current
+    caseLastChunkRef.current = "" // reset for this run
 
     try {
       const caseInfo = JSON.stringify(patientInfo) // Send the entire case study info
@@ -152,18 +154,28 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
         const chunkText = decoder.decode(value, { stream: true })
         if (!chunkText) continue
 
-        // Just like AIChat: each chunk is treated as the full text-so-far
-        // so we overwrite instead of accumulating with +=
-        result = chunkText
+        // BACKEND sends full text-so-far each time.
+        // We only want the *new* part beyond the previous chunk.
+        const prevFull = caseLastChunkRef.current
+        const newPart = chunkText.startsWith(prevFull)
+          ? chunkText.slice(prevFull.length)
+          : chunkText // fallback if something weird happens
 
-        // optional tiny delay to slow down stream processing
+        caseLastChunkRef.current = chunkText
+        result += newPart
+
+        // small delay so the stream doesn't feel too "instant"
         await new Promise((resolve) => setTimeout(resolve, delayMs))
       }
 
       // flush any remaining buffered text
       const remaining = decoder.decode()
       if (remaining) {
-        result = remaining
+        const prevFull = caseLastChunkRef.current
+        const full = prevFull + remaining
+        const newPart = full.startsWith(prevFull) ? full.slice(prevFull.length) : remaining
+        caseLastChunkRef.current = full
+        result += newPart
       }
 
       if (myRunId === caseStreamRunIdRef.current) {
@@ -180,6 +192,7 @@ const CaseStudy = ({ selectedPanel, addResponse, setIsLoading, responses }) => {
     } finally {
       if (myRunId === caseStreamRunIdRef.current) {
         caseStreamControllerRef.current = null
+        caseLastChunkRef.current = ""
         setIsLoading(false)
       }
     }
