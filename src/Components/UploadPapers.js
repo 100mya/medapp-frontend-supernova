@@ -29,6 +29,9 @@ const UploadPapers = () => {
   const [isDraggingIndividual, setIsDraggingIndividual] = useState(false)
   const [isDraggingBulk, setIsDraggingBulk] = useState(false)
 
+  const NO_DELETE_SET = new Set(noDeleteFiles?.filenames || [])
+  const canShowDelete = (filename) => !NO_DELETE_SET.has(filename)
+
   useEffect(() => {
   const checkAuthAndFetchFiles = async () => {
     const userId = localStorage.getItem("id")
@@ -562,7 +565,13 @@ const UploadPapers = () => {
                     {uploadedFiles.map((file, index) => (
                       <li key={index}>
                         <span>{file}</span>
-                        <AiOutlineDelete className="UploadPapers-delete-icon" onClick={() => handleFileDelete(file)} />
+
+                        {canShowDelete(file) && (
+                          <AiOutlineDelete
+                            className="UploadPapers-delete-icon"
+                            onClick={() => handleFileDelete(file)}
+                          />
+                        )}
                       </li>
                     ))}
                   </ul>
